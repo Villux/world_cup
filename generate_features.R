@@ -13,6 +13,22 @@ library(reshape2)
 
 # Match features
 wc_match_results <- read_csv("results.csv")
+elo_rankings <- read_csv("elo_ranking.csv")
+elo_rankings <- elo_rankings[,2:ncol(elo_rankings)]
+
+# Merge datasets for home team
+wc_match_results <- merge(x = wc_match_results, y = elo_rankings,
+              by.x = c("date", "home_team"),
+              by.y = c("date", "team"))
+names(wc_match_results)[ncol(wc_match_results)] <- "home_elo"
+
+wc_match_results <- merge(x = wc_match_results, y = elo_rankings,
+                          by.x = c("date", "away_team"),
+                          by.y = c("date", "team"))
+names(wc_match_results)[ncol(wc_match_results)] <- "away_elo"
+
+# Elo diff
+wc_match_results$elo_diff <- wc_match_results$home_elo -wc_match_results$away_elo
 
 # Remove friendly matches
 wc_match_results <- wc_match_results %>%
@@ -44,6 +60,19 @@ wc_match_results <- wc_match_results %>%
                                         na.rm = T)) %>%
   ungroup()
 
+# Mean goals received by the opposing team
+wc_match_results <- wc_match_results %>% 
+  group_by(home_team) %>%
+  mutate(avg_goals_received = rollapply(data = away_score, 
+                                        width = score_diff_lag, 
+                                        FUN = mean, 
+                                        align = "right", 
+                                        fill = NA, 
+                                        na.rm = T)) %>%
+  ungroup()
+
+
+
 wc_match_results <- wc_match_results %>%
   group_by(home_team) %>%
   tidyr::fill(home_avg_goal_diff, home_score_difference_lag) %>%
@@ -54,10 +83,16 @@ wc_match_results <- wc_match_results %>%
   tidyr::fill(away_avg_goal_diff, away_score_difference_lag) %>%
   arrange(date)
 
+wc_match_results <- wc_match_results %>%
+  group_by(home_team) %>%
+  tidyr::fill(avg_goals_received) %>%
+  arrange(date)
+
 wc_match_results$home_avg_goal_diff[is.na(wc_match_results$home_avg_goal_diff)] <- 0
 wc_match_results$away_avg_goal_diff[is.na(wc_match_results$away_avg_goal_diff)] <- 0
 wc_match_results$home_score_difference_lag[is.na(wc_match_results$home_score_difference_lag)] <- 0
 wc_match_results$away_score_difference_lag[is.na(wc_match_results$away_score_difference_lag)] <- 0
+wc_match_results$avg_goals_received[is.na(wc_match_results$avg_goals_received)] <- 0
 
 # Win, draw or lose: [1, 0, -1]
 wc_match_results$home_win <- sign(wc_match_results$score_difference)
@@ -140,3 +175,5 @@ data$rank_diff_avg <- data$home_cur_year_avg - data$away_cur_year_avg
 data <- data[complete.cases(data),]
 
 write.csv(data, file = "dataset.csv")
+
+
