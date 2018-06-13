@@ -4,12 +4,31 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
+import argparse
 
 def get_nationality(playerPage):
     link = playerPage.a["href"]
     page = requests.get('http://www.futhead.com/' + link)
     bs = BeautifulSoup(page.text, 'html.parser')
-    return bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
+    nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
+    if len(nationality) == 0:
+        nationality = ' '
+    return nationality
+
+
+nationality_cache = {}
+def get_nationality_from_cache(cache_key):
+    if cache_key in nationality_cache:
+        return nationality_cache[cache_key]
+    else:
+        return None
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--year', type=int, default=17, help="Which year's FIFA")
+args = parser.parse_args()
+
+key = args.year
 
 
 # Runtime start
@@ -36,61 +55,46 @@ fifa = {
     '18': 'FIFA18'
 }
 
-for key, value in fifa.items():
-    print('Doing Fifa ' + key)
+print(f'Doing Fifa {key}')
 
-    # List Intializations
-    players = []
-    attributes = []
+# List Intializations
+players = []
 
-    # Looping through all pages to retrieve players stats and information
-    for page in range(1, 2):
-        FutHead = requests.get('http://www.futhead.com/' + key + '/players/?page=' + str(page) + '&bin_platform=ps')
-        bs = BeautifulSoup(FutHead.text, 'html.parser')
-        Stats = bs.findAll('span', {'class': 'player-stat stream-col-60 hidden-md hidden-sm'})
-        Names = bs.findAll('span', {'class': 'player-name'})
-        Information = bs.findAll('span', {'class': 'player-club-league-name'})
-        Ratings = bs.findAll('span', {'class': re.compile('revision-gradient shadowed font-12')})
-        PlayerPages = bs.findAll('div', {'class': 'content player-item font-24'})
+# Looping through all pages to retrieve players stats and information
+for page in range(1, TotalPages + 1):
+    FutHead = requests.get('http://www.futhead.com/' + str(key) + '/players/?page=' + str(page) + '&bin_platform=ps')
+    bs = BeautifulSoup(FutHead.text, 'html.parser')
 
-        # Calcualting the number of players per page
-        num = len(bs.findAll('li', {'class': 'list-group-item list-group-table-row player-group-item dark-hover'}))
+    Players = bs.findAll('div', {'class': 'content player-item font-24'})
+    print("PLAYER COUNT IN PAGE: ", len(Players))
+    for player in Players:
+        name = player.findAll('span', {'class': 'player-name'})[0].get_text()
 
-        # Parsing all players information
-        for i in range(0, num):
-            p = []
-            p.append(Names[i].get_text())
-            strong = Information[i].strong.extract()
-            nationality = get_nationality(PlayerPages[i])
-            try:
-                p.append(re.sub('\s +', '', str(Information[i].get_text())).split('| ')[1])
-            except IndexError:
-                p.append((''))
-            try:
-                p.append(re.sub('\s +', '', str(Information[i].get_text())).split('| ')[2])
-            except IndexError:
-                p.append((''))
-            p.append(strong.get_text())
-            p.append(Ratings[i].get_text())
-            p.append(nationality)
-            players.append(p)
+        nationality_key = player.findAll("img", {"class": "player-nation"})[0]["data-src"]
+        nationality = get_nationality_from_cache(nationality_key)
+        if nationality is None:
+            nationality = get_nationality(player)
+            nationality_cache[nationality_key] = nationality
+            print(f"Cache set for {nationality}")
+        rating = player.findAll('span', {'class': re.compile('revision-gradient shadowed font-12')})[0].get_text()
 
-        # Parsing all players stats
-        a = []
-        for stat in Stats:
-            if Stats.index(stat) % 6 == 0:
-                if len(a) > 0:
-                    attributes.append(a)
-                a = []
-            if stat.find('span', {'class': 'value'}) is None:
-                pass
-            else:
-                a.append(stat.find('span', {'class': 'value'}).get_text())
-        print('page ' + str(page) + ' is done!')
+        # Stats
+        stats = player.findAll('span', {'class': "player-stat stream-col-60 hidden-md hidden-sm"})
+        pace = stats[0].findAll('span', {'class': 'value'})[0].get_text()
+        shooting = stats[1].findAll('span', {'class': 'value'})[0].get_text()
+        passing = stats[2].findAll('span', {'class': 'value'})[0].get_text()
+        dribbling = stats[3].findAll('span', {'class': 'value'})[0].get_text()
+        defending = stats[4].findAll('span', {'class': 'value'})[0].get_text()
+        physical = stats[5].findAll('span', {'class': 'value'})[0].get_text()
 
-    df_cols = ["NAME","CLUB","LEAGUE","POSITION","RATING","NATIONALITY", "PACE","SHOOTING","PASSING","DRIBBLING","DEFENDING","PHYSICAL"]
-    player_df = pd.DataFrame(np.hstack((players, attributes)), columns=df_cols)
-    player_df.to_csv(f"{value}.csv")
+        players.append([name, nationality, rating, pace, shooting, passing, dribbling, defending, physical])
+
+    print('page ' + str(page) + ' is done!')
+
+df_cols = ["NAME", "NATIONALITY", "RATING", "PACE","SHOOTING","PASSING","DRIBBLING","DEFENDING","PHYSICAL"]
+
+player_df = pd.DataFrame(players,  columns=df_cols)
+player_df.to_csv(f"FIFA{key}.csv")
 
 
 # Runtime end
