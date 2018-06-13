@@ -10,7 +10,10 @@ def get_nationality(playerPage):
     link = playerPage.a["href"]
     page = requests.get('http://www.futhead.com/' + link)
     bs = BeautifulSoup(page.text, 'html.parser')
-    nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
+    if args.year in [17, 18]:
+        nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[4].a.get_text()
+    else:
+        nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
     if len(nationality) == 0:
         nationality = ' '
     return nationality
