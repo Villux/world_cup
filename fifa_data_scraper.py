@@ -11,7 +11,15 @@ def get_nationality(playerPage):
     page = requests.get('http://www.futhead.com/' + link)
     bs = BeautifulSoup(page.text, 'html.parser')
     if args.year in [17, 18]:
-        nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[4].a.get_text()
+        a_elem = bs.findAll('div', {'class': 'player-sidebar-item'})[4].a
+        if a_elem is None:
+            nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
+        else:
+            try:
+                nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[4].a.get_text()
+            except:
+                print("FAILET TO GET NATIONALITY")
+                nationality = "NONE"
     else:
         nationality = bs.findAll('div', {'class': 'player-sidebar-item'})[2].a.get_text()
     if len(nationality) == 0:
