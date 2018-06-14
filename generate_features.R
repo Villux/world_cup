@@ -128,7 +128,8 @@ fifa_rankings <- fifa_rankings %>% filter(as.Date(date) %in% wc_dates)
 # Merge datasets for home team
 data <- merge(x = wc_match_results, y = fifa_rankings,
               by.x = c("date", "home_team"),
-              by.y = c("date", "country"))
+              by.y = c("date", "country"),
+              all.x = TRUE)
 
 col_range <- (ncol(wc_match_results)+1):ncol(data)
 # Prefix columns
@@ -137,7 +138,8 @@ names(data)[col_range] <- paste("home", colnames(data)[col_range], sep = "_")
 # Merge datasets for away team
 data <- merge(x = data, y = fifa_rankings,
               by.x = c("date", "away_team"),
-              by.y = c("date", "country"))
+              by.y = c("date", "country"),
+              all.x = TRUE)
 col_range <- (tail(col_range, 1)+1):ncol(data)
 names(data)[col_range] <- paste("away", colnames(data)[col_range], sep = "_")
 

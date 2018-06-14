@@ -17,6 +17,7 @@ library(xgboost)
 library(class)
 
 results <- read_csv("dataset.csv")
+
 results <- results[,2:ncol(results)]
 
 train <- results %>% 
