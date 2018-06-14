@@ -30,9 +30,6 @@ names(wc_match_results)[ncol(wc_match_results)] <- "away_elo"
 # Elo diff
 wc_match_results$elo_diff <- wc_match_results$home_elo -wc_match_results$away_elo
 
-# Remove friendly matches
-wc_match_results <- wc_match_results %>%
-  filter(tournament != "Friendly")
 # Goals difference
 wc_match_results$score_difference <- wc_match_results$home_score - wc_match_results$away_score
 
@@ -120,28 +117,9 @@ wc_match_results <- wc_match_results %>%
 wc_match_results$wc_home_wins[is.na(wc_match_results$wc_home_wins)] <- 0
 wc_match_results$wc_away_wins[is.na(wc_match_results$wc_away_wins)] <- 0
 
-fifa_rankings <- read_csv("fifa_ranking.csv")
 
-start_date <- min(fifa_rankings$rank_date)
-end_date <- max(fifa_rankings$rank_date)
-daily_country <- data.frame(matrix(ncol = ncol(fifa_rankings), nrow = 0))
-names(daily_country) <- colnames(fifa_rankings)
-countries <- unique(fifa_rankings$country_full)
-for (country in countries){
-  tmp <- data.frame(
-    date = seq(start_date, end_date, by = "1 day"),
-    country = country
-  )
-  daily_country <- rbind(daily_country, tmp)
-}
-
-fifa_rankings <- merge(x = daily_country, 
-                       y = fifa_rankings, 
-                       by.x = c("date", "country"), 
-                       by.y = c("rank_date", "country_full"), 
-                       all.x = TRUE)
-
-fifa_rankings <- fifa_rankings %>% group_by(country) %>% do(na.locf(.))
+fifa_rankings <- read_csv("daily_fifa_ranking.csv") 
+fifa_rankings <- fifa_rankings[,2:ncol(fifa_rankings)]
 
 wc_dates <- unique(wc_match_results$date)
 fifa_rankings <- fifa_rankings %>% filter(as.Date(date) %in% wc_dates)
@@ -175,5 +153,7 @@ data$rank_diff_avg <- data$home_cur_year_avg - data$away_cur_year_avg
 data <- data[complete.cases(data),]
 
 write.csv(data, file = "dataset.csv")
+
+
 
 
