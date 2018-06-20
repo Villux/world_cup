@@ -1,15 +1,6 @@
-library(vars)
 library(readr)
-library(ggplot2)
 library(dplyr)
 library(lubridate)
-library(xts)
-library(broom)
-library(xtable)
-library(stringr)
-library(tseries)
-library(lmtest)
-library(reshape2)
 library(elo)
 
 # Data
@@ -18,7 +9,7 @@ matches <- read_csv('results.csv')
 # Elo rating table
 teams <- data.frame(team = unique(c(matches$home_team, matches$away_team)))
 teams <- teams %>%
-  mutate(elo = 1500, date = as.Date(1800-01-01))
+  mutate(elo = 1500, date = as.Date('1872-11-30'))
 
 # Game end results
 matches <- matches %>%
@@ -30,9 +21,6 @@ matches <- matches %>%
   select(date, home_team, away_team, result, date, tournament, home_score, away_score) %>%
   arrange(date)
 
-matches <- matches %>%
-  filter(year(date) > 1979)
-
 for (i in seq_len(nrow(matches))) {
   match <- matches[i, ]
   
@@ -43,27 +31,28 @@ for (i in seq_len(nrow(matches))) {
   if (match$tournament %in% c("FIFA World Cup")) {
     K <- 60
   } else if (match$tournament %in% c("Confederations Cup",
-                                     "Gold Cup",
-                                     "African Cup of Nations",
-                                     "AFC Asian Cup",
-                                     "Copa Am<U+00E9>rica",
-                                     "CONCACAF Championship",
-                                     "Nations Cup",
+                                     "Copa America",
                                      "UEFA Euro",
                                      "FIFA World Cup qualification"
                                      )) {
+    
     K <- 50
+  } else if (match$tournament %in% c("AFC Asian Cup",
+                                     "Gold Cup",
+                                     "CONCACAF Championship",
+                                     "Oceania Nations Cup",
+                                     "African Cup of Nations")) {
+    K <- 50 * 0.85
   } else if (match$tournament %in% c("African Cup of Nations qualification", 
                                      "AFC Asian Cup qualification",
                                      "UEFA Euro qualification",
                                      "CONCACAF Championship qualification",
                                      "Oceania Nations Cup qualification",
+                                     "AFC Challenge Cup",
                                      "AFC Challenge Cup qualification",
                                      "Gold Cup qualification"
                                      )) {
     K <- 40
-  } else if (match$tournament == "Friendly") {
-    K <- 20
   } else {
     K <- 30
   }
@@ -98,4 +87,6 @@ for (i in seq_len(nrow(matches))) {
 }
 
 write.csv(teams, file = "elo_ranking.csv")
+
+
 
