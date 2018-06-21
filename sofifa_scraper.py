@@ -23,7 +23,7 @@ while page.status_code:
     player_table  = bs.findAll('table', {'class': 'table table-hover persist-area'})[0]
 
     rows = player_table.findChildren(['tr'])
-    for row in rows:
+    for row in rows[2:]:
         try:
             id_col = row.findChildren(["td"])[0]
             player_col = row.findChildren(["td"])[1]
@@ -43,6 +43,7 @@ while page.status_code:
             players.append([player_id, player_name, player_nationality, player_play_pos])
 
     offset += 80
+    print(f"Next Offset: {offset}")
     page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 
 df_cols = ["id", "name", "nationality", "position"]
