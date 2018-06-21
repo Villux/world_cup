@@ -21,26 +21,55 @@ for (file in files){
     do(head(., 23)) %>%
     summarise(
       rating = mean(RATING),
+      rating_max = max(RATING),
+      rating_min = min(RATING),
       pace = mean(head(sort(PACE, decreasing = TRUE), 6)),
+      pace_max = max(PACE),
+      pace_min = min(PACE),
       shooting = mean(head(sort(SHOOTING, decreasing = TRUE), 5)),
+      shooting_max = max(SHOOTING), 
+      shooting_min = min(SHOOTING),
       passing = mean(head(sort(PASSING, decreasing = TRUE), 10)),
+      passing_max = max(PASSING),
+      passing_min = min(PASSING),
       dribbling = mean(head(sort(DRIBBLING, decreasing = TRUE), 5)),
+      dribbling_max = max(DRIBBLING),
+      dribbling_min = min(DRIBBLING),
       defending = mean(head(sort(DEFENDING, decreasing = TRUE), 5)),
+      defending_max = max(DEFENDING),
+      defending_min = min(DEFENDING),
       physical = mean(head(sort(PHYSICAL, decreasing = TRUE), 8)),
+      physical_max = max(PHYSICAL),
+      physical_min = min(PHYSICAL),
       year = year)
   
+  r_coef <- 0.90
   summary_shit_teams = player_stats %>% 
     group_by(NATIONALITY) %>%
     filter(n() < 23) %>%
     do(head(., 23)) %>%
     summarise(
-      rating = mean(RATING) * 0.8,
-      pace = mean(RATING) * 0.8,
-      shooting = mean(RATING)* 0.8,
-      passing = mean(RATING)* 0.8,
-      dribbling = mean(RATING)* 0.8,
-      defending = mean(RATING)* 0.8,
-      physical = mean(RATING)* 0.8,
+      rating = mean(RATING) * min(1, max(n()/18, r_coef)),
+      rating_max = max(RATING),
+      rating_min = min(RATING),
+      pace = mean(RATING) * min(1, max(n()/18, r_coef)),
+      pace_max = max(PACE),
+      pace_min = min(PACE),
+      shooting = mean(SHOOTING)* min(1, max(n()/18, r_coef)),
+      shooting_max = max(SHOOTING),
+      shooting_min = min(SHOOTING),
+      passing = mean(PASSING)* min(1, max(n()/18, r_coef)),
+      passing_max = max(PASSING),
+      passing_min = min(PASSING),
+      dribbling = mean(DRIBBLING)* min(1, max(n()/18, r_coef)),
+      dribbling_max = max(DRIBBLING),
+      dribbling_min = min(DRIBBLING),
+      defending = mean(DEFENDING)* min(1, max(n()/18, r_coef)),
+      defending_max = max(DEFENDING),
+      defending_min = min(DEFENDING),
+      physical = mean(RATING)* min(1, max(n()/18, r_coef)),
+      physical_max = max(PHYSICAL),
+      physical_min = min(PHYSICAL),
       year = year)
   year <- year + 1
   
