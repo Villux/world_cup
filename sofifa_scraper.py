@@ -18,7 +18,7 @@ page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 while page.status_code:
     bs = BeautifulSoup(page.text, 'html.parser')
 
-    player_table  = bs.findAll('table', {'class': 'table table-hover persist-area'})
+    player_table  = bs.findAll('table', {'class': 'table table-hover persist-area'})[0]
 
     rows = player_table.findChildren(['tr'])
     for row in rows:
@@ -29,15 +29,16 @@ while page.status_code:
             nationality_col = a_cols[0]
             name_col = a_cols[1]
             play_pos = a_cols[2]
-        except:
+        except Exception as e:
             print("Failed to get data")
+            print(e)
         else:
             player_id = int(id_col.img["id"])
             player_nationality = player_col.div.a["title"]
             player_name = name_col.get_text()
             player_play_pos = play_pos.get_text()
 
-            players.append([player_id, player_name, player_nationality, player_play_pos]
+            players.append([player_id, player_name, player_nationality, player_play_pos])
 
     offset += 80
     page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
