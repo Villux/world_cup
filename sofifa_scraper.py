@@ -37,7 +37,7 @@ while page.status_code:
         else:
             player_id = int(id_col.img["id"])
             player_nationality = player_col.div.a["title"]
-            player_name = name_col.get_text()
+            player_name = name_col["title"]
             player_play_pos = play_pos.get_text()
 
             players.append([player_id, player_name, player_nationality, player_play_pos])
@@ -46,7 +46,7 @@ while page.status_code:
     print(f"Next Offset: {offset}")
     page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 
-df_cols = ["id", "name", "nationality", "position"]
+df_cols = ["player_fifa_api_id", "name", "nationality", "position"]
 
 player_df = pd.DataFrame(players,  columns=df_cols)
 player_df.to_csv(f"SOFIFA{args.year}.csv")
