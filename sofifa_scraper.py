@@ -15,9 +15,11 @@ players = []
 offset = 0
 page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 
-
+first_player_id = None
 print(f"Starting to scrape data for year {args.year}")
-while page.status_code:
+
+not_all_done = True
+while not_all_done:
     bs = BeautifulSoup(page.text, 'html.parser')
 
     player_table  = bs.findAll('table', {'class': 'table table-hover persist-area'})[0]
@@ -40,11 +42,19 @@ while page.status_code:
             player_name = name_col["title"]
             player_play_pos = play_pos.get_text()
 
-            players.append([player_id, player_name, player_nationality, player_play_pos])
+            if first_player_id is None:
+                first_player_id = player_id
+            else:
+                if first_player_id == player_id:
+                    not_all_done = False
+                    break
+                else:
+                    players.append([player_id, player_name, player_nationality, player_play_pos])
 
-    offset += 80
-    print(f"Next Offset: {offset}")
-    page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
+    if not_all_done:
+        offset += 80
+        print(f"Next Offset: {offset}")
+        page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 
 df_cols = ["player_fifa_api_id", "name", "nationality", "position"]
 
