@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--year', type=int, default=17, help="Which year's FIFA")
+parser.add_argument('--year', type=str, default='17', help="Which year's FIFA")
 args = parser.parse_args()
 
 players = []
@@ -15,6 +15,8 @@ players = []
 offset = 0
 page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
 
+
+print(f"Starting to scrape data for year {args.year}")
 while page.status_code:
     bs = BeautifulSoup(page.text, 'html.parser')
 
