@@ -56,8 +56,11 @@ def get_all_attributes(bs):
 
     attrs = bs.findChildren('li')
     for attr in attrs:
-        if attr.span:
-            value = int(attr.span.extract().get_text())
+        spans = attr.findChildren('span')
+        if len(spans) > 0:
+            value = int(spans[0].get_text())
+            for span in spans:
+                span.extract()
             key = attr.get_text().strip().replace(" ", "_")
             attributes[key] = value
 
@@ -67,7 +70,6 @@ def get_all_attributes(bs):
 def get_column_level_data(bs):
     article = bs.findAll("article", {"class": 'column'})[0]
     rows = article.findAll("div", {"class": 'columns'})
-
     attributes = {}
     for row in rows:
         cols = row.findAll("div", {"class": 'column'})
@@ -79,7 +81,7 @@ def get_column_level_data(bs):
 
 
 def get_player_data(player_data):
-    page = requests.get(f'https://sofifa.com/{player_data["link"]}')
+    page = requests.get(f'https://sofifa.com{player_data["link"]}')
     bs = BeautifulSoup(page.text, 'html.parser')
 
     final = player_data
