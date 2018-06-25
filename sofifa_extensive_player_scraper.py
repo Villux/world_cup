@@ -61,3 +61,6 @@ while not_all_done:
         offset += 80
         print(f"Next Offset: {offset}")
         page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
+
+player_df = pd.DataFrame(players)
+player_df.to_csv(f"SOFIFA_ext_{args.year}.csv")
