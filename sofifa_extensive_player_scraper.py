@@ -15,7 +15,8 @@ args = parser.parse_args()
 players = []
 
 offset = 0
-page = requests.get(f'https://sofifa.com/players?v={args.year}&offset={offset}')
+url = f'https://sofifa.com/players?v={args.year}&offset={offset}'
+page = requests.get(url)
 
 first_player_id = None
 print(f"Starting to scrape data for year {args.year}")
@@ -24,6 +25,9 @@ pool = Pool(cpu_count())
 
 not_all_done = True
 while not_all_done:
+    if 'offset' not in page.url:
+        not_all_done = False
+        break
     bs = BeautifulSoup(page.text, 'html.parser')
 
     player_table  = bs.findAll('table', {'class': 'table table-hover persist-area'})[0]
