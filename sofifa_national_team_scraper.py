@@ -4,8 +4,6 @@ from bs4 import BeautifulSoup
 import numpy as np
 import argparse
 from multiprocessing import Pool, cpu_count
-import sys
-sys.setrecursionlimit(1000)
 
 def get_team_data(row):
     columns = row.findChildren(['td'])
