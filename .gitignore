@@ -183,3 +183,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Exclude generated datafiles
+data/generated/
