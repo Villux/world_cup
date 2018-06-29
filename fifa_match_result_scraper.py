@@ -38,4 +38,4 @@ for match in matches:
         all_matches.append(match_dict)
 
 match_df = pd.DataFrame(all_matches)
-match_df.to_csv(f"data/generated/fifa_match_results_{args.start}-{args.end}.csv")
+match_df.to_csv(f"data/original/fifa_match_results_{args.start}-{args.end}.csv")
