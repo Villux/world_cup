@@ -97,6 +97,7 @@ summary$nationality[summary$nationality == "DR Congo"] <- "Congo DR"
 summary$nationality[summary$nationality == "Guinea Bissau"] <- "Guinea-Bissau"
 summary$nationality[summary$nationality == "Trinidad & Tobago"] <- "Trinidad and Tobago"
 summary$nationality[summary$nationality == "Yemen"] <- "Yemen DPR"
+summary$nationality[summary$nationality == "Iran"] <- "IR Iran"
 write.csv(summary, file = "data/generated/team_level_player_data.csv")
 
 
