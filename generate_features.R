@@ -1,15 +1,11 @@
-library(vars)
 library(readr)
 library(ggplot2)
 library(dplyr)
 library(lubridate)
-library(xts)
 library(broom)
 library(xtable)
 library(stringr)
 library(tseries)
-library(lmtest)
-library(reshape2)
 
 # Match features
 wc_match_results <- read_csv("results.csv")
