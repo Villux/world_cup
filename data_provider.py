@@ -55,6 +55,9 @@ def get_data(filename, write_to_csv=False, save_filename="data/generated/master_
     match_results = pd.read_csv(filename)
     match_results['date'] =  pd.to_datetime(match_results['date'], format='%Y-%m-%d')
     match_results["year"] = match_results["date"].dt.year
+    if 'Unnamed: 0' in match_results:
+        match_results = match_results.drop(['Unnamed: 0'], axis=1)
+
 
     elo_ranking, player_stats, goal_history = load_feature_data()
 
