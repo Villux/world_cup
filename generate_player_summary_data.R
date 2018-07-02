@@ -11,6 +11,7 @@ player_attributes <- player_attributes[,2:ncol(player_attributes)]
 top <- 3
 half <- 5
 whole <- 10
+GK <- 2
 
 summary = player_attributes %>% 
   group_by(nationality, year) %>%
@@ -47,7 +48,12 @@ summary = player_attributes %>%
     Aggression = mean(head(sort(Aggression, decreasing = TRUE), half)),
     Penalties = mean(head(sort(Penalties, decreasing = TRUE), top)),
     Marking = mean(head(sort(Marking, decreasing = TRUE), top)),
-    Standing_Tackle = mean(head(sort(Standing_Tackle, decreasing = TRUE), half)))
+    Standing_Tackle = mean(head(sort(Standing_Tackle, decreasing = TRUE), half)),
+    GK_Diving = mean(head(sort(GK_Diving, decreasing = TRUE), GK)),
+    GK_Handling = mean(head(sort(GK_Handling, decreasing = TRUE), GK)),
+    GK_Kicking = mean(head(sort(GK_Kicking, decreasing = TRUE), GK)),
+    GK_Positioning = mean(head(sort(GK_Positioning, decreasing = TRUE), GK)),
+    GK_Reflexes = mean(head(sort(GK_Reflexes, decreasing = TRUE), GK)))
 
 
 r_coef <- 0.90
@@ -86,7 +92,12 @@ summary_shit_teams = player_attributes %>%
     Aggression = mean(head(sort(Aggression, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Penalties = mean(head(sort(Penalties, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
     Marking = mean(head(sort(Marking, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
-    Standing_Tackle = mean(head(sort(Standing_Tackle, decreasing = TRUE), half)) * min(1, max(n()/top, r_coef)))
+    Standing_Tackle = mean(head(sort(Standing_Tackle, decreasing = TRUE), half)) * min(1, max(n()/top, r_coef)),
+    GK_Diving = mean(head(sort(GK_Diving, decreasing = TRUE), GK)),
+    GK_Handling = mean(head(sort(GK_Handling, decreasing = TRUE), GK)),
+    GK_Kicking = mean(head(sort(GK_Kicking, decreasing = TRUE), GK)),
+    GK_Positioning = mean(head(sort(GK_Positioning, decreasing = TRUE), GK)),
+    GK_Reflexes = mean(head(sort(GK_Reflexes, decreasing = TRUE), GK)))
 
 summary <- rbind(summary, summary_shit_teams)
 
