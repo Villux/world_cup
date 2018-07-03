@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from dateutil.parser import parse
 
-from db_interface import fetchall, execute_statement, get_connection
+from goal_feature_table import get_mutual_matches, get_mutual_matches_between_dates, insert
+from match_table import get_matches
 
 def get_median_goals(data, home, away):
     home_data = data[(data['home_team'] == home) | (data['away_team'] == home)]
@@ -42,52 +43,30 @@ def get_previous_goals(data, home, away):
 
     return float(goal_diff), float(home_avg), float(away_avg)
 
+def get_mutual_matches_for_window(home_team, away_team, end, lag_years=4):
+    start = datetime.timedelta(days=lag_years)
+    return get_mutual_matches_between_dates(home_team, away_team, start, end)
+
 def calculate_goal_features_for_match(date, home_team, away_team, match_id):
-    query = f"select home_team, home_score, away_team, away_score \
-        from match \
-        where date < '{date}' AND \
-        ((home_team='{home_team}' AND away_team='{away_team}') OR (home_team='{away_team}' AND away_team='{home_team}'));"
-    with get_connection() as conn:
-        df = pd.read_sql(query, conn)
+    df = get_mutual_matches(home_team, away_team, date)
     goal_diff_with_away, home_goals_with_away, away_goals_with_home = get_previous_goals(df, home_team, away_team)
 
-    max_date = parse(date)
-    min_date = max_date - datetime.timedelta(days=4)
-
-    query = f"select home_team, home_score, away_team, away_score \
-        from match \
-        where date BETWEEN '{min_date}' AND '{max_date}' AND \
-        home_team='{home_team}' OR away_team='{away_team}' OR home_team='{away_team}' OR away_team='{home_team}';"
-
-    with get_connection() as conn:
-        df = pd.read_sql(query, conn)
+    df = get_mutual_matches_for_window(home_team, away_team, parse(date))
     home_goal_mean, away_goal_mean = get_median_goals(df, home_team, away_team)
 
-    insert_query = "insert into goal_feature (goal_diff_with_away, home_goals_with_away, away_goals_with_home, match_id, home_goal_mean, away_goal_mean) values (?, ?, ?, ?, ?, ?)"
-    execute_statement((insert_query, (goal_diff_with_away, home_goals_with_away, away_goals_with_home, match_id, home_goal_mean, away_goal_mean)))
-
-def init_goal_features_table():
-    drop = '''DROP TABLE IF EXISTS goal_feature;'''
-    create = '''CREATE TABLE goal_feature
-                    (id integer PRIMARY KEY AUTOINCREMENT,
-                    goal_diff_with_away real,
-                    home_goals_with_away real,
-                    away_goals_with_home real,
-                    home_goal_mean real,
-                    away_goal_mean real,
-                    match_id integer,
-                    FOREIGN KEY(match_id) REFERENCES match(id));'''
-
-    execute_statement([drop, create])
+    goal_data = {
+        "goal_diff_with_away": goal_diff_with_away,
+        "home_goals_with_away": home_goals_with_away,
+        "away_goals_with_home": away_goals_with_home,
+        "match_id": match_id,
+        "home_goal_mean": home_goal_mean,
+        "away_goal_mean": away_goal_mean
+    }
+    insert(**goal_data)
 
 def calculate_features_for_matches():
-    statement = '''select date, home_team, away_team, id from match'''
-    for match in fetchall(statement):
+    for match in get_matches():
         match_id = match[3]
         date = match[0]
         home_team, away_team = match[1], match[2]
         calculate_goal_features_for_match(date, home_team, away_team, match_id)
-
-if __name__ == "__main__":
-    init_goal_features_table()
-    calculate_features_for_matches()

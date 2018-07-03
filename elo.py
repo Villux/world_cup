@@ -1,3 +1,6 @@
+import datetime
+
+from elo_table import select_latest_for_team, attach_match_to_current_rating, insert_many
 from db_interface import fetchall, execute_many, fetchone, execute_statement
 
 def expected(A, B):
@@ -43,13 +46,23 @@ def elo_rating_change_for_match(elo_A, elo_B, tournament, goals_A, goals_B):
 
     return new_elo_A, new_elo_B
 
-def init_elo_for_every_team(init_date='1800-01-01', init_value=1500):
-    statement = '''select home_team as teams from match
-                   union
-                   select away_team from match'''
-    teams = [team[0] for team in fetchall(statement)]
-    tuples = [(init_date, team, init_value, False) for team in teams]
-    execute_many("insert into elo_rating (date, team, elo, simulation) values (?, ?, ?, ?)", tuples)
+def get_current_elo(team):
+    return select_latest_for_team(team)
+
+def attach_elo_to_match(match_id, home_team, away_team):
+    elo_A = get_current_elo(home_team)
+    elo_B = get_current_elo(away_team)
+
+    attach_match_to_current_rating(match_id, [home_team, away_team])
+    return elo_A, elo_B
+
+def update_elo_after_match(date, elo_home, elo_away, home_team, away_team, home_score, away_score, tournament):
+    new_elo_home, new_elo_away = elo_rating_change_for_match(elo_home, elo_away, tournament, home_score, away_score)
+
+    home_data = {"date": date, "team": home_team, "elo": new_elo_home}
+    away_data = {"date": date, "team": away_team, "elo": new_elo_away}
+
+    insert_many([home_data, away_data])
 
 def calculate_elo_from_matches():
     statement = '''select date, home_team, away_team, home_score, away_score, tournament, id from match'''
@@ -60,31 +73,5 @@ def calculate_elo_from_matches():
         home_score, away_score = match[3], match[4]
         tournament = match[5]
 
-        query = 'SELECT id, elo FROM elo_rating WHERE team=? AND date<=? AND match_id IS NULL ORDER BY date DESC;'
-        id_a, elo_A = fetchone((query, (home_team, date)))
-        id_b, elo_B = fetchone((query, (away_team, date)))
-
-        elo_home, elo_away = elo_rating_change_for_match(elo_A, elo_B, tournament, home_score, away_score)
-
-        execute_many("update elo_rating set match_id=? where id=?",
-            [(match_id, id_a),
-            (match_id, id_b)])
-
-        execute_many("insert into elo_rating (date, team, elo, simulation) values (?, ?, ?, ?)",
-            [(date, home_team, elo_home, False),
-            (date, away_team, elo_away, False)])
-
-def init_elo_table():
-    drop_elo_table = '''DROP TABLE IF EXISTS elo_rating;'''
-    create_elo_table = '''CREATE TABLE elo_rating
-                    (id integer PRIMARY KEY AUTOINCREMENT,
-                    date text, team text, elo real, simulation integer,
-                    match_id integer,
-                    FOREIGN KEY(match_id) REFERENCES match(id));'''
-
-    execute_statement([drop_elo_table, create_elo_table])
-
-if __name__ == "__main__":
-    init_elo_table()
-    init_elo_for_every_team()
-    calculate_elo_from_matches()
+        elo_A, elo_B = attach_elo_to_match(match_id, home_team, away_team)
+        update_elo_after_match(date, elo_A, elo_B, home_team, away_team, home_score, away_score, tournament)
