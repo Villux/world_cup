@@ -45,33 +45,11 @@ def merge_all_data():
 
     return append_player_data(df_match)
 
-def load_feature_data():
-    elo_ranking = pd.read_csv('data/generated/elo_ranking.csv', )
-    elo_ranking['date'] =  pd.to_datetime(elo_ranking['date'], format='%Y-%m-%d')
-    elo_ranking = elo_ranking.drop(['Unnamed: 0'], axis=1)
-
-    player_stats = pd.read_csv('data/generated/team_level_player_data.csv')
-    player_stats = player_stats.drop(['Unnamed: 0'], axis=1)
-
-    goal_history = pd.read_csv('data/generated/goal_history_data.csv')
-    goal_history['date'] =  pd.to_datetime(goal_history['date'], format='%Y-%m-%d')
-    goal_history = goal_history.drop(['Unnamed: 0'], axis=1)
-
-    return elo_ranking, player_stats, goal_history
-
 def get_data(write_to_csv=False, save_filename="data/generated/master_data.csv"):
     master_data = merge_all_data()
     if write_to_csv:
         master_data.to_csv(save_filename, index=False)
     return master_data
-
-def get_latest_elo(team):
-    elo_ranking = pd.read_csv('data/generated/elo_ranking.csv', )
-    elo_ranking['date'] =  pd.to_datetime(elo_ranking['date'], format='%Y-%m-%d')
-    elo_ranking = elo_ranking.drop(['Unnamed: 0'], axis=1)
-
-    elo_ranking = elo_ranking.sort_values(by='date')
-    return elo_ranking[elo_ranking["team"] == team]["elo"].tail(1).item()
 
 if __name__ == "__main__":
     merge_all_data()
