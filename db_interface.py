@@ -60,13 +60,16 @@ def import_match_results(filename='data/original/results.csv'):
     match_results["simulation"] = False
     match_results = match_results.drop(['neutral'], axis=1)
     with contextlib.closing(sqlite3.connect(path_to_file)) as conn:
-        match_results.to_sql('match', con=conn, index=True, index_label='id',)
+        match_results.to_sql('match', con=conn, index=True, index_label='id')
 
 def import_player_attributes(filename='data/generated/team_level_player_data.csv'):
     player_stats = pd.read_csv(filename)
     player_stats = player_stats.drop(['Unnamed: 0'], axis=1)
     with contextlib.closing(sqlite3.connect(path_to_file)) as conn:
-        player_stats.to_sql('player_attributes', con=conn)
+        player_stats.to_sql('player_attribute', con=conn, index=True, index_label='id')
+
+def get_connection():
+    return contextlib.closing(sqlite3.connect(path_to_file))
 
 if __name__ == "__main__":
     create_tables()
