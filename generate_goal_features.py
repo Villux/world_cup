@@ -6,6 +6,15 @@ from dateutil.parser import parse
 from goal_feature_table import get_mutual_matches, get_mutual_matches_between_dates, insert
 from match_table import get_matches
 
+def get_goal_data_from_input_data(data):
+    columns = ["goal_diff_with_away", "home_goals_with_away", "away_goals_with_home", "home_goal_mean", "away_goal_mean"]
+
+    goal_data = {}
+    for key, value in data.items():
+        if key in columns:
+            goal_data[key] = value
+    return goal_data
+
 def get_median_goals(data, home, away):
     home_data = data[(data['home_team'] == home) | (data['away_team'] == home)]
     home_goal_mean = pd.concat([home_data[(home_data['home_team'] == home)]["home_score"],
@@ -44,10 +53,10 @@ def get_previous_goals(data, home, away):
     return float(goal_diff), float(home_avg), float(away_avg)
 
 def get_mutual_matches_for_window(home_team, away_team, end, lag_years=4):
-    start = datetime.timedelta(days=lag_years)
+    start = end - datetime.timedelta(days=lag_years)
     return get_mutual_matches_between_dates(home_team, away_team, start, end)
 
-def calculate_goal_features_for_match(date, home_team, away_team, match_id):
+def calculate_goal_features_for_match(date, home_team, away_team):
     df = get_mutual_matches(home_team, away_team, date)
     goal_diff_with_away, home_goals_with_away, away_goals_with_home = get_previous_goals(df, home_team, away_team)
 
@@ -58,15 +67,20 @@ def calculate_goal_features_for_match(date, home_team, away_team, match_id):
         "goal_diff_with_away": goal_diff_with_away,
         "home_goals_with_away": home_goals_with_away,
         "away_goals_with_home": away_goals_with_home,
-        "match_id": match_id,
         "home_goal_mean": home_goal_mean,
         "away_goal_mean": away_goal_mean
     }
-    insert(**goal_data)
+    return goal_data
+
+def insert_with_match_id(match_id, data):
+    data["match_id"] = match_id
+    insert(**data)
+
 
 def calculate_features_for_matches():
     for match in get_matches():
         match_id = match[3]
         date = match[0]
         home_team, away_team = match[1], match[2]
-        calculate_goal_features_for_match(date, home_team, away_team, match_id)
+        goal_data = calculate_goal_features_for_match(date, home_team, away_team)
+        insert_with_match_id(match_id, goal_data)
