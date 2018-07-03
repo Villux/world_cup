@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from dateutil.parser import parse
 
-from db_interface import fetchall, execute_many, fetchone, execute_statement, get_connection
+from db_interface import fetchall, execute_statement, get_connection
 
 def get_median_goals(data, home, away):
     home_data = data[(data['home_team'] == home) | (data['away_team'] == home)]
