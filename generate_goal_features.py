@@ -53,7 +53,7 @@ def get_previous_goals(data, home, away):
     return float(goal_diff), float(home_avg), float(away_avg)
 
 def get_mutual_matches_for_window(home_team, away_team, end, lag_years=4):
-    start = end - datetime.timedelta(years=lag_years)
+    start = end - datetime.timedelta(days=365 * lag_years)
     return get_mutual_matches_between_dates(home_team, away_team, start, end)
 
 def calculate_goal_features_for_match(date, home_team, away_team):
