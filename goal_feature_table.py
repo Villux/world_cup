@@ -5,7 +5,7 @@ def get_mutual_matches_between_dates(home_team, away_team, start, end):
     query = f"select home_team, home_score, away_team, away_score \
         from match \
         where date BETWEEN '{start}' AND '{end}' AND \
-        home_team='{home_team}' OR away_team='{away_team}' OR home_team='{away_team}' OR away_team='{home_team}';"
+        (home_team='{home_team}' OR away_team='{away_team}' OR home_team='{away_team}' OR away_team='{home_team}');"
 
     with get_connection() as conn:
         return pd.read_sql(query, conn)
