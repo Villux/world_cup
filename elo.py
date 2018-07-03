@@ -1,6 +1,3 @@
-import datetime
-from dateutil.parser import parse
-
 from db_interface import fetchall, execute_many, fetchone, execute_statement
 
 def expected(A, B):
