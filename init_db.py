@@ -12,7 +12,7 @@ def delete_tables():
         query = f"DROP TABLE IF EXISTS {table};"
         execute_statement(query)
 
-def init_elo_table():
+def create_and_init_elo_table():
     def init_elo_for_every_team(init_date='1800-01-01', init_value=1500):
         statement = '''select home_team as teams from match
                     union
@@ -35,9 +35,10 @@ def import_match_results(filename='data/original/results.csv'):
     match_results['date'] =  pd.to_datetime(match_results['date'], format='%Y-%m-%d')
     match_results["year"] = match_results["date"].dt.year
     match_results["simulation"] = False
-    match_results = match_results.drop(['neutral'], axis=1)
+    match_results = match_results.reset_index()
+    match_results = match_results.drop(['neutral', 'index'], axis=1)
     with get_connection() as conn:
-        match_results.to_sql('match', con=conn, index=True, index_label='id')
+        match_results.to_sql('match', con=conn, index=False, if_exists='append')
 
 def import_player_attributes(filename='data/generated/team_level_player_data.csv'):
     player_stats = pd.read_csv(filename)
@@ -45,7 +46,7 @@ def import_player_attributes(filename='data/generated/team_level_player_data.csv
     with get_connection() as conn:
         player_stats.to_sql('player_attribute', con=conn, index=True, index_label='id')
 
-def init_goal_features_table():
+def create_goal_features_table():
     create = '''CREATE TABLE goal_feature
                     (id integer PRIMARY KEY AUTOINCREMENT,
                     goal_diff_with_away real,
@@ -58,17 +59,53 @@ def init_goal_features_table():
 
     execute_statement(create)
 
+def create_match_table():
+    query = '''CREATE TABLE IF NOT EXISTS "match" (
+                "id" integer PRIMARY KEY AUTOINCREMENT,
+                "date" TIMESTAMP,
+                "home_team" TEXT,
+                "away_team" TEXT,
+                "home_score" INTEGER,
+                "away_score" INTEGER,
+                "tournament" TEXT,
+                "city" TEXT,
+                "country" TEXT,
+                "year" INTEGER,
+                "simulation" INTEGER
+                );'''
+    execute_statement(query)
+
 if __name__ == "__main__":
     start = time.time()
 
     delete_tables()
-    import_match_results()
-    import_player_attributes()
-    init_elo_table()
-    calculate_elo_from_matches()
-    init_goal_features_table()
-    calculate_features_for_matches()
+    print("DELETED TABLES")
+    end = time.time()
+    print(end - start)
 
-    print("RUN TIME")
+    start = time.time()
+    create_match_table()
+    import_match_results()
+    print("MATCHES IMPORTED")
+    end = time.time()
+    print(end - start)
+
+    start = time.time()
+    import_player_attributes()
+    print("PLAYER ATTRIBUTES")
+    end = time.time()
+    print(end - start)
+
+    start = time.time()
+    create_and_init_elo_table()
+    calculate_elo_from_matches()
+    print("ELO CALCULATED")
+    end = time.time()
+    print(end - start)
+
+    start = time.time()
+    create_goal_features_table()
+    calculate_features_for_matches()
+    print("GOAL FEATURES")
     end = time.time()
     print(end - start)
