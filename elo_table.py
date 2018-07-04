@@ -1,22 +1,16 @@
 from db_interface import execute_statement, execute_many, fetchone
+from db_helper import get_value_tuple, build_insert_query
 
-def get_value_tuple(row):
-    return tuple(row.values())
-
-def build_insert_query(elo_data):
-    columns = elo_data.keys()
-    placeholders = ["?"] * len(columns)
-    query = f"insert into elo_rating ({','.join(columns)}) values ({','.join(placeholders)})"
-    return query
+table_name = "elo_rating"
 
 def insert(**kwargs):
-    query = build_insert_query(kwargs)
+    query = build_insert_query(kwargs, table_name)
     values = get_value_tuple(kwargs)
     execute_statement((query, values))
     return execute_statement("select last_insert_rowid()")
 
 def insert_many(elo_rows):
-    query = build_insert_query(elo_rows[0])
+    query = build_insert_query(elo_rows[0], table_name)
 
     values = []
     for row in elo_rows:
@@ -33,3 +27,7 @@ def attach_match_to_current_rating(match_id, team):
     else:
         values = [(match_id, team)]
     execute_many("update elo_rating set match_id=? where match_id IS NULL and team=?", values)
+
+def delete_elos_after_date(date):
+    query = 'delete from elo_rating where date > ?;'
+    execute_statement((query, (date,)))

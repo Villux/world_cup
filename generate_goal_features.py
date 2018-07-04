@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from dateutil.parser import parse
 
-from goal_feature_table import get_mutual_matches, get_mutual_matches_between_dates, insert
-from match_table import get_matches
+from goal_feature_table import insert
+from match_table import get_matches, get_mutual_matches, get_mutual_matches_between_dates
 
 def get_goal_data_from_input_data(data):
     columns = ["goal_diff_with_away", "home_goals_with_away", "away_goals_with_home", "home_goal_mean", "away_goal_mean"]
