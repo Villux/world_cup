@@ -8,7 +8,7 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--start', type=str, default='2018-6-01', help="Start date in form of YYYY-M-DD")
-parser.add_argument('--end', type=str, default='2018-8-01', help="End date in form of YYYY-M-DD")
+parser.add_argument('--end', type=str, default='2018-6-29', help="End date in form of YYYY-M-DD")
 args = parser.parse_args()
 
 url = f'https://data.fifa.com/livescores/en/internationaltournaments/matches/m/bydaterange/{args.start}/{args.end}'
@@ -28,12 +28,7 @@ for match in matches:
             "home_team": match["homeTeamName"],
             "away_team": match["awayTeamName"],
             "home_score": int(match["scoreHome"]),
-            "away_score": int(match["scoreAway"]),
-            "year": int(match["matchDate"][:4]),
-            "tournament": "FIFA World Cup",
-            "city": match["venueName"],
-            "country": "Russia",
-            "neutral": False
+            "away_score": int(match["scoreAway"])
         }
         all_matches.append(match_dict)
 
