@@ -1,6 +1,5 @@
 import sqlite3
 import contextlib
-import pandas as pd
 
 path_to_file = 'data/database.db'
 

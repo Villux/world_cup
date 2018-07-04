@@ -23,7 +23,7 @@ def append_player_data(df):
     return dataset
 
 def merge_all_data():
-    query = ''' SELECT
+    query = '''SELECT
                     m.*,
                     home_e.elo as "home_elo",
                     away_e.elo as "away_elo",
