@@ -6,8 +6,8 @@ from dateutil.parser import parse
 
 from features.generate_goal_features import calculate_goal_features_for_match
 from features.data_provider import append_player_data, get_feature_vector
-from db.match_table import insert, delete_simulations
 from features.elo import update_elo_after_match, get_current_elo, attach_elo_to_match
+from db.match_table import insert, delete_simulations
 from db.elo_table import delete_elos_after_date
 from match import Match
 from group_table import GroupTable
