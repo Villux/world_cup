@@ -9,270 +9,143 @@ from features.data_provider import append_player_data, get_feature_vector
 from db.match_table import insert, delete_simulations
 from features.elo import update_elo_after_match, get_current_elo, attach_elo_to_match
 from db.elo_table import delete_elos_after_date
-
-def get_match_feature_vector(df):
-    home_team = df["home_team"]
-    away_team = df["away_team"]
-    date = df["date"]
-    df["year"] = parse(date).year
-
-    # ELO
-    home_elo = get_current_elo(home_team)
-    away_elo = get_current_elo(away_team)
-    df["home_elo"] = home_elo
-    df["away_elo"] = away_elo
-
-    # Goals
-    goal_data = calculate_goal_features_for_match(date, home_team, away_team)
-    for key, value in goal_data.items():
-        df[key] = value
-
-    # Player data
-    df = pd.DataFrame([df])
-    df = append_player_data(df)
-    return df
-
-def post_match_results(df):
-    df = df.iloc[0].to_dict()
-    home_team = df["home_team"]
-    away_team = df["away_team"]
-    date = df["date"]
-    home_score = df["home_score"]
-    away_score = df["away_score"]
-    tournament = df["tournament"]
-
-    match = {
-        "date": date,
-        "home_team": home_team,
-        "away_team": away_team,
-        "home_score": home_score,
-        "away_score": away_score,
-        "tournament": tournament,
-        "year": df["year"],
-        "simulation": True
-    }
-
-    match_id = insert(**match)
-
-    home_elo, away_elo = attach_elo_to_match(match_id, home_team, away_team)
-    update_elo_after_match(date, home_elo, away_elo, home_team, away_team, home_score, away_score, tournament)
+from match import Match
+from group_table import GroupTable
+from predictor import Predictor
 
 def post_simulation():
     simulation_start_date = "2018-06-13"
     delete_elos_after_date(simulation_start_date)
     delete_simulations()
 
-class GroupTable():
-    def __init__(self, matches):
-        self.matches = matches
-        self.table = self.build_group_table()
-
-    def build_group_table(self):
-        data = []
-        for key, value in self.matches.groupby('group')['home_team'].unique().to_dict().items():
-            for team in value:
-                data.append({"Team": team, "Group": key, "points": 0, 'goal_diff': 0, 'goals_scored': 0})
-
-        return pd.DataFrame(data)
-
-    def print_group_standings(self):
-        self.sort()
-        columns = ['Position', 'Group A', 'Points A', 'Group B', 'Points B', 'Group C', 'Points C',
-                'Group D', 'Points D', 'Group E', 'Points E', 'Group F', 'Points F',
-                'Group G', 'Points G', 'Group H', 'Points H']
-
-        data = {"Position": [1,2,3,4]}
-        df = pd.DataFrame(data, columns = columns)
-
-        for idx, group in enumerate(["A", "B", "C", "D", "E", "F", "G", "H"]):
-            group_df = self.table[self.table["Group"] == group]
-            group_df = group_df.reset_index()
-            group_df = group_df.drop(['index', 'Group'], axis=1)
-            df.iloc[:, 1 + (idx * 2)] = group_df["Team"]
-            df.iloc[:, 2 + (idx * 2)] = group_df["points"]
-
-        print("\n\n", df)
-
-    def sort(self):
-        sorted_table = pd.DataFrame()
-        for group in np.unique(self.table["Group"]):
-            group_df = self.table[self.table["Group"] == group]
-            teams = [group_df.iloc[0], group_df.iloc[1], group_df.iloc[2], group_df.iloc[3]]
-            shorted_standing = sorted(teams, key=functools.cmp_to_key(self.get_better_team))
-            tmp = pd.concat([row.to_frame().T for row in shorted_standing])
-            sorted_table = pd.concat([sorted_table, tmp])
-        self.table = sorted_table
-
-    def update_table(self, match, match_sign):
-        if match_sign == 1:
-            self.table.loc[self.table["Team"] == match["home_team"], "points"] += 3
-        elif match_sign == 0:
-            self.table.loc[self.table["Team"] == match["home_team"], "points"] += 1
-            self.table.loc[self.table["Team"] == match["away_team"], "points"] += 1
-        elif match_sign == -1:
-            self.table.loc[self.table["Team"] == match["away_team"], "points"] += 3
-        self.sort()
-
-    def get_team(self, group, position):
-        return self.table[self.table["Group"] == group].iloc[position]["Team"]
-
-    def store_mutual_match(self, match):
-        home = match["home_team"]
-        away = match["away_team"]
-        self.table[f"{home}-{away}"] = match["home_score"] - match["away_score"]
-        self.table[f"{away}-{home}"] = match["away_score"] - match["home_score"]
-
-    def get_better_team(self, first_team, second_team):
-        if first_team["points"] > second_team["points"]:
-            return -1
-        elif first_team["points"] < second_team["points"]:
-            return 1
-
-        if first_team["goal_diff"] > second_team["goal_diff"]:
-            return -1
-        elif first_team["goal_diff"] < second_team["goal_diff"]:
-            return 1
-
-        if first_team["goals_scored"] > second_team["goals_scored"]:
-            return -1
-        elif first_team["goals_scored"] < second_team["goals_scored"]:
-            return 1
-
-        f_name = first_team["Team"]
-        s_name = second_team["Team"]
-        if first_team[f"{f_name}-{s_name}"] > 0:
-            return -1
-        elif first_team[f"{f_name}-{s_name}"] < 0:
-            return 1
-        else:
-            return - 1 if random.random() > 0.5 else -1
-
-class WorldCup():
-    def __init__(self, matches, table, sign_model, verbose=True):
-        self.matches = matches
+class WorldCupSimulator():
+    def __init__(self, match_templates, table, predictor, verbose=True):
+        self.match_templates = match_templates
         self.group_table = table
-        self.sign_model = sign_model
+        self.predictor = predictor
         self.verbose = verbose
 
     def print(self, text, end='\n'):
         if self.verbose:
             print(text, end=end)
 
-    def get_sign_from_probabilities(self, sign_probabilities, win_or_loose=False):
-        probas = sign_probabilities
-        if win_or_loose:
-            probas[1] = 0.0
-        sign = np.argmax(probas)
-        return sign - 1
+    def predict_match(self, match):
+        x = self.get_match_feature_vector(match)
+        match.set_feature_vector(x)
 
-    def predict_match_outcome(self, match):
-        data = get_match_feature_vector(match)
-        x = get_feature_vector(data)
+        outcome_probabilities = self.predictor.predict_outcome_probabilities(x)
+        match.set_outcome_probabilties(outcome_probabilities)
 
-        probas = self.sign_model.predict_proba(x)
+        home_score, away_score = self.predictor.predict_score(x, match.get_outcome())
+        match.set_score(home_score, away_score)
+        return match
 
-        data["home_score"] = 0
-        data["away_score"] = 0
-        data["tournament"] = "FIFA World Cup"
-        data["year"] = 2018
-        post_match_results(data)
+    def post_match_results(self, match):
+        db_obj = match.to_dict()
+        db_obj["year"] = parse(db_obj["date"]).year
+        db_obj["simulation"] = True
+        match_id = insert(**db_obj)
+        home_elo, away_elo = attach_elo_to_match(match_id, match.home_team, match.away_team)
+        update_elo_after_match(match.date, home_elo, away_elo, match.home_team,
+                               match.away_team, match.home_score, match.away_score, match.tournament)
 
-        return probas[0]
+    def get_match_feature_vector(self, match):
+        data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
+        data_merge_obj["year"] = parse(match.date).year
 
-    def print_match_result(self, match_sign, probas, match):
-        if "home_win" in match and match_sign != match.get("home_win", 100):
-            self.print(f"\x1b[31m{match['home_team']} - {match['away_team']}: \x1b[0m", end='')
-        else:
-            self.print(f"{match['home_team']} - {match['away_team']}: ", end='')
-        self.print(f"{match_sign} -- PROBAS -- {probas}")
+        # ELO
+        home_elo = get_current_elo(match.home_team)
+        away_elo = get_current_elo(match.away_team)
+        data_merge_obj["home_elo"] = home_elo
+        data_merge_obj["away_elo"] = away_elo
+
+        # Goals
+        goal_data = calculate_goal_features_for_match(match.date, match.home_team, match.away_team)
+        for key, value in goal_data.items():
+            data_merge_obj[key] = value
+
+        # Player data
+        data_merge_obj = pd.DataFrame([data_merge_obj])
+        data_merge_obj = append_player_data(data_merge_obj)
+        return get_feature_vector(data_merge_obj)
+
+    def print_match_result(self, match):
+        self.print(f"{match.home_team} - {match.away_team}: ", end='')
+        self.print(f"{match.get_outcome()}        -- probabilities [Lose, Draw, Win] -- {match.outcome_probabilities}")
+
+    def simulate_match(self, match):
+        match = self.predict_match(match)
+        self.post_match_results(match)
+        self.print_match_result(match)
+        return match
 
     def simulate_group_stage(self):
         self.print("\n\n\n___Group Stage___\n")
-
-        for _, match in self.matches.iloc[0:48].iterrows():
-            match = match.to_dict()
-            match["home_win"] = np.sign(match["home_score"] - match["away_score"])
-
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas)
-            self.print_match_result(match_sign, probas, match)
-
-            self.group_table.update_table(match, match_sign)
-
-            self.group_table.store_mutual_match(match)
+        for _, match_template in self.match_templates.iloc[0:48].iterrows():
+            match = Match(match_template)
+            match = self.simulate_match(match)
+            self.group_table.update_table(match.home_team, match.away_team, match.get_outcome())
 
     def simulate_round_of_16(self):
         i = 0
         self.print("\n\n\n___Round of 16___\n")
-        for index, match in self.matches.iloc[48:56].iterrows():
-            home_group, home_position = list(match["home_team"])
-            away_group, away_position = list(match["away_team"])
+        for index, match_template in self.match_templates.iloc[48:56].iterrows():
+            home_group, home_position = list(match_template["home_team"])
+            match_template["home_team"] = self.group_table.get_team(home_group, int(home_position) - 1)
+            away_group, away_position = list(match_template["away_team"])
+            match_template["away_team"] = self.group_table.get_team(away_group, int(away_position) - 1)
 
-            self.matches.loc[index, "home_team"] = self.group_table.get_team(home_group, int(home_position) - 1)
-            self.matches.loc[index, "away_team"] = self.group_table.get_team(away_group, int(away_position) - 1)
-
-            match = self.matches.loc[index].to_dict()
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas, win_or_loose=True)
-
-            self.print_match_result(match_sign, probas, match)
+            match = Match(match_template)
+            match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
-            if match_sign == 1:
-                self.matches.loc[56 + i, team_col] = match["home_team"]
+            if match.get_outcome() == 1:
+                self.match_templates.loc[56 + i, team_col] = match.home_team
             else:
-                self.matches.loc[56 + i, team_col] = match["away_team"]
+                self.match_templates.loc[56 + i, team_col] = match.away_team
             if index%2 != 0:
                 i += 1
 
     def simulate_quarter_finals(self):
         i = 0
         self.print("\n\n\n___Quarter-Finals___\n")
-        for index, match in self.matches.iloc[56:60].iterrows():
-            match = self.matches.loc[index].to_dict()
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas, win_or_loose=True)
-            self.print_match_result(match_sign, probas, match)
+        for index, match_template in self.match_templates.iloc[56:60].iterrows():
+            match = Match(match_template)
+            match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
-            if match_sign == 1:
-                self.matches.loc[60 + i, team_col] = match["home_team"]
+            if match.get_outcome() == 1:
+                self.match_templates.loc[60 + i, team_col] = match.home_team
             else:
-                self.matches.loc[60 + i, team_col] = match["away_team"]
+                self.match_templates.loc[60 + i, team_col] = match.away_team
             if index%2 != 0:
                 i += 1
 
     def simulate_semi_finals(self):
         self.print("\n\n\n___Semi-Finals___\n")
-        for index, match in self.matches.iloc[60:62].iterrows():
-            match = self.matches.loc[index].to_dict()
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas, win_or_loose=True)
-            self.print_match_result(match_sign, probas, match)
+        for index, match_template in self.match_templates.iloc[60:62].iterrows():
+            match = Match(match_template)
+            match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
-            if match_sign == 1:
-                self.matches.loc[63, team_col] = match["home_team"]
-                self.matches.loc[62, team_col] = match["away_team"]
+            if match.get_outcome() == 1:
+                self.match_templates.loc[63, team_col] = match.home_team
+                self.match_templates.loc[62, team_col] = match.away_team
             else:
-                self.matches.loc[63, team_col] = match["away_team"]
-                self.matches.loc[62, team_col] = match["home_team"]
+                self.match_templates.loc[63, team_col] = match.away_team
+                self.match_templates.loc[62, team_col] = match.home_team
 
     def simulate_third_place_play_off(self):
         self.print("\n\n\n___Third place play-off___\n")
-        for index, match in self.matches.iloc[62:63].iterrows():
-            match = self.matches.loc[index].to_dict()
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas, win_or_loose=True)
-            self.print_match_result(match_sign, probas, match)
+        for _, match_template in self.match_templates.iloc[62:63].iterrows():
+            match = Match(match_template)
+            match = self.simulate_match(match)
 
     def simulate_finals(self):
         self.print("\n\n\n___Final___\n")
-        for index, match in self.matches.iloc[63:].iterrows():
-            match = self.matches.loc[index].to_dict()
-            probas = self.predict_match_outcome(match)
-            match_sign = self.get_sign_from_probabilities(probas, win_or_loose=True)
-            self.print_match_result(match_sign, probas, match)
+        for _, match_template in self.match_templates.iloc[63:].iterrows():
+            match = Match(match_template)
+            match = self.simulate_match(match)
 
     def simulate_tournament(self):
         self.simulate_group_stage()
@@ -283,10 +156,29 @@ class WorldCup():
         self.simulate_third_place_play_off()
         self.simulate_finals()
 
-def run_simulation(sign_model):
-    wc_2018_matches = pd.read_csv('data/original/wc_2018_games.csv')
-    group_table = GroupTable(wc_2018_matches)
-    wc_2018 = WorldCup(wc_2018_matches, group_table, sign_model)
+def run_simulation(outcome_model, home_score_model, away_score_model):
+    wc_2018_matches_templates = pd.read_csv('data/original/wc_2018_games.csv')
+    group_table = GroupTable(wc_2018_matches_templates)
+    predictor = Predictor(outcome_model, home_score_model, away_score_model)
+    wc_2018 = WorldCupSimulator(wc_2018_matches_templates, group_table, predictor)
 
     wc_2018.simulate_tournament()
     post_simulation()
+
+class DummyPredictor():
+    def __init__(self, classes):
+        self.classes = classes
+
+    def predict(self, *arg):
+        return [random.choice(self.classes)]
+
+    def predict_proba(self, *arg):
+        return [np.random.rand(len(self.classes))]
+
+
+if __name__ == "__main__":
+    sign_model = DummyPredictor([-1, 0, 1])
+    home_score_model = DummyPredictor([0, 1, 2])
+    away_score_model = DummyPredictor([0, 1, 2])
+
+    run_simulation(sign_model, home_score_model, away_score_model)
