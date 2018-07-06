@@ -164,21 +164,3 @@ def run_simulation(outcome_model, home_score_model, away_score_model):
 
     wc_2018.simulate_tournament()
     post_simulation()
-
-class DummyPredictor():
-    def __init__(self, classes):
-        self.classes = classes
-
-    def predict(self, *arg):
-        return [random.choice(self.classes)]
-
-    def predict_proba(self, *arg):
-        return [np.random.rand(len(self.classes))]
-
-
-if __name__ == "__main__":
-    sign_model = DummyPredictor([-1, 0, 1])
-    home_score_model = DummyPredictor([0, 1, 2])
-    away_score_model = DummyPredictor([0, 1, 2])
-
-    run_simulation(sign_model, home_score_model, away_score_model)
