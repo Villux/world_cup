@@ -138,26 +138,28 @@ def get_dataset(suffle=True):
     print("Dataset complete cases length", dataset.shape[0])
     return dataset
 
-def get_sign_dataset():
+def get_train_test_wc_dataset(y_label):
     dataset = get_dataset()
-    dataset.loc[:, "home_win"] = np.sign(dataset.home_score - dataset.away_score)
+
+    if y_label == "home_win":
+        dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
     no_friendly_or_wc = dataset[(dataset["tournament"] != "Friendly") & (dataset["tournament"] != "FIFA World Cup")]
 
     X = get_feature_vector(no_friendly_or_wc)
-    y = no_friendly_or_wc["home_win"]
+    y = no_friendly_or_wc[y_label]
 
     X_train, X_test, y_train, y_test = get_train_test_split(X, y)
 
     friendly_games = dataset[dataset["tournament"] == "Friendly"]
     X_friendly = get_feature_vector(friendly_games)
-    y_friendly = friendly_games["home_win"]
+    y_friendly = friendly_games[y_label]
 
     X_train = pd.concat([X_train, X_friendly])
     y_train = pd.concat([y_train, y_friendly])
 
     wc_games = dataset[dataset["tournament"] == "FIFA World Cup"]
     X_wc = get_feature_vector(wc_games)
-    y_wc = wc_games["home_win"]
+    y_wc = wc_games[y_label]
 
     X_test = pd.concat([X_test, X_wc])
     y_test = pd.concat([y_test, y_wc])
@@ -167,6 +169,17 @@ def get_sign_dataset():
     print("Whole WC set length: ", X_wc.shape[0])
 
     return X_train, y_train, X_test, y_test, X_wc, y_wc
+
+def get_whole_dataset(y_label):
+    dataset = get_dataset()
+
+    if y_label == "home_win":
+        dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
+
+    X = get_feature_vector(dataset)
+    y = dataset[y_label]
+
+    return X, y
 
 def get_train_test_split(X, y, size=0.25):
     return train_test_split(X, y, test_size=size, random_state=42)
