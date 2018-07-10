@@ -435,3 +435,6 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+# Do not include master's theses pdf
+thesis/masters.pdf
