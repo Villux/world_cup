@@ -1,13 +1,72 @@
 \section{Data}
-\begin{enumerate}
-    \item Primary and secondary dataset
-    \item Generated data
-    Elo rating, data aggregation
-\end{enumerate}
+In this section I briefly describe the primary dataset of all international football matches and the secondary dataset of player attributes from the EA Sport's video game series FIFA. I have used both of the datasets to generate new datapoints; this process will be discussed later in this chapter.
+
+\subsection{International football match dataset}
+As the primary source of data I have used results from all international football matches from November 11th, 1872 to June 12th, 2018. This dataset is provided by Kaggle \cite{matchdb} and I have collected the missing games between June 4th, 2018 and June 12th, 2018 from FIFA's website \cite{fifa:matchdata}. From this dataset I have used columns: home team, away team, match score and tournament type.
+
+\subsection{EA Sport’s video game series FIFA's player attributes}
+EA Sport's video game series FIFA describes every player in the game with several different attributes. These attributes are first collected by EA's data reviewers who are made up by coaches, professional scouts and a lot of season ticket holders from around the world. The final value is given by EA editors based on the reviewers answers \cite{playerattr}. From here onwards EA Sport's video game series FIFA's player attributes are called just player attributes.
+
+Player attributes where available from year 2007 onwards \cite{sofifa}. I collected this data myself since it was not available as a single dataset.
+
+From all player atttributes 24 attributes are used. Reaso
+
+All of the player attributes have a value in the range of 0-99. When two players are compared lower value means that the player's cabability regarding that attribute is not as good as the other players. To guarantee similar attributes for every year only 24 player attributes are used that are listed for every year from 2007 to 2018. I have listed these attributes here and the short description is taken from Fifplay \cite{playerattr}.
+
+\renewcommand{\labelitemi}{}
+\begin{description}
+    \itemsep0em
+    \item[Goalkeeper:]
+    \begin{itemize}
+        \itemsep0.3em
+        \item[]
+        \item{\textit{Diving}:} determines a player's ability to dive as a goalkeeper.
+        \item{\textit{Handling}:} determines a player's ability to handle the ball and hold onto it using their hands as a goalkeeper.
+        \item{\textit{Kicking}:} determines a player's ability to kick the ball as a goalkeeper.
+        \item{\textit{Positioning}:} determines that how well a player is able to perform the positioning on the field as a player or on the goal line as a goalkeeper.
+        \item{\textit{Reflexes}:} determines a player's ability and speed to react (reflex) for catching/saving the ball as a goalkeeper.
+    \end{itemize}
+    \item[Mental:]
+    \begin{itemize}
+        \itemsep0.3em
+        \item[]
+        \item{\textit{Aggression}:} determines the aggression level of a player on pushing, pulling and tackling.
+        \item{\textit{Heading accuracy}:} determines a player's accuracy when using the head to pass, shoot or clear the ball.
+        \item{\textit{Marking}:} determines a player's capability to mark an opposition player or players to prevent them from taking control of the ball.
+        \item{\textit{Short passing}:} determines a player's accuracy for the short passes.
+    \end{itemize}
+    \item[Physical:]
+    \begin{itemize}
+        \itemsep0.3em
+        \item[]
+        \item{\textit{Acceleration}:} determines the increment of a player's running speed (sprint speed) on the pitch. The acceleration rate specifies how fast a player can reach their maximum sprint speed.
+        \item{\textit{Reactions}:} determines the acting speed of a player in response to the situations happening around them.
+        \item{\textit{Shot Power}:} determines the strength of a player's shootings.
+        \item{\textit{Sprint Speed}:} determines the speed rate of a player's sprinting (running).
+        \item{\textit{Stamina}:} determines a player's ability to sustain prolonged physical or mental effort in a match.
+        \item{\textit{Strength}:} determines the quality or state of being physically strong of a player.
+
+    \end{itemize}
+    \item[Skill:]
+    \begin{itemize}
+        \itemsep0.3em
+        \item[]
+        \item{\textit{Ball control}:} determines the ability of a player to control the ball on the pitch.
+        \item{\textit{Crossing}:} determines the accuracy and the quality of a player's crosses.
+        \item{\textit{Dribbling}:} determines a player's ability to carry the ball and past an opponent while being in control.
+        \item{\textit{Finishing}:} determines the ability of a player to score (ability for finishing - How well they can finish a opportunity with a score).
+        \item{\textit{Free kick accuracy}:} determines a player's accuracy for taking the Free Kicks.
+        \item{\textit{Long passing}:} determines a player's accuracy for the long and aerial passes.
+        \item{\textit{Long Shots}:} determines a player's accuracy for the shots taking from long distances.
+        \item{\textit{Penalties}:} determine a player's accuracy for the shots taking from the penalty kicks.
+        \item{\textit{Standing tackle}:} determines the ability of performing standing tackle of a player.
+
+    \end{itemize}
+
+    \end{description}
 
 
-\subsection{Match data}
-\subsection{FIFA player attributes}
+
 % http://global.espn.com/football/blog/espn-fc-united/68/post/2959703/fifa-17-player-ratings-system-blends-advanced-stats-and-subjective-scouting
 % https://www.ea.com/en-gb/news/the-backpage-fifa-12-attributes-guide
 % https://www.reddit.com/r/FIFA/comments/1rne3o/stat_breakdown_here_are_all_the_stats_contribute
