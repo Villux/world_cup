@@ -13,7 +13,7 @@ half <- 5
 whole <- 10
 GK <- 2
 
-summary = player_attributes %>% 
+summary = player_attributes %>%
   group_by(nationality, year) %>%
   filter(n() > 23) %>%
   do(head(., 23)) %>%
@@ -33,18 +33,18 @@ summary = player_attributes %>%
     Crossing = mean(head(sort(Crossing, decreasing = TRUE), half)),
     Finishing = mean(head(sort(Finishing, decreasing = TRUE), half)),
     Heading_Accuracy = mean(head(sort(Heading_Accuracy, decreasing = TRUE), half)),
-    Short_Passing = mean(head(sort(Short_Passing, decreasing = TRUE), whole)),
+    Short_Passing = mean(head(sort(Short_Passing, decreasing = TRUE), half)),
     Dribbling = mean(head(sort(Dribbling, decreasing = TRUE), half)),
     FK_Accuracy = mean(head(sort(FK_Accuracy, decreasing = TRUE), top)),
-    Long_Passing = mean(head(sort(Long_Passing, decreasing = TRUE), whole)),
-    Ball_Control = mean(head(sort(Ball_Control, decreasing = TRUE), whole)),
+    Long_Passing = mean(head(sort(Long_Passing, decreasing = TRUE), half)),
+    Ball_Control = mean(head(sort(Ball_Control, decreasing = TRUE), half)),
     Acceleration = mean(head(sort(Acceleration, decreasing = TRUE), half)),
     Sprint_Speed = mean(head(sort(Sprint_Speed, decreasing = TRUE), top)),
     Reactions = mean(head(sort(Reactions, decreasing = TRUE), half)),
     Shot_Power = mean(head(sort(Shot_Power, decreasing = TRUE), half)),
     Stamina = mean(head(sort(Stamina, decreasing = TRUE), whole)),
     Strength = mean(head(sort(Strength, decreasing = TRUE), whole)),
-    Long_Shots = mean(head(sort(Long_Shots, decreasing = TRUE), whole)),
+    Long_Shots = mean(head(sort(Long_Shots, decreasing = TRUE), top)),
     Aggression = mean(head(sort(Aggression, decreasing = TRUE), half)),
     Penalties = mean(head(sort(Penalties, decreasing = TRUE), top)),
     Marking = mean(head(sort(Marking, decreasing = TRUE), top)),
@@ -57,7 +57,7 @@ summary = player_attributes %>%
 
 
 r_coef <- 0.90
-summary_shit_teams = player_attributes %>% 
+summary_shit_teams = player_attributes %>%
   group_by(nationality, year) %>%
   filter(n() < 23) %>%
   do(head(., 23)) %>%
@@ -77,18 +77,18 @@ summary_shit_teams = player_attributes %>%
     Crossing = mean(head(sort(Crossing, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Finishing = mean(head(sort(Finishing, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Heading_Accuracy = mean(head(sort(Heading_Accuracy, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
-    Short_Passing = mean(head(sort(Short_Passing, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
+    Short_Passing = mean(head(sort(Short_Passing, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Dribbling = mean(head(sort(Dribbling, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     FK_Accuracy = mean(head(sort(FK_Accuracy, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
-    Long_Passing = mean(head(sort(Long_Passing, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
-    Ball_Control = mean(head(sort(Ball_Control, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
+    Long_Passing = mean(head(sort(Long_Passing, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
+    Ball_Control = mean(head(sort(Ball_Control, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Acceleration = mean(head(sort(Acceleration, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Sprint_Speed = mean(head(sort(Sprint_Speed, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
     Reactions = mean(head(sort(Reactions, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Shot_Power = mean(head(sort(Shot_Power, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Stamina = mean(head(sort(Stamina, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
     Strength = mean(head(sort(Strength, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
-    Long_Shots = mean(head(sort(Long_Shots, decreasing = TRUE), whole)) * min(1, max(n()/whole, r_coef)),
+    Long_Shots = mean(head(sort(Long_Shots, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Aggression = mean(head(sort(Aggression, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
     Penalties = mean(head(sort(Penalties, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
     Marking = mean(head(sort(Marking, decreasing = TRUE), top)) * min(1, max(n()/top, r_coef)),
