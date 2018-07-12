@@ -1,17 +1,15 @@
 \section{Data}
-In this section I briefly describe the primary dataset of all international football matches and the secondary dataset of player attributes from the EA Sport's video game series FIFA. I have used both of the datasets to generate new datapoints; this process will be discussed later in this chapter.
+In this section, I briefly describe the primary dataset of all international football matches and the secondary dataset of player attributes from the EA Sport's video game series FIFA. I have used both of the datasets to generate new data points; this process will be discussed later in this chapter.
 
 \subsection{International football match dataset}
 As the primary source of data I have used results from all international football matches from November 11th, 1872 to June 12th, 2018. This dataset is provided by Kaggle \cite{matchdb} and I have collected the missing games between June 4th, 2018 and June 12th, 2018 from FIFA's website \cite{fifa:matchdata}. From this dataset I have used columns: home team, away team, match score and tournament type.
 
 \subsection{EA Sport’s video game series FIFA's player attributes}
-EA Sport's video game series FIFA describes every player in the game with several different attributes. These attributes are first collected by EA's data reviewers who are made up by coaches, professional scouts and a lot of season ticket holders from around the world. The final value is given by EA editors based on the reviewers answers \cite{playerattr}. From here onwards EA Sport's video game series FIFA's player attributes are called just player attributes.
+EA Sport's video game series FIFA describes every player in the game with several different attributes. These attributes are first collected by EA's data reviewers who are made up by coaches, professional scouts and a lot of season ticket holders from around the world. The final value is given by EA editors based on the reviewers' answers \cite{playerattr}. From here onwards EA Sport's video game series FIFA's player attributes are called just player attributes.
 
-Player attributes where available from year 2007 onwards \cite{sofifa}. I collected this data myself since it was not available as a single dataset.
+Player attributes where available from the year 2007 onwards \cite{sofifa}. I collected this data myself since it was not available as a single dataset. This dataset has a single data point per player per year. In my research, I assume that the ratings are not changing too much during the season and that the team-level attributes, that are aggregated from player attributes are itself somewhat resistant to minor changes in the player-level ratings. EA Sport's has released updated ratings during the seasons, but the frequency is varying season-wise and data is not easily accessible.
 
-From all player atttributes 24 attributes are used. Reaso
-
-All of the player attributes have a value in the range of 0-99. When two players are compared lower value means that the player's cabability regarding that attribute is not as good as the other players. To guarantee similar attributes for every year only 24 player attributes are used that are listed for every year from 2007 to 2018. I have listed these attributes here and the short description is taken from Fifplay \cite{playerattr}.
+All of the player attributes have a value in the range of 0-99. When two players are compared lower value means that the player's capability regarding that attribute is not as good as the other players. To guarantee similar attributes for every year only 24 player attributes are used that are listed for every year from 2007 to 2018. I have listed these attributes here and the short description is taken from Fifplay \cite{playerattr}.
 
 \renewcommand{\labelitemi}{}
 \begin{description}
@@ -33,7 +31,6 @@ All of the player attributes have a value in the range of 0-99. When two players
         \item{\textit{Aggression}:} determines the aggression level of a player on pushing, pulling and tackling.
         \item{\textit{Heading accuracy}:} determines a player's accuracy when using the head to pass, shoot or clear the ball.
         \item{\textit{Marking}:} determines a player's capability to mark an opposition player or players to prevent them from taking control of the ball.
-        \item{\textit{Short passing}:} determines a player's accuracy for the short passes.
     \end{itemize}
     \item[Physical:]
     \begin{itemize}
@@ -54,21 +51,24 @@ All of the player attributes have a value in the range of 0-99. When two players
         \item{\textit{Ball control}:} determines the ability of a player to control the ball on the pitch.
         \item{\textit{Crossing}:} determines the accuracy and the quality of a player's crosses.
         \item{\textit{Dribbling}:} determines a player's ability to carry the ball and past an opponent while being in control.
-        \item{\textit{Finishing}:} determines the ability of a player to score (ability for finishing - How well they can finish a opportunity with a score).
+        \item{\textit{Finishing}:} determines the ability of a player to score (ability for finishing - How well they can finish an opportunity with a score).
         \item{\textit{Free kick accuracy}:} determines a player's accuracy for taking the Free Kicks.
         \item{\textit{Long passing}:} determines a player's accuracy for the long and aerial passes.
         \item{\textit{Long Shots}:} determines a player's accuracy for the shots taking from long distances.
         \item{\textit{Penalties}:} determine a player's accuracy for the shots taking from the penalty kicks.
-        \item{\textit{Standing tackle}:} determines the ability of performing standing tackle of a player.
+        \item{\textit{Short passing}:} determines a player's accuracy for the short passes.
+        \item{\textit{Standing tackle}:} determines the ability of a player to performing standing tackle.
 
     \end{itemize}
 
     \end{description}
 
+\subsection{Aggregating team-level attributes}
+When people predict the end result of a football match they often reason based on the team's attributes. They might say that Italy is more likely to win since it has a stronger defense and its ball control is excellent. This reasoning is of course very subjective, but it introduces an assumption that certain attributes could explain the outcome of a match. In this section, I explain how I have combined player attributes to team-level attributes to describe a football team based on its players' capabilities. Data for starting lineups was not available.
 
+To describe the whole football team I have used the average value from 23 best players. These attributes are: \textit{overall rating, potential, age, height, weight, international reputation} and \textit{weak foot}. As an extra attribute, I calculated the average age from the top 11 players. The idea behind this attribute is to get the average age of the presumed starting lineup.
 
-% http://global.espn.com/football/blog/espn-fc-united/68/post/2959703/fifa-17-player-ratings-system-blends-advanced-stats-and-subjective-scouting
-% https://www.ea.com/en-gb/news/the-backpage-fifa-12-attributes-guide
-% https://www.reddit.com/r/FIFA/comments/1rne3o/stat_breakdown_here_are_all_the_stats_contribute
-\subsection{Team level aggregation}
+The other attributes are described by subsection of the players. I have used my knowledge and intuition on football to select the sizes of the subsetions. The goalkeeper attributes are calculated based on the team's two best values for that attributes. The average for the skills required in set piece situations, like the attributes \textit{free kick accuracy} and \textit{penalties} for example, are calculated based on top three ratings, since in most cases very small subset of players handle these situations. Also sprint speed and marking are only calculated based on top three values. \textit{Strength} and \textit{stamina} are calculated using 10 best ratings. Other values are calculated using five best ratings for each attribute.
+
+In cases where team doesn't have enough players to calculate the attribute's value as mentioned in the previous part I have used this formula $\frac{1}{N}\sum_{i=1}^{N}x_i * \max{(N/K, C)}$ to calculate the attribute's value. If $N$ (the number of all available ratings for the attribute), is smaller than $K$ (the required number of ratings) the average is multiplied with a coefficient that has a integer value in the inclusive range from $C$ and 1. I have set $C$ to 0.9.
 \subsection{Historical odds}
