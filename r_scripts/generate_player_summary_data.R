@@ -71,7 +71,7 @@ summary_shit_teams = player_attributes %>%
     height = mean(height) * min(1, max(n()/18, r_coef)),
     weight = mean(weight) * min(1, max(n()/18, r_coef)),
     age = mean(age) * min(1, max(n()/18, r_coef)),
-    top_11_age = mean(head(age, 11)) * min(1, max(n()/18, r_coef)),
+    top_11_age = mean(head(age, 11)) * min(1, max(n()/11, r_coef)),
     weak_foot = mean(weak_foot) * min(1, max(n()/18, r_coef)),
     international_reputation = mean(international_reputation) * min(1, max(n()/18, r_coef)),
     Crossing = mean(head(sort(Crossing, decreasing = TRUE), half)) * min(1, max(n()/half, r_coef)),
