@@ -3,15 +3,53 @@ What is is done. Why random forest? What are the alternative methods
 \subsection{Random Forest}
 Decision tree
 Overfitting, high variance, bad prediction power, CART
+In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relathionship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
 \subsubsection{bagging}
 The problem of high variance in decision trees is problematic. Bootstrap aggragating, also called bagging, is a way to reduce this high variance of decision trees by averaging. Averiging is done over multiple estimators:
 \begin{align}
     \hat {f_{bag}}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*b}(x)
 \end{align}
-where B is the number of estimators and ${f}^{*}$ is a single estimator. Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution which means that the trees are identically distributed (i.d.). This combined with deep trees that have less bias means that the variance reduction achieved in bagging comes with a expense of small increase in bias and the loss of interpretability. A single tree can't be used anymore for reasoning. Since trees in bagging are not independent trees can have high correlation betweem each other. This is common in cases where we have one strong predictor which often means that each tree is splitted similarily. \cite{friedman2001elements}
+where B is the number of estimators and ${f}^{*}$ is a single estimator. Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution which means that the trees are identically distributed (i.d.). This combined with deep trees that have less bias means that the variance reduction achieved in bagging comes with a expense of small increase in bias and the loss of interpretability, since a single tree can't be used anymore for reasoning. Trees in bagging are only i.d. which means that trees in the forest can have pairwise correlation. This is common in cases where input data has one strong predictor which often leads to a situation where all of the tree are splitted similarily. \cite{friedman2001elements}
 
-Amit and Geman's \cite{amit1997shape} idea of random feature selection that inspired Breiman to use bagging in tandem with random feature selection which he named as Random Forest \cite{breiman2001random}. With this random feature selection correlation between the trees can reduced since the generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them \cite{breiman2001random}.
+Amit and Geman's \cite{amit1997shape} idea of random feature selection inspired Breiman to use bagging in tandem with random feature selection. With this random feature selection correlation between the trees can be reduced since the generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them \cite{breiman2001random}. Breiman was first to use the name \textit{Random Forest} for algorithms that use bagging and random feature selection with tree predictors \cite{breiman2001random}. Step-by-step instruction from \cite{friedman2001elements} for Random Forest algorithm are listed in the Algorithm \ref{alg:random_forest}.
+
+Main usecases for Random forest are \textit{classification} and \textit{regression}.
+
+
+\begin{algorithm}
+    \footnotesize
+    \begin{minipage}{.92\linewidth}
+    Here I have some text that I need to have within the algorithm that
+    sets up the problem, and the text stretches over two  lines.
+    \textbf{Note that the second line has a weird indentation.}
+    \BlankLine
+    For all the of the seconds in the day:
+    \begin{enumerate}
+        \item For $b = 1$ to $B$:
+        \begin{enumerate}
+            \item Draw a bootstrap sample $\bm{Z}^{*}$ of size $N$ from the training data.
+            \item Grow a random-forest tree $T_b$ to the bootstrapped data, by recursively repeating the following steps for each terminal node of the tree, until the minimum node size $n_{min}$ is reached.
+            \begin{enumerate}
+                \item Select $m$ variables at random from the $p$ variables.
+                \item Pick the best variable/split-point among the $m$.
+                \item Split the node into two daughter nodes.
+            \end{enumerate}
+        \end{enumerate}
+        \item Output the ensemble of trees $\left\{ T _ { b } \right\} _ { 1 } ^ { B }$.
+    \end{enumerate}
+    To make a prediction at a new point $x$:
+
+    \textit{Regression:} $\hat { f } _ { \mathrm { rf } } ^ { B } ( x ) = \frac { 1 } { B } \sum _ { b = 1 } ^ { B } T _ { b } ( x )$
+
+    \textit{Classification:} Let $\hat { C } _ { b } ( x )$ be the class prediction of the $b$th random forest
+    tree. Then $\hat{C} _ { r f } ^ { B } ( x )$ = \textit{majority vote} $\left\{ \hat { C } _ { b } ( x ) \right\} _ { 1 } ^ { B }$
+    \end{minipage}
+    \caption{\footnotesize Random Forest for Regression or Classification.}
+    \label{alg:random_forest}
+\end{algorithm}
+
+
 
 random subsampling
 Variance reduction more, higher feature space
