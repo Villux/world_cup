@@ -1,29 +1,6 @@
 \section{Objectives of the Thesis}
-1. Can player level attribute data improve accuracy of match outcome prediction?
-2. How to improve prediction accuracy of the draw class?
-3. Is't possible to earn positive returns betting according the model's predictions?
 \begin{enumerate}
     \item Can player level attribute data improve accuracy of match outcome prediction?
     \item How to improve prediction accuracy of the draw class?
     \item Is't possible to earn positive returns betting according the model's predictions?
 \end{enumerate}
-\section{Literature Review}
-
-\begin{enumerate}
-    \item What methods and how matches are predicted (Win/lose, score)
-    One factor models, Multifactor models, Score vs outcome prediction, data used in multifactor,
-    \item How simulations are done if any
-    \item Elo rating
-    \item beating bookmaker's odds
-\end{enumerate}
-
-Groll et al. \cite{groll2018prediction} predicted the FIFA World Cup 2018 match outcomes using three different methods. Data used in their experiments was the as in \cite{groll2015prediction}. This dataset has very limited attributes to describe teams playing styles. Team's ability covariate from the rating method is included in the input vector for the final simulations. Team's ability weights team's recent performance more than FIFA/Coca-Cola World ranking . Including this team's ability parameter improved the accuracy significantly for Random Forest. It's important to notice that the input data used in \cite{groll2018prediction} is not updated during the tournament. This means that ranking stays static even though one team might perform well based on the other attributes and survive far in the tournament. This means that the team's ability is not updated to reflect the real ability based on the prediction results.
-Groll et al. \cite{groll2018prediction} predicted the match outcomes using regression, not classification. With regression, the feature vector is conditional on match's teams but predicted scores are drawn from independent Poisson distributions. With ranking methods score is dependent. Dixon and Coles \cite{dixon1997} identified correlation between scores and are one of the many researchers that have relaxed the strong assumption of conditional independence between the scores.
-
-Leitner et al. \cite{leitner2010forecasting} simulated UEFA Euro 2008 football tournament using ratings of abilities (such as the Elo rating or FIFA/Coca-Cola World ranking) and Bookmaker's odds. They showed that Bookmarker's odds outperformed Elo, but both are suitable attributes for match outcome prediction. Their models predicted only the probability of a win. This limits the model's accuracy in cases where two or more teams share the same number of points in the group stage. The model which based on the bookmaker's odds was able to predict the teams in the final correctly. One interesting finding in \cite{leitner2010forecasting} is that FIFA/Coca-Cola World \footnote{FIFA has changed the ranking algorithm three times since it was introduced. The ranking algorithm will be changed after FIFA World Cup 2018 to resemble Elo rating \cite{wiki:fifarating}.} rating has a higher Spearman correlation than Elo rating and could be a good metric if the corresponding winning probabilities could be computed. Results in paper \cite{lasek2013predictive} are contrary to these findings. Lasek et al. \cite{lasek2013predictive} compared different rating methods and their results imply that Elo rating describes a better team's ability compared to FIFA/Coca-Cola rating.
-
-Simulations \cite{leitner2010forecasting, groll2018prediction} are done in a manner which takes into account group draws. Their results show that teams with relatively easier opponents in the group stage have higher probabilities to go further in the tournament.
-
-One clear motivation behind match outcome prediction is the possibility to earn money from betting. The \textit{Efficient market hypothesis} defined by Badarinathi and Kochmann \cite{badarinathi1996football} "asserts that investors cannot consistently "beat the market" because stocks reside in perpetual equilibrium" is an assumption used in finance. Weak-form efficiency means that a part of the odds given by bookmakers are mispriced. The efficient market hypothesis has been revoked in finance \cite{jegadeesh1993returns}. Goddard et al. and Badarinathi et al. \cite{goddard2003modelling, badarinathi1996football} find that this might be the case in also in betting. However Goddard et al. \cite{goddard2003modelling} states that there is some evidence that inefficiencies in the bookmakers’ prices have diminished over time.
-
-Kuypers \cite{kuypers2008} shares some light on how bookmakers calculate their odds. If bookmaker wants to increase its profits while keeping its over-roundness competitive it needs set the odds futher from the market effiecient odds. Also, marketing purposes and heavy one-sided bets can lead to inefficient odds. In the case of heavy one-sided bets bookmaker exposes itself to higher risk exposure if match's outcome is the one that is betted very heavily.
