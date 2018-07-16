@@ -64,16 +64,19 @@ def switch_home_and_away(df):
     df.loc[:, "goal_diff_with_away"] = df.loc[:, "goal_diff_with_away"].mul(-1)
     return df
 
-def merge_and_suffle():
-    df_match = get_match_elo_and_goal()
-    df_match_percent = df_match.loc[(df_match["home_score"] > df_match["away_score"])].sample(frac=0.20)
-    df_match_percent = switch_home_and_away(df_match_percent)
-    df_match.update(df_match_percent)
-    return append_player_data(df_match)
+def flip_wins(dataset, frac=0.20):
+    return dataset.loc[(dataset["home_score"] > dataset["away_score"])].sample(frac=frac)
 
-def get_data(suffle=False, write_to_csv=False, save_filename="data/generated/master_data.csv"):
+def get_dataset_with_balanced_wins(dataset):
+    flip_df = flip_wins(dataset)
+    flip_df = switch_home_and_away(flip_df)
+    dataset.update(flip_df)
+    return append_player_data(dataset)
+
+def get_data(suffle=True, write_to_csv=False, save_filename="data/generated/master_data.csv"):
+    match_data = get_match_elo_and_goal()
     if suffle:
-        master_data = merge_and_suffle()
+        master_data = get_dataset_with_balanced_wins(match_data)
     else:
         master_data = merge_all_data()
     if write_to_csv:
@@ -130,18 +133,28 @@ def get_feature_vector(dataset):
     feature_columns = get_feature_columns()
     return dataset[feature_columns]
 
-def get_dataset(suffle=True):
-    dataset = get_data(suffle=suffle)
+def get_dataset(flip=False):
+    if flip:
+        df_match = get_match_elo_and_goal()
+        df_match = switch_home_and_away(df_match)
+        dataset = append_player_data(df_match)
+    else:
+        dataset = get_data(suffle=True)
     print("Dataset length", dataset.shape[0])
     dataset = dataset.dropna()
     print("Dataset complete cases length", dataset.shape[0])
     return dataset
 
 def get_train_test_wc_dataset(y_label):
-    dataset = get_dataset()
+    if y_label == "away_score":
+        dataset = get_dataset(flip=True)
+        y_label = "home_score"
+    else:
+        dataset = get_dataset()
 
     if y_label == "home_win":
         dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
+
     no_friendly_or_wc = dataset[(dataset["tournament"] != "Friendly") & (dataset["tournament"] != "FIFA World Cup")]
 
     X = get_feature_vector(no_friendly_or_wc)
@@ -170,19 +183,14 @@ def get_train_test_wc_dataset(y_label):
     return X_train, y_train, X_test, y_test, X_wc, y_wc
 
 def get_whole_dataset(y_label):
-    dataset = get_dataset()
+    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label):
 
-    if y_label == "home_win":
-        dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
-
-    X = get_feature_vector(dataset)
-    y = dataset[y_label]
-
+    X = np.concat([X_train, X_test, X_wc])
+    y = np.concat([y_train, y_test, y_wc])
     return X, y
 
 def get_train_test_split(X, y, size=0.25):
     return train_test_split(X, y, test_size=size, random_state=42)
-
 
 if __name__ == "__main__":
     merge_all_data()
