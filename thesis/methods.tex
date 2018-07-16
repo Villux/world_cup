@@ -1,21 +1,25 @@
 \section{Predicting football match outcome with Random Forest Classifier}
 What is is done. Why random forest? What are the alternative methods
 \subsection{Random Forest}
-Decision tree
-Overfitting, high variance, bad prediction power, CART
 In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relathionship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
-\subsubsection{bagging}
-The problem of high variance in decision trees is problematic. Bootstrap aggragating, also called bagging, is a way to reduce this high variance of decision trees by averaging. Averiging is done over multiple estimators:
+Decision tree is one of the most popular model type used in classification problems. Decision tree is a directed tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edge are called the \textit{leave nodes}. Internal nodes in decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leave nodes}. When new input is given tree is navigated from the \textit{root node} to a \textit{leave node} which determinates the predicted class label. In regression these target values can take continuous values. \cite{rokach2005top}
+
+Decision trees have many benefits and are very useful "off-the-shelf" predictors. Outliers in the dataset or many irrelevant predictors are not problematic for the trees. Scaling or any other general transformation can be done to the input space since trees are invariant under transformation of the individual predictors. \cite{friedman2001elements} Decision trees have good interpretability if the trees are small.
+
+On main disadvantage of the decision trees is bad prediction accuracy \cite{friedman2001elements}. Decision trees can express the training data well, but have high variance which means that prediction accuracy for unseen data is often worse compared to other models.
+
+Bootstrap aggragating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the  average is taken over the output of a multiple estimators:
 \begin{align}
     \hat {f_{bag}}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*b}(x)
 \end{align}
-where B is the number of estimators and ${f}^{*}$ is a single estimator. Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution which means that the trees are identically distributed (i.d.). This combined with deep trees that have less bias means that the variance reduction achieved in bagging comes with a expense of small increase in bias and the loss of interpretability, since a single tree can't be used anymore for reasoning. Trees in bagging are only i.d. which means that trees in the forest can have pairwise correlation. This is common in cases where input data has one strong predictor which often leads to a situation where all of the tree are splitted similarily. \cite{friedman2001elements}
+where B is the number of estimators and ${f}^{*}$ is a single estimator. This reduces the high variance of a single tree and makes predictions more accurate.
+
+Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution, meaning that the trees are identically distributed (i.d.). This combined with deep trees that have less bias ensures that the variance reduction achieved in bagging comes with a expense of small increase in bias and the loss of interpretability. The loss of interpretability can't be avoided since a single tree can't be used anymore for reasoning. Trees in bagging are only identically distributed. The missing independent property means that the trees in the forest can have pairwise correlation. This is common in cases where input data has one strong predictor which often leads to a situation where all of the tree are splitted similarily. \cite{friedman2001elements}
 
 Amit and Geman's \cite{amit1997shape} idea of random feature selection inspired Breiman to use bagging in tandem with random feature selection. With this random feature selection correlation between the trees can be reduced since the generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them \cite{breiman2001random}. Breiman was first to use the name \textit{Random Forest} for algorithms that use bagging and random feature selection with tree predictors \cite{breiman2001random}. Step-by-step instruction from \cite{friedman2001elements} for Random Forest algorithm are listed in the Algorithm \ref{alg:random_forest}.
 
 Main usecases for Random forest are \textit{classification} and \textit{regression}.
-
 
 \begin{algorithm}
     \footnotesize
@@ -48,15 +52,6 @@ Main usecases for Random forest are \textit{classification} and \textit{regressi
     \caption{\footnotesize Random Forest for Regression or Classification.}
     \label{alg:random_forest}
 \end{algorithm}
-
-
-
-random subsampling
-Variance reduction more, higher feature space
-
-random forest
-Low variance, high prediction power, if grown sufficiently deep, have relatively low bias
-Moreover, since each tree generated in bagging is identically distributed (i.d.), the expectation of an average of B such trees is the same as the ex- pectation of any one of them.
 \subsection{Random forest hyperparameter selection}
 \subsection{Variable importance in Random Forest}
 \subsection{Model specifications}
