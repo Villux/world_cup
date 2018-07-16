@@ -183,10 +183,10 @@ def get_train_test_wc_dataset(y_label):
     return X_train, y_train, X_test, y_test, X_wc, y_wc
 
 def get_whole_dataset(y_label):
-    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label):
+    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label)
 
-    X = np.concat([X_train, X_test, X_wc])
-    y = np.concat([y_train, y_test, y_wc])
+    X = pd.concat([X_train, X_test, X_wc])
+    y = pd.concat([y_train, y_test, y_wc])
     return X, y
 
 def get_train_test_split(X, y, size=0.25):
