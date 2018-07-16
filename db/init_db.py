@@ -75,6 +75,18 @@ def create_match_table():
                 );'''
     execute_statement(query)
 
+def create_simulation_tableI():
+    query = '''CREATE TABLE IF NOT EXISTS "match_simulation" (
+                "id" integer PRIMARY KEY AUTOINCREMENT,
+                "match_id" INTEGER,
+                "date" TIMESTAMP,
+                "home_team" TEXT,
+                "away_team" TEXT,
+                "home_score" INTEGER,
+                "away_score" INTEGER
+                );'''
+    execute_statement(query)
+
 if __name__ == "__main__":
     start = time.time()
 
