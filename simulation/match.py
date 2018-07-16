@@ -1,4 +1,5 @@
 import numpy as np
+
 class Match():
     def __init__(self, data, win_or_lose=False):
         self.id = data["id"]
