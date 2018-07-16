@@ -9,9 +9,10 @@ from features.data_provider import append_player_data, get_feature_vector
 from features.elo import update_elo_after_match, get_current_elo, attach_elo_to_match
 from db.match_table import insert, delete_simulations
 from db.elo_table import delete_elos_after_date
-from match import Match
-from group_table import GroupTable
-from predictor import Predictor
+from db.simulation_table import insert_match
+from simulation.match import Match
+from simulation.group_table import GroupTable
+from simulation.predictor import WDLPredictor
 
 def post_simulation():
     simulation_start_date = "2018-06-13"
@@ -36,7 +37,7 @@ class WorldCupSimulator():
         outcome_probabilities = self.predictor.predict_outcome_probabilities(x)
         match.set_outcome_probabilties(outcome_probabilities)
 
-        home_score, away_score = self.predictor.predict_score(x, match.get_outcome())
+        home_score, away_score = self.predictor.predict_score(x)
         match.set_score(home_score, away_score)
         return match
 
@@ -48,6 +49,8 @@ class WorldCupSimulator():
         home_elo, away_elo = attach_elo_to_match(match_id, match.home_team, match.away_team)
         update_elo_after_match(match.date, home_elo, away_elo, match.home_team,
                                match.away_team, match.home_score, match.away_score, match.tournament)
+
+        insert_match(match)
 
     def get_match_feature_vector(self, match):
         data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
@@ -156,10 +159,10 @@ class WorldCupSimulator():
         self.simulate_third_place_play_off()
         self.simulate_finals()
 
-def run_simulation(outcome_model, home_score_model, away_score_model):
+def run_simulation(outcome_model):
     wc_2018_matches_templates = pd.read_csv('data/original/wc_2018_games.csv')
     group_table = GroupTable(wc_2018_matches_templates)
-    predictor = Predictor(outcome_model, home_score_model, away_score_model)
+    predictor = WDLPredictor(outcome_model)
     wc_2018 = WorldCupSimulator(wc_2018_matches_templates, group_table, predictor)
 
     wc_2018.simulate_tournament()
