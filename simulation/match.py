@@ -30,10 +30,7 @@ class Match():
 
     def set_outcome_probabilties(self, outcome_probabilities):
         assert len(outcome_probabilities) > 2
-        if self.win_or_lose:
-            self.outcome_probabilities = [outcome_probabilities[0], None, outcome_probabilities[2]]
-        else:
-            self.outcome_probabilities = outcome_probabilities
+        self.outcome_probabilities = outcome_probabilities
 
     def set_score(self, home_score, away_score):
         self.home_score = home_score
@@ -54,9 +51,19 @@ class Match():
         return np.argmax(self.outcome_probabilities) - 1
 
     def get_outcome(self):
+        outcome = None
         if self.outcome is None:
-            return self.get_outcome_from_probabilites()
-        return self.outcome
+            outcome = self.get_outcome_from_probabilites()
+        else:
+            outcome = self.outcome
+
+        if self.win_or_lose and outcome == 0:
+            home_win_prob = self.outcome_probabilities[2]
+            away_win_prob = self.outcome_probabilities[0]
+            total = home_win_prob + away_win_prob
+            outcome = int(np.random.choice([-1, 1], 1, p=[away_win_prob/total, home_win_prob/total])[0])
+
+        return outcome
 
     def to_dict(self):
         return {
