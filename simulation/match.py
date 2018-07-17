@@ -30,6 +30,14 @@ class Match():
         self.home_score = home_score
         self.away_score = away_score
 
+    def set_outcome_from_score(self):
+        if self.home_score > self.away_score:
+            self.outcome = 1
+        elif self.home_score == self.away_score:
+            self.outcome = 0
+        else:
+            self.outcome = -1
+
     def get_outcome_probabilties(self):
         return self.outcome_probabilities
 
@@ -51,3 +59,14 @@ class Match():
             "tournament": self.tournament,
             "date": self.date
         }
+
+    def flip_and_copy(self):
+        data = {
+            "home_team": self.away_team,
+            "away_team": self.home_team,
+            "home_score": self.away_score,
+            "away_score": self.home_score,
+            "tournament": self.tournament,
+            "date": self.date
+        }
+        return Match(data, self.win_or_lose)
