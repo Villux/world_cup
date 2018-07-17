@@ -83,7 +83,8 @@ def create_simulation_tableI():
                 "home_team" TEXT,
                 "away_team" TEXT,
                 "home_score" INTEGER,
-                "away_score" INTEGER
+                "away_score" INTEGER,
+                "outcome" INTEGER
                 );'''
     execute_statement(query)
 
