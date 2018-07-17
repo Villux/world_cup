@@ -3,7 +3,7 @@ import pandas as pd
 from features.elo import update_elo_after_match, attach_elo_to_match
 from db.match_table import delete_simulations
 from db.elo_table import delete_elos_after_date
-from db.simulation_table import insert
+from db.simulation_table import insert, get_win_probability
 from simulation.match import Match, insert_match
 from simulation.group_table import GroupTable
 
@@ -15,6 +15,7 @@ def clean_after_simulation():
 def insert_match_simulation(match):
     match_dict = match.to_dict()
     match_dict["match_id"] = match.id
+    match_dict["outcome"] = match.get_outcome()
     match_dict.pop('tournament', None)
     insert(**match_dict)
 
@@ -63,7 +64,7 @@ class WorldCupSimulator():
             away_group, away_position = list(match_template["away_team"])
             match_template["away_team"] = self.group_table.get_team(away_group, int(away_position) - 1)
 
-            match = Match(match_template)
+            match = Match(match_template, win_or_lose=True)
             match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
@@ -78,7 +79,7 @@ class WorldCupSimulator():
         i = 0
         self.print("\n\n\n___Quarter-Finals___\n")
         for index, match_template in self.match_templates.iloc[56:60].iterrows():
-            match = Match(match_template)
+            match = Match(match_template, win_or_lose=True)
             match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
@@ -92,7 +93,7 @@ class WorldCupSimulator():
     def simulate_semi_finals(self):
         self.print("\n\n\n___Semi-Finals___\n")
         for index, match_template in self.match_templates.iloc[60:62].iterrows():
-            match = Match(match_template)
+            match = Match(match_template, win_or_lose=True)
             match = self.simulate_match(match)
 
             team_col = "home_team" if index%2 == 0 else "away_team"
@@ -106,28 +107,37 @@ class WorldCupSimulator():
     def simulate_third_place_play_off(self):
         self.print("\n\n\n___Third place play-off___\n")
         for _, match_template in self.match_templates.iloc[62:63].iterrows():
-            match = Match(match_template)
+            match = Match(match_template, win_or_lose=True)
             match = self.simulate_match(match)
 
     def simulate_finals(self):
         self.print("\n\n\n___Final___\n")
         for _, match_template in self.match_templates.iloc[63:].iterrows():
-            match = Match(match_template)
+            match = Match(match_template, win_or_lose=True)
             match = self.simulate_match(match)
 
     def simulate_tournament(self):
         self.simulate_group_stage()
-        self.group_table.print_group_standings()
+        if self.verbose:
+            self.group_table.print_group_standings()
         self.simulate_round_of_16()
         self.simulate_quarter_finals()
         self.simulate_semi_finals()
         self.simulate_third_place_play_off()
         self.simulate_finals()
 
-def run_simulation(predictor, verbose=False):
-    wc_2018_matches_templates = pd.read_csv('data/original/wc_2018_games.csv')
-    group_table = GroupTable(wc_2018_matches_templates)
-    wc_2018 = WorldCupSimulator(wc_2018_matches_templates, group_table, predictor, verbose=verbose)
+def run_simulation(match_template, predictor, verbose=False):
+    group_table = GroupTable(match_template)
+    tournament = WorldCupSimulator(match_template, group_table, predictor, verbose=verbose)
 
-    wc_2018.simulate_tournament()
+    tournament.simulate_tournament()
     clean_after_simulation()
+
+
+def get_match_win_probability(teams, match_id):
+    prob_dict = {}
+    for team in teams:
+        prob = get_win_probability(team, match_id)
+        prob_dict[team] = prob
+
+    return prob_dict
