@@ -1,0 +1,65 @@
+id,away_score,away_team,date,home_score,home_team,group
+0,0,Saudi Arabia,2018-06-14,5,Russia,A
+1,1,Uruguay,2018-06-15,0,Egypt,A
+2,1,IR Iran,2018-06-15,0,Morocco,B
+3,3,Spain,2018-06-15,3,Portugal,B
+4,1,Australia,2018-06-16,2,France,C
+5,1,Iceland,2018-06-16,1,Argentina,D
+6,1,Denmark,2018-06-16,0,Peru,C
+7,0,Nigeria,2018-06-16,2,Croatia,D
+8,1,Serbia,2018-06-17,0,Costa Rica,E
+9,1,Mexico,2018-06-17,0,Germany,F
+10,1,Switzerland,2018-06-17,1,Brazil,E
+11,0,Korea Republic,2018-06-18,1,Sweden,F
+12,0,Panama,2018-06-18,3,Belgium,G
+13,2,England,2018-06-18,1,Tunisia,G
+14,2,Japan,2018-06-19,1,Colombia,H
+15,2,Senegal,2018-06-19,1,Poland,H
+16,1,Egypt,2018-06-19,3,Russia,A
+17,0,Morocco,2018-06-20,1,Portugal,B
+18,0,Saudi Arabia,2018-06-20,1,Uruguay,A
+19,1,Spain,2018-06-20,0,IR Iran,B
+20,1,Australia,2018-06-21,1,Denmark,C
+21,0,Peru,2018-06-21,1,France,C
+22,3,Croatia,2018-06-21,0,Argentina,D
+23,0,Costa Rica,2018-06-22,2,Brazil,E
+24,0,Iceland,2018-06-22,2,Nigeria,D
+25,2,Switzerland,2018-06-22,1,Serbia,E
+26,2,Tunisia,2018-06-23,5,Belgium,G
+27,2,Mexico,2018-06-23,1,Korea Republic,F
+28,1,Sweden,2018-06-23,2,Germany,F
+29,1,Panama,2018-06-24,6,England,G
+30,2,Senegal,2018-06-24,2,Japan,H
+31,3,Colombia,2018-06-24,0,Poland,H
+32,1,Egypt,2018-06-25,2,Saudi Arabia,A
+33,0,Russia,2018-06-25,3,Uruguay,A
+34,2,Morocco,2018-06-25,2,Spain,B
+35,1,Portugal,2018-06-25,1,IR Iran,B
+36,2,Peru,2018-06-26,0,Australia,C
+37,0,France,2018-06-26,0,Denmark,C
+38,2,Croatia,2018-06-26,1,Iceland,D
+39,2,Argentina,2018-06-26,1,Nigeria,D
+40,0,Germany,2018-06-27,2,Korea Republic,F
+41,3,Sweden,2018-06-27,0,Mexico,F
+42,2,Costa Rica,2018-06-27,2,Switzerland,E
+43,2,Brazil,2018-06-27,0,Serbia,E
+44,1,Poland,2018-06-28,0,Japan,H
+45,1,Colombia,2018-06-28,0,Senegal,H
+46,1,Belgium,2018-06-28,0,England,G
+47,2,Tunisia,2018-06-28,1,Panama,G
+48,,B2,2018-06-30,,A1,
+49,,D2,2018-06-30,,C1,
+50,,F2,2018-07-01,,E1,
+51,,H2,2018-07-01,,G1,
+52,,A2,2018-07-02,,B1,
+53,,C2,2018-07-02,,D1,
+54,,E2,2018-07-03,,F1,
+55,,G2,2018-07-03,,H1,
+56,,,2018-07-06,,,
+57,,,2018-07-06,,,
+58,,,2018-07-07,,,
+59,,,2018-07-07,,,
+60,,,2018-07-10,,,
+61,,,2018-07-11,,,
+62,,,2018-07-14,,,
+63,,,2018-07-15,,,
