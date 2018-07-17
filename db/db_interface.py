@@ -51,4 +51,4 @@ def fetchone(statement):
         return cursor.fetchone()
 
 def get_connection():
-    return contextlib.closing(sqlite3.connect(path_to_file))
+    return conn
