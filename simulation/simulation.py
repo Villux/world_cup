@@ -1,12 +1,7 @@
-import functools
-import random
-import numpy as np
 import pandas as pd
 from dateutil.parser import parse
 
-from features.generate_goal_features import calculate_goal_features_for_match
-from features.data_provider import append_player_data, get_feature_vector
-from features.elo import update_elo_after_match, get_current_elo, attach_elo_to_match
+from features.elo import update_elo_after_match, attach_elo_to_match
 from db.match_table import insert, delete_simulations
 from db.elo_table import delete_elos_after_date
 from db.simulation_table import insert_match
@@ -19,6 +14,17 @@ def post_simulation():
     delete_elos_after_date(simulation_start_date)
     delete_simulations()
 
+def post_match_results(match):
+    db_obj = match.to_dict()
+    db_obj["year"] = parse(db_obj["date"]).year
+    db_obj["simulation"] = True
+    match_id = insert(**db_obj)
+    home_elo, away_elo = attach_elo_to_match(match_id, match.home_team, match.away_team)
+    update_elo_after_match(match.date, home_elo, away_elo, match.home_team,
+                           match.away_team, match.home_score, match.away_score, match.tournament)
+
+    insert_match(match)
+
 class WorldCupSimulator():
     def __init__(self, match_templates, table, predictor, verbose=True):
         self.match_templates = match_templates
@@ -30,55 +36,13 @@ class WorldCupSimulator():
         if self.verbose:
             print(text, end=end)
 
-    def predict_match(self, match):
-        x = self.get_match_feature_vector(match)
-        match.set_feature_vector(x)
-
-        outcome_probabilities = self.predictor.predict_outcome_probabilities(x)
-        match.set_outcome_probabilties(outcome_probabilities)
-
-        home_score, away_score = self.predictor.predict_score(x)
-        match.set_score(home_score, away_score)
-        return match
-
-    def post_match_results(self, match):
-        db_obj = match.to_dict()
-        db_obj["year"] = parse(db_obj["date"]).year
-        db_obj["simulation"] = True
-        match_id = insert(**db_obj)
-        home_elo, away_elo = attach_elo_to_match(match_id, match.home_team, match.away_team)
-        update_elo_after_match(match.date, home_elo, away_elo, match.home_team,
-                               match.away_team, match.home_score, match.away_score, match.tournament)
-
-        insert_match(match)
-
-    def get_match_feature_vector(self, match):
-        data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
-        data_merge_obj["year"] = parse(match.date).year
-
-        # ELO
-        home_elo = get_current_elo(match.home_team)
-        away_elo = get_current_elo(match.away_team)
-        data_merge_obj["home_elo"] = home_elo
-        data_merge_obj["away_elo"] = away_elo
-
-        # Goals
-        goal_data = calculate_goal_features_for_match(match.date, match.home_team, match.away_team)
-        for key, value in goal_data.items():
-            data_merge_obj[key] = value
-
-        # Player data
-        data_merge_obj = pd.DataFrame([data_merge_obj])
-        data_merge_obj = append_player_data(data_merge_obj)
-        return get_feature_vector(data_merge_obj)
-
     def print_match_result(self, match):
         self.print(f"{match.home_team} - {match.away_team}: ", end='')
         self.print(f"{match.get_outcome()}        -- probabilities [Lose, Draw, Win] -- {match.outcome_probabilities}")
 
     def simulate_match(self, match):
-        match = self.predict_match(match)
-        self.post_match_results(match)
+        match = self.predictor.predict(match)
+        post_match_results(match)
         self.print_match_result(match)
         return match
 
