@@ -9,12 +9,6 @@ def insert(**kwargs):
     execute_statement((query, values))
     return execute_statement("select last_insert_rowid()")
 
-def insert_match(match):
-    match_dict = match.to_dict()
-    match_dict["match_id"] = match.id
-    match_dict.pop('tournament', None)
-    return insert(**match_dict)
-
 def delete_all():
     query = 'delete from match_simulation;'
     execute_statement(query)
