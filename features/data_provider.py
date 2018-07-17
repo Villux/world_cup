@@ -140,9 +140,7 @@ def get_dataset(flip=False):
         dataset = append_player_data(df_match)
     else:
         dataset = get_data(suffle=True)
-    print("Dataset length", dataset.shape[0])
     dataset = dataset.dropna()
-    print("Dataset complete cases length", dataset.shape[0])
     return dataset
 
 def get_train_test_wc_dataset(y_label):
@@ -175,11 +173,6 @@ def get_train_test_wc_dataset(y_label):
 
     X_test = pd.concat([X_test, X_wc])
     y_test = pd.concat([y_test, y_wc])
-
-    print("Whole train set length: ", X_train.shape[0])
-    print("Whole test set length: ", X_test.shape[0])
-    print("Whole WC set length: ", X_wc.shape[0])
-
     return X_train, y_train, X_test, y_test, X_wc, y_wc
 
 def get_whole_dataset(y_label):
