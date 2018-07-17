@@ -438,3 +438,6 @@ TSWLatexianTemp*
 
 # Do not include master's theses pdf
 thesis/masters.pdf
+
+# Exclude simulatio outputs
+data/simulations/*
