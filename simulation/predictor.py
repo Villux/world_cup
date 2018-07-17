@@ -82,26 +82,19 @@ class ScorePredictor():
         self.model = model
 
     def predict_score(self, x):
-        start = time.clock()
         mu_score = self.model.predict(x)[0]
-        print("Prediction time:", time.clock() - start)
         p = poisson(mu_score)
         return p.rvs(), mu_score
 
     def predict_outcome_probabilities(self, home_mu, away_mu):
-        start = time.clock()
         home_goal_prob, away_goal_prob = [[poisson.pmf(i, team_avg) for i in range(0, 11)] for team_avg in [home_mu, away_mu]]
-        print("PMF time:", time.clock() - start)
         goal_matrix = np.outer(home_goal_prob, away_goal_prob)
         return get_outcome_probabilities(goal_matrix)
 
     def predict(self, match):
-        start = time.clock()
         away_match = match.flip_and_copy()
 
-        start = time.clock()
         home_x = get_match_feature_vector(match)
-        print("FV time:", time.clock() - start)
         home_score, home_mu = self.predict_score(home_x)
 
         away_x = get_match_feature_vector(away_match)
@@ -112,5 +105,4 @@ class ScorePredictor():
 
         match.set_score(home_score, away_score)
         match.set_outcome_from_score()
-        print("Whole predict func", time.clock() - start)
         return match
