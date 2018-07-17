@@ -1,4 +1,13 @@
 import numpy as np
+from dateutil.parser import parse
+
+from db.match_table import insert
+
+def insert_match(match):
+    db_obj = match.to_dict()
+    db_obj["year"] = parse(db_obj["date"]).year
+    db_obj["simulation"] = True
+    return insert(**db_obj)
 
 class Match():
     def __init__(self, data, win_or_lose=False):
@@ -47,8 +56,7 @@ class Match():
     def get_outcome(self):
         if self.outcome is None:
             return self.get_outcome_from_probabilites()
-        else:
-            return self.outcome
+        return self.outcome
 
     def to_dict(self):
         return {
@@ -67,6 +75,7 @@ class Match():
             "home_score": self.away_score,
             "away_score": self.home_score,
             "tournament": self.tournament,
-            "date": self.date
+            "date": self.date,
+            "id": self.id
         }
         return Match(data, self.win_or_lose)
