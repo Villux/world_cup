@@ -36,12 +36,10 @@ def get_previous_goals(data, home, away):
     away_team_goals = pd.concat([data[(data['home_team'] == away)]["home_score"],
                                  data[(data['away_team'] == away)]["away_score"]])
 
-    home_goals = home_team_goals.sum()
-    away_goals = away_team_goals.sum()
+    home_goals = float(home_team_goals.sum())
+    away_goals = float(away_team_goals.sum())
     goal_diff = home_goals - away_goals
-    if np.isnan(goal_diff) or goal_diff == False:
-        goal_diff = float(0)
-
+    
     home_avg = home_team_goals.mean()
     away_avg = away_team_goals.mean()
 
