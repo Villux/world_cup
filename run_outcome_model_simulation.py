@@ -17,9 +17,9 @@ model = get_model(X=X, y=y)
 match_template = pd.read_csv('data/original/wc_2018_games.csv')
 predictor = OutcomePredictor(model)
 
-for i in range(0, 10):
+for i in range(0, 5):
     print(f"Running simulation: {i}")
-    run_simulation(match_template, predictor)
+    run_simulation(match_template, predictor, verbose=False)
 
 teams = pd.unique(match_template[['home_team', 'away_team']].values.ravel('K'))[0:32]
 print(get_match_win_probability(teams, 63))

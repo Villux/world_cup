@@ -44,6 +44,9 @@ class Match():
         else:
             self.outcome = -1
 
+    def set_outcome(self, outcome):
+        self.outcome = outcome
+
     def get_outcome_probabilties(self):
         return self.outcome_probabilities
 

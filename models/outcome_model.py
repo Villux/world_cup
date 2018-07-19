@@ -12,7 +12,7 @@ def get_model(params=None, X=None, y=None):
             "max_features": "sqrt"
         }
     model = RandomForestClassifier(**params)
-    if X and y:
+    if (X is not None) and (y is not None):
         model.fit(X, y)
 
     return model

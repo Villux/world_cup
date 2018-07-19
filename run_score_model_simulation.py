@@ -29,4 +29,4 @@ for i in range(0, 1000):
 teams = pd.unique(match_template[['home_team', 'away_team']].values.ravel('K'))[0:32]
 print(get_match_win_probability(teams, 63))
 
-store_simulation_results(f"data/simulations/{socket.gethostname()}_{round(time.time())}_simulation.csv")
+store_simulation_results(f"data/simulations/score_{socket.gethostname()}_{round(time.time())}_simulation.csv")
