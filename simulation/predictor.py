@@ -50,21 +50,23 @@ def get_match_feature_vector(match):
     data_merge_obj = append_player_data(data_merge_obj)
     return get_feature_vector(data_merge_obj)
 
-class WDLPredictor():
+class OutcomePredictor():
     def __init__(self, model):
         self.model = model
 
     def predict_outcome_probabilities(self, x):
         return self.model.predict_proba(x)[0]
 
-    def predict_score(self, x):
+    def predict_score(self, outcome):
         home_goals, away_goals = 0, 0
-        outcome = self.model.predict(x)
         if outcome == 1:
             home_goals = 1
         elif outcome == -1:
             away_goals = 1
         return home_goals, away_goals
+
+    def sample_outcome(self, outcome_probabilities):
+        return int(np.random.choice([-1, 0, 1], 1, p=outcome_probabilities)[0])
 
     def predict(self, match):
         x = get_match_feature_vector(match)
@@ -73,7 +75,9 @@ class WDLPredictor():
         outcome_probabilities = self.predict_outcome_probabilities(x)
         match.set_outcome_probabilties(outcome_probabilities)
 
-        home_score, away_score = self.predict_score(x)
+        outcome = self.sample_outcome(outcome_probabilities)
+        match.set_outcome(outcome)
+        home_score, away_score = self.predict_score(outcome)
         match.set_score(home_score, away_score)
         return match
 
