@@ -22,11 +22,10 @@ model = get_model(X=X, y=y)
 match_template = pd.read_csv('data/original/wc_2018_games.csv')
 predictor = ScorePredictor(model)
 
-for i in range(0, 1000):
+for i in range(0, 100):
     print(f"Running simulation: {i}")
     run_simulation(match_template, predictor)
 
 teams = pd.unique(match_template[['home_team', 'away_team']].values.ravel('K'))[0:32]
-print(get_match_win_probability(teams, 63))
 
 store_simulation_results(f"data/simulations/score_{socket.gethostname()}_{round(time.time())}_simulation.csv")
