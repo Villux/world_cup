@@ -7,7 +7,7 @@ import pandas as pd
 
 from features.data_provider import get_train_test_wc_dataset, get_feature_columns, get_whole_dataset
 from simulation.predictor import OutcomePredictor
-from simulation.simulation import run_simulation, get_match_win_probability
+from simulation.simulation import run_simulation
 from db.simulation_table import store_simulation_results
 from models.outcome_model import get_model
 

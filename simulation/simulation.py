@@ -132,12 +132,3 @@ def run_simulation(match_template, predictor, verbose=False):
 
     tournament.simulate_tournament()
     clean_after_simulation()
-
-
-def get_match_win_probability(teams, match_id):
-    prob_dict = {}
-    for team in teams:
-        prob = get_win_probability(team, match_id)
-        prob_dict[team] = prob
-
-    return prob_dict
