@@ -6,10 +6,10 @@ def get_model(params=None, X=None, y=None):
             'oob_score' : True,
             'bootstrap': True,
             'n_jobs':-1,
-            'n_estimators': 1000,
+            'n_estimators': 200,
             "max_depth": None,
             "min_samples_leaf": 5,
-            "max_features": "sqrt"
+            "max_features": "log2"
         }
     model = RandomForestRegressor(**params)
     if (X is not None) and (y is not None):

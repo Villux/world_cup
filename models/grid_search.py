@@ -13,13 +13,11 @@ def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest, X_wc, y_wc,
 
     i = 0
     for depth in [3, 5, 8, 12, None]:
-        for min_samples in [1, 3, 5, 10]:
+        for min_samples in [1, 3, 5, 10, 15]:
             for max_features in ["sqrt", "log2"]:
-                for n_estimators in [200, 500, 1000, 2000, 5000]:
                     params["max_depth"] = depth
                     params["min_samples_leaf"] = min_samples
                     params["max_features"] = max_features
-                    params["n_estimators"] = n_estimators
 
                     if classifier:
                         model = RandomForestClassifier(**params)
@@ -31,7 +29,6 @@ def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest, X_wc, y_wc,
                         "max_depth": depth,
                         "min_samples_leaf": min_samples,
                         "max_features": max_features,
-                        "n_estimators": n_estimators
                     }
 
                     y_true, y_pred = ytrain, model.predict(Xtrain)

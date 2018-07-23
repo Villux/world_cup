@@ -1,4 +1,4 @@
-
+import numpy as np
 
 def get_best_params(results, verbose=False):
     results["best_combo"] = results["test_acc"] + results["wc_acc"]
@@ -17,5 +17,14 @@ def get_best_params(results, verbose=False):
         print()
         print("BEST COMBO")
         print(best_params)
-
+     
+    best_params = best_params.replace({np.nan:None})
     return best_params.to_dict()
+
+def get_feature_importance(feature_importances, feature_columns):
+    zipped = sorted(zip(feature_columns, feature_importances), key = lambda t: t[1], reverse=True)
+    D = {}
+    for feature, importance in zipped:
+        D[feature] = round(importance, 5)
+    return D
+
