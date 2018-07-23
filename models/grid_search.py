@@ -1,13 +1,14 @@
 from time import time
 import pandas as pd
 import numpy as np
+
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-def run_custom_grid_search(model, org_params, Xtrain, ytrain, Xtest, ytest, X_wc, y_wc):
+def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest, X_wc, y_wc, classifier=True):
     start = time()
 
     results = []
-
     params = org_params.copy()
 
     i = 0
@@ -20,10 +21,18 @@ def run_custom_grid_search(model, org_params, Xtrain, ytrain, Xtest, ytest, X_wc
                     params["max_features"] = max_features
                     params["n_estimators"] = n_estimators
 
-                    model = model(**params)
+                    if classifier:
+                        model = RandomForestClassifier(**params)
+                    else:
+                        model = RandomForestRegressor(**params)
                     model.fit(Xtrain, ytrain)
 
-                    res = {"max_depth": depth, "min_samples_leaf": min_samples, "max_features": max_features, "n_estimators": n_estimators}
+                    res = {
+                        "max_depth": depth,
+                        "min_samples_leaf": min_samples,
+                        "max_features": max_features,
+                        "n_estimators": n_estimators
+                    }
 
                     y_true, y_pred = ytrain, model.predict(Xtrain)
                     res["train_acc"] = sum(np.around(y_pred) == y_true) / len(Xtrain)
