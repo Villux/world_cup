@@ -17,7 +17,7 @@ model = get_model(X=X, y=y)
 match_template = pd.read_csv('data/original/wc_2018_games.csv')
 predictor = OutcomePredictor(model)
 
-for i in range(0, 5):
+for i in range(0, 100):
     print(f"Running simulation: {i}")
     run_simulation(match_template, predictor, verbose=False)
 
