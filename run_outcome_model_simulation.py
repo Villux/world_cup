@@ -22,6 +22,5 @@ for i in range(0, 100):
     run_simulation(match_template, predictor, verbose=False)
 
 teams = pd.unique(match_template[['home_team', 'away_team']].values.ravel('K'))[0:32]
-print(get_match_win_probability(teams, 63))
 
 store_simulation_results(f"data/simulations/outcome_{socket.gethostname()}_{round(time.time())}_simulation.csv")
