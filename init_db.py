@@ -75,7 +75,7 @@ def create_match_table():
                 );'''
     execute_statement(query)
 
-def create_simulation_tableI():
+def create_simulation_table():
     query = '''CREATE TABLE IF NOT EXISTS "match_simulation" (
                 "id" integer PRIMARY KEY AUTOINCREMENT,
                 "match_id" INTEGER,
@@ -84,7 +84,10 @@ def create_simulation_tableI():
                 "away_team" TEXT,
                 "home_score" INTEGER,
                 "away_score" INTEGER,
-                "outcome" INTEGER
+                "outcome" INTEGER,
+                "home_win_prob" REAL,
+                "draw_prob" REAL,
+                "away_win_prob" REAL
                 );'''
     execute_statement(query)
 
