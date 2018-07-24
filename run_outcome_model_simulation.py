@@ -13,7 +13,7 @@ from db.simulation_table import store_simulation_results
 from models.outcome_model import get_model
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--actual')
+parser.add_argument('--actual', action="store_true")
 args = parser.parse_args()
 
 X, y = get_whole_dataset("home_win")
