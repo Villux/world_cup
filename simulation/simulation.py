@@ -155,7 +155,7 @@ def run_simulation(match_template, predictor, verbose=False):
     clean_after_simulation()
 
 def run_actual_tournament_simulation(match_template, predictor, verbose=False):
-    tournament = WorldCupMatchSimulator(match_template, predictor)
+    tournament = WorldCupMatchSimulator(match_template, predictor, verbose=verbose)
     tournament.simulate_matches()
 
     clean_after_simulation()
