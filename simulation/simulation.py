@@ -16,6 +16,12 @@ def insert_match_simulation(match):
     match_dict = match.to_dict()
     match_dict["match_id"] = match.id
     match_dict["outcome"] = match.get_outcome()
+
+    outcome_probabilites = match.get_outcome_probabilties()
+    match_dict["home_win_prob"] = outcome_probabilites[2]
+    match_dict["draw_prob"] = outcome_probabilites[1]
+    match_dict["away_win_prob"] = outcome_probabilites[0]
+
     match_dict.pop('tournament', None)
     insert(**match_dict)
 
