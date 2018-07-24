@@ -27,16 +27,16 @@ for i in range(0, 100):
     predictor = ScorePredictor(model)
 
     if args.actual:
-        postfix = "matchlevel"
+        prefix = "matchlevel"
         print(f"Running match-level tournament simulation: {i}")
 
         match_template = pd.read_csv('data/original/wc_2018_games_real.csv')
         run_actual_tournament_simulation(match_template, predictor)
     else:
-        postfix = "full"
+        prefix = "full"
         print(f"Running full tournament simulation: {i}")
 
         match_template = pd.read_csv('data/original/wc_2018_games.csv')
         run_simulation(match_template, predictor)
 
-store_simulation_results(f"data/simulations/score_{socket.gethostname()}_{round(time.time())}_{postfix}_simulation.csv")
+store_simulation_results(f"data/simulations/{prefix}_score_{socket.gethostname()}_{round(time.time())}_simulation.csv")
