@@ -1,4 +1,9 @@
+import glob
 import pandas as pd
+
+def get_simulations(path):
+    simulation_files = glob.glob(path)
+    return pd.concat((pd.read_csv(f, index_col=None) for f in simulation_files))
 
 def get_win_probabilities(simulatios, teams, match_ids):
     results = []
