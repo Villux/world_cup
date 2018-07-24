@@ -12,15 +12,14 @@ from db.simulation_table import store_simulation_results
 from models.outcome_model import get_model
 
 X, y = get_whole_dataset("home_win")
-model = get_model(X=X, y=y)
-
 match_template = pd.read_csv('data/original/wc_2018_games.csv')
-predictor = OutcomePredictor(model)
 
 for i in range(0, 100):
     print(f"Running simulation: {i}")
-    run_simulation(match_template, predictor, verbose=False)
 
-teams = pd.unique(match_template[['home_team', 'away_team']].values.ravel('K'))[0:32]
+    model = get_model(X=X, y=y)
+    predictor = OutcomePredictor(model)
+
+    run_simulation(match_template, predictor, verbose=False)
 
 store_simulation_results(f"data/simulations/outcome_{socket.gethostname()}_{round(time.time())}_simulation.csv")

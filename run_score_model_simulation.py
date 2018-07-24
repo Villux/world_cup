@@ -17,13 +17,13 @@ away = get_whole_dataset("away_score")
 X = pd.concat([home[0], away[0]])
 y = pd.concat([home[1], away[1]])
 
-model = get_model(X=X, y=y)
-
 match_template = pd.read_csv('data/original/wc_2018_games.csv')
-predictor = ScorePredictor(model)
-
 for i in range(0, 100):
     print(f"Running simulation: {i}")
+
+    model = get_model(X=X, y=y)
+    predictor = ScorePredictor(model)
+
     run_simulation(match_template, predictor)
 
 store_simulation_results(f"data/simulations/score_{socket.gethostname()}_{round(time.time())}_simulation.csv")
