@@ -51,10 +51,15 @@ class WorldCupMatchSimulator(Simulator):
         self.print_match_result(match)
         return match
 
+    def update_actual_score(self, match, match_template):
+        match.set_score(match_template["home_score"], match_template["away_score"])
+        return match
+
     def simulate_matches(self):
         for _, match_template in self.tournament_diagram.iterrows():
             match = Match(match_template)
             simulated_match = self.simulate_match(match)
+            match = self.update_actual_score(match, match_template)
             post_match_results(match, store_simulation=False)
             insert_match_simulation(simulated_match)
 
