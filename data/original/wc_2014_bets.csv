@@ -1,0 +1,65 @@
+id,date,home_team,away_team,1,X,2
+0,2014-06-12,Brazil,Croatia,1.32,5.19,11.93
+1,2014-06-13,Chile,Australia,1.42,4.48,8.76
+2,2014-06-13,Mexico,Cameroon,2.18,3.15,3.78
+3,2014-06-13,Spain,Netherlands,1.84,3.39,5.10
+4,2014-06-14,Colombia,Greece,1.86,3.27,5.15
+5,2014-06-14,England,Italy,2.51,2.99,3.28
+6,2014-06-14,Ivory Coast,Japan,2.72,3.32,2.69
+7,2014-06-14,Uruguay,Costa Rica,1.44,4.26,8.90
+8,2014-06-15,Argentina,Bosnia and Herzegovina,1.30,5.66,10.54
+9,2014-06-15,France,Honduras,1.27,6.04,12.18
+10,2014-06-15,Switzerland,Ecuador,2.44,3.23,3.11
+11,2014-06-16,Germany,Portugal,2.09,3.53,3.66
+12,2014-06-16,Ghana,United States,2.42,3.43,2.98
+13,2014-06-16,IR Iran,Nigeria,4.79,3.48,1.84
+14,2014-06-17,Belgium,Algeria,1.33,5.25,10.21
+15,2014-06-17,Brazil,Mexico,1.35,5.30,9.20
+16,2014-06-17,Russia,Korea Republic,1.82,3.60,4.66
+17,2014-06-18,Australia,Netherlands,13.15,6.61,1.23
+18,2014-06-18,Cameroon,Croatia,5.53,3.93,1.66
+19,2014-06-18,Spain,Chile,1.58,4.43,5.52
+20,2014-06-19,Colombia,Ivory Coast,2.03,3.54,3.76
+21,2014-06-19,Japan,Greece,2.41,3.36,3.04
+22,2014-06-19,Uruguay,England,3.81,3.78,1.94
+23,2014-06-20,Honduras,Ecuador,5.79,4.23,1.59
+24,2014-06-20,Italy,Costa Rica,1.58,4.02,6.47
+25,2014-06-20,Switzerland,France,4.59,3.53,1.86
+26,2014-06-21,Argentina,IR Iran,1.14,8.60,21.96
+27,2014-06-21,Germany,Ghana,1.33,5.61,9.09
+28,2014-06-21,Nigeria,Bosnia and Herzegovina,4.32,3.63,1.87
+29,2014-06-22,Belgium,Russia,2.22,3.35,3.44
+30,2014-06-22,Korea Republic,Algeria,2.50,3.30,2.96
+31,2014-06-22,United States,Portugal,4.57,4.12,1.74
+32,2014-06-23,Australia,Spain,8.13,5.30,1.37
+33,2014-06-23,Cameroon,Brazil,22.75,9.53,1.13
+34,2014-06-23,Croatia,Mexico,2.72,3.47,2.62
+35,2014-06-23,Netherlands,Chile,2.70,3.51,2.61
+36,2014-06-24,Costa Rica,England,4.48,4.01,1.76
+37,2014-06-24,Greece,Ivory Coast,3.98,3.58,1.96
+38,2014-06-24,Italy,Uruguay,2.54,3.49,2.78
+39,2014-06-24,Japan,Colombia,3.45,3.73,2.08
+40,2014-06-25,Bosnia and Herzegov,IR Iran,2.20,3.57,3.29
+41,2014-06-25,Ecuador,France,5.52,4.16,1.62
+42,2014-06-25,Honduras,Switzerland,7.10,4.48,1.48
+43,2014-06-25,Nigeria,Argentina,9.67,4.25,1.43
+44,2014-06-26,Algeria,Russia,3.69,3.67,2.02
+45,2014-06-26,Korea Republic,Belgium,4.60,3.54,1.85
+46,2014-06-26,Portugal,Ghana,1.76,4.83,3.81
+47,2014-06-26,United States,Germany,8.18,3.13,1.68
+48,2014-06-28,Brazil,Chile,1.52,4.52,6.33
+49,2014-06-28,Colombia,Uruguay,2.15,3.33,3.70
+50,2014-06-29,Costa Rica,Greece,2.73,3.08,2.92
+51,2014-06-29,Netherlands,Mexico,2.15,3.34,3.67
+52,2014-06-30,France,Nigeria,1.41,4.66,8.71
+53,2014-06-30,Germany,Algeria,1.32,5.65,10.17
+54,2014-07-01,Argentina,Switzerland,1.57,4.17,6.32
+55,2014-07-01,Belgium,United States,2.01,3.39,4.09
+56,2014-07-04,Brazil,Colombia,1.76,3.79,4.93
+57,2014-07-04,France,Germany,2.81,3.16,2.78
+58,2014-07-05,Argentina,Belgium,1.99,3.39,4.21
+59,2014-07-05,Netherlands,Costa Rica,1.52,4.18,7.15
+60,2014-07-08,Brazil,Germany,2.63,3.20,2.96
+61,2014-07-09,Netherlands,Argentina,3.09,3.20,2.53
+62,2014-07-12,Brazil,Netherlands,2.15,3.68,3.37
+63,2014-07-13,Germany,Argentina,2.39,3.27,3.27
