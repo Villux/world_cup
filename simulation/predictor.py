@@ -4,7 +4,7 @@ import pandas as pd
 from dateutil.parser import parse
 from scipy.stats import poisson
 
-from features.elo import get_current_elo, attach_elo_to_match
+from features.elo import get_elo
 from features.generate_goal_features import calculate_goal_features_for_match
 from features.data_provider import append_player_data, get_feature_vector
 
@@ -35,8 +35,8 @@ def get_match_feature_vector(match):
     data_merge_obj["year"] = parse(match.date).year
 
     # ELO
-    home_elo = get_current_elo(match.home_team)
-    away_elo = get_current_elo(match.away_team)
+    home_elo = get_elo(match.home_team, match.date)
+    away_elo = get_elo(match.away_team, match.date)
     data_merge_obj["home_elo"] = home_elo
     data_merge_obj["away_elo"] = away_elo
 
