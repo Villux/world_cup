@@ -12,6 +12,13 @@ from player_data_parser import get_player_data
 def get_url(query_string, offset):
     return f'https://sofifa.com/players?{query_string}&offset={offset}'
 
+fname = "scraped_datapoints.txt"
+try:
+    with open(fname) as file:
+        read_queries = [line.rstrip('\n') for line in file]
+except:
+    read_queries = []
+
 url = f'https://sofifa.com/players?'
 page = requests.get(url)
 bs = BeautifulSoup(page.text, 'html.parser')
@@ -28,6 +35,8 @@ for drow in datapoint_rows.findAll('div', {'class': 'column col-4'})[4:]:
         dates[date_string] = query_string
 
 for data_date, query_string in dates.items():
+    if query_string in read_queries:
+        continue
     players = []
 
     offset = 0
@@ -86,3 +95,6 @@ for data_date, query_string in dates.items():
 
     player_df = pd.DataFrame(players)
     player_df.to_csv(f"data/generated/player_data/SOFIFA_ext_{data_date}.csv")
+
+    with open(fname, "a") as myfile:
+        myfile.write(f"{query_string}\n")
