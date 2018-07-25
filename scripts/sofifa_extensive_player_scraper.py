@@ -37,6 +37,10 @@ for drow in datapoint_rows.findAll('div', {'class': 'column col-4'})[4:]:
 for data_date, query_string in dates.items():
     if query_string in read_queries:
         continue
+
+    with open(fname, "a") as myfile:
+        myfile.write(f"{query_string}\n")
+
     players = []
 
     offset = 0
@@ -95,6 +99,3 @@ for data_date, query_string in dates.items():
 
     player_df = pd.DataFrame(players)
     player_df.to_csv(f"data/generated/player_data/SOFIFA_ext_{data_date}.csv")
-
-    with open(fname, "a") as myfile:
-        myfile.write(f"{query_string}\n")
