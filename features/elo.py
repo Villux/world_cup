@@ -46,12 +46,12 @@ def elo_rating_change_for_match(elo_A, elo_B, tournament, goals_A, goals_B):
 
     return new_elo_A, new_elo_B
 
-def get_current_elo(team):
-    return select_latest_for_team(team)
+def get_elo(team, date):
+    return select_latest_for_team(team, date)
 
-def attach_elo_to_match(match_id, home_team, away_team):
-    elo_A = get_current_elo(home_team)
-    elo_B = get_current_elo(away_team)
+def attach_elo_to_match(match_id, match_date, home_team, away_team):
+    elo_A = get_elo(home_team, match_date)
+    elo_B = get_elo(away_team, match_date)
 
     attach_match_to_current_rating(match_id, [home_team, away_team])
     return elo_A, elo_B
@@ -73,5 +73,5 @@ def calculate_elo_from_matches():
         home_score, away_score = match[3], match[4]
         tournament = match[5]
 
-        elo_A, elo_B = attach_elo_to_match(match_id, home_team, away_team)
+        elo_A, elo_B = attach_elo_to_match(match_id, date, home_team, away_team)
         update_elo_after_match(date, elo_A, elo_B, home_team, away_team, home_score, away_score, tournament)

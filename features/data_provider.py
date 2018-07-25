@@ -143,7 +143,7 @@ def get_dataset(flip=False):
     dataset = dataset.dropna()
     return dataset
 
-def get_train_test_wc_dataset(y_label):
+def get_train_test_wc_dataset(y_label, filter_start=None, filter_end=None):
     if y_label == "away_score":
         dataset = get_dataset(flip=True)
         y_label = "home_score"
@@ -152,6 +152,13 @@ def get_train_test_wc_dataset(y_label):
 
     if y_label == "home_win":
         dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
+
+    if filter_start and filter_end:
+        dataset = dataset.loc[(dataset['date'] < filter_start) | (dataset['date'] > filter_end)]
+    elif filter_start:
+        dataset = dataset.loc[dataset['date'] < filter_start]
+    elif filter_end:
+        dataset = dataset.loc[dataset['date'] > filter_end]
 
     no_friendly_or_wc = dataset[(dataset["tournament"] != "Friendly") & (dataset["tournament"] != "FIFA World Cup")]
 
@@ -175,8 +182,8 @@ def get_train_test_wc_dataset(y_label):
     y_test = pd.concat([y_test, y_wc])
     return X_train, y_train, X_test, y_test, X_wc, y_wc
 
-def get_whole_dataset(y_label):
-    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label)
+def get_whole_dataset(y_label, filter_start=None, filter_end=None):
+    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label, filter_start=filter_start, filter_end=filter_end)
 
     X = pd.concat([X_train, X_test, X_wc])
     y = pd.concat([y_train, y_test, y_wc])

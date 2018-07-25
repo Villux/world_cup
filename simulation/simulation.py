@@ -27,7 +27,7 @@ def insert_match_simulation(match):
 
 def post_match_results(match, store_simulation=True):
     match_id = insert_match(match)
-    home_elo, away_elo = attach_elo_to_match(match_id, match.home_team, match.away_team)
+    home_elo, away_elo = attach_elo_to_match(match_id, match.date, match.home_team, match.away_team)
     update_elo_after_match(match.date, home_elo, away_elo, match.home_team,
                            match.away_team, match.home_score, match.away_score, match.tournament)
 
