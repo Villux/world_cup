@@ -74,4 +74,6 @@ def get_player_data(player_data):
     final = {**final, **get_team_level_info(bs)}
     final = {**final, **get_column_level_data(bs)}
 
+    bs.decompose()
+
     return final
