@@ -34,6 +34,8 @@ for drow in datapoint_rows.findAll('div', {'class': 'column col-4'})[4:]:
         date_string = date.strftime("%Y-%m-%d")
         dates[date_string] = query_string
 
+bs.decompose()
+
 for data_date, query_string in dates.items():
     if query_string in read_queries:
         continue
@@ -89,6 +91,8 @@ for data_date, query_string in dates.items():
 
         data = pool.map(get_player_data, list_of_players)
         players.extend(data)
+
+        bs.decompose()
 
         if not_all_done:
             offset += 80
