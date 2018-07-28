@@ -46,8 +46,6 @@ for data_date, query_string in dates.items():
     players = []
 
     offset = 0
-    offset = 17120
-    query_string = "v=18&e=158925&set=true"
     url = get_url(query_string, offset)
     page = requests.get(url)
 
