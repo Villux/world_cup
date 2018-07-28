@@ -46,6 +46,8 @@ for data_date, query_string in dates.items():
     players = []
 
     offset = 0
+    offset = 17120
+    query_string = "v=18&e=158925&set=true"
     url = get_url(query_string, offset)
     page = requests.get(url)
 
@@ -103,3 +105,4 @@ for data_date, query_string in dates.items():
 
     player_df = pd.DataFrame(players)
     player_df.to_csv(f"data/generated/player_data/SOFIFA_ext_{data_date}.csv")
+    break
