@@ -5,6 +5,15 @@ from sklearn.model_selection import train_test_split
 
 from db.db_interface import get_connection
 
+feature_columns = ["elo_diff", "rating_diff", "potential_diff","height_diff", "weight_diff", "age_diff", "weak_foot_diff",
+            "internationl_repuatiotion_diff", "crossing_diff", "finishing_diff", "heading_accuracy_diff",
+            "short_passing_diff", "dribbling_diff", "fk_accuracy_diff", "long_passing_diff",
+            'ball_control_diff', 'acceleration_diff', 'sprint_speed_diff', "reactions_diff",
+            'shot_power_diff', 'stamina_diff', 'strength_diff', 'long_shots_diff',
+            "aggression_diff", "penalties_diff", "marking_diff", "standing_tackle_diff",
+            "away_goal_mean", "away_goals_with_home", "goal_diff_with_away", "home_goal_mean",
+            "home_goals_with_away", "gk_diving_diff", "gk_handling_diff", "gk_kicking_diff", "gk_reflexes_diff"]
+
 def get_player_attribute_query(team, date):
     return f"SELECT * from player_attribute where nationality='{team}' AND date < '{date}' ORDER BY date desc LIMIT 1;"
 
@@ -128,19 +137,17 @@ def calculate_relative_features(df):
     return dataset
 
 def get_feature_columns():
-    return ["elo_diff", "rating_diff", "potential_diff","height_diff", "weight_diff", "age_diff", "weak_foot_diff",
-            "internationl_repuatiotion_diff", "crossing_diff", "finishing_diff", "heading_accuracy_diff",
-            "short_passing_diff", "dribbling_diff", "fk_accuracy_diff", "long_passing_diff",
-            'ball_control_diff', 'acceleration_diff', 'sprint_speed_diff', "reactions_diff",
-            'shot_power_diff', 'stamina_diff', 'strength_diff', 'long_shots_diff',
-            "aggression_diff", "penalties_diff", "marking_diff", "standing_tackle_diff",
-            "away_goal_mean", "away_goals_with_home", "goal_diff_with_away", "home_goal_mean",
-            "home_goals_with_away", "gk_diving_diff", "gk_handling_diff", "gk_kicking_diff", "gk_reflexes_diff"]
+    return feature_columns
+
+def set_feature_columns(columns):
+    # TODO fix this nasty hack
+    global feature_columns
+    feature_columns = columns
 
 def get_feature_vector(dataset):
     dataset = calculate_relative_features(dataset)
-    feature_columns = get_feature_columns()
-    return dataset[feature_columns]
+    fc = get_feature_columns()
+    return dataset[fc]
 
 def get_dataset(flip=False, suffle=False):
     dataset = get_original_data()
