@@ -111,7 +111,7 @@ class ScorePredictor():
         match.set_outcome_from_score()
         return match
 
-class MaxProbabilityPredictor():
+class MaxProbabilityOutcomePredictor():
     def __init__(self, model):
         self.model = model
 
@@ -126,9 +126,6 @@ class MaxProbabilityPredictor():
             away_goals = 1
         return home_goals, away_goals
 
-    def sample_outcome(self, outcome_probabilities):
-        return int(np.random.choice([-1, 0, 1], 1, p=outcome_probabilities)[0])
-
     def predict(self, match):
         x = get_match_feature_vector(match)
         match.set_feature_vector(x)
@@ -139,5 +136,37 @@ class MaxProbabilityPredictor():
         outcome = np.argmax(outcome_probabilities) - 1
         match.set_outcome(outcome)
         home_score, away_score = self.predict_score(outcome)
+        match.set_score(home_score, away_score)
+        return match
+
+class MaxProbabilityScorePredictor():
+    def __init__(self, model):
+        self.model = model
+
+    def predict_score(self, x):
+        mu_score = self.model.predict(x)[0]
+        p = poisson(mu_score)
+        return p.rvs(), mu_score
+
+    def predict_outcome_probabilities(self, home_mu, away_mu):
+        home_goal_prob, away_goal_prob = [[poisson.pmf(i, team_avg) for i in range(0, 11)] for team_avg in [home_mu, away_mu]]
+        goal_matrix = np.outer(home_goal_prob, away_goal_prob)
+        return get_outcome_probabilities(goal_matrix), goal_matrix
+
+    def predict(self, match):
+        away_match = match.flip_and_copy()
+
+        home_x = get_match_feature_vector(match)
+        _, home_mu = self.predict_score(home_x)
+
+        away_x = get_match_feature_vector(away_match)
+        _, away_mu = self.predict_score(away_x)
+
+        outcome_probabilities, goal_matrix = self.predict_outcome_probabilities(home_mu, away_mu)
+        match.set_outcome_probabilties(outcome_probabilities)
+
+        outcome = np.argmax(outcome_probabilities) - 1
+        home_score, away_score = get_score_from_goal_matrix(goal_matrix, outcome)
+        match.set_outcome(outcome)
         match.set_score(home_score, away_score)
         return match

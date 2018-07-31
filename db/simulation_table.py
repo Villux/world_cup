@@ -40,3 +40,7 @@ def get_win_probability(team, match_id):
 def store_simulation_results(filename):
     simulations = pd.read_sql_query("""select * from match_simulation;""", get_connection())
     simulations.to_csv(filename)
+
+def get_simulation_results():
+    simulations = pd.read_sql_query("""select * from match_simulation;""", get_connection())
+    return simulations
