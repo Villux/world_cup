@@ -13,7 +13,7 @@ def plot_bank_and_bets(banks, bets, results):
     ax.set_xticks(np.arange(0, 64))
     plt.xticks(rotation='vertical')
     
-def run_unit_strategy(y_pred, y_true, odds, initial_capital=64, bet_size=1):
+def run_unit_strategy(y_pred, y_true, odds, initial_capital=64, bet_size=1, plot=False):
     bets = []
     banks = []
     results = []
@@ -41,12 +41,14 @@ def run_unit_strategy(y_pred, y_true, odds, initial_capital=64, bet_size=1):
             results.append(1)
         else:
             results.append(0)
-    print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
-    print("Balance: ", bank)
-
-    plot_bank_and_bets(banks, bets, results)
+                
+    if plot:
+        print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
+        print("Balance: ", bank)
+        plot_bank_and_bets(banks, bets, results)
+    return bank
     
-def run_kelly_strategy(y_pred, y_true, odds, probabilities, initial_capital=64):
+def run_kelly_strategy(y_pred, y_true, odds, probabilities, initial_capital=64, plot=False):
     bank = initial_capital
 
     bets = []
@@ -81,10 +83,11 @@ def run_kelly_strategy(y_pred, y_true, odds, probabilities, initial_capital=64):
             results.append(0)
         banks.append(bank)
 
-    print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
-    print("Balance: ", bank)
-
-    plot_bank_and_bets(banks, bets, results)
+    if plot:
+        print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
+        print("Balance: ", bank)
+        plot_bank_and_bets(banks, bets, results)
+    return bank
     
 def get_tournament_results(simulations_files, tournament_template_file, filename=None):
     tournament_template = pd.read_csv(tournament_template_file)
