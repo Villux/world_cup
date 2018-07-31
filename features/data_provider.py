@@ -14,6 +14,9 @@ feature_columns = ["elo_diff", "rating_diff", "potential_diff","height_diff", "w
             "away_goal_mean", "away_goals_with_home", "goal_diff_with_away", "home_goal_mean",
             "home_goals_with_away", "gk_diving_diff", "gk_handling_diff", "gk_kicking_diff", "gk_reflexes_diff"]
 
+other_features = ['elo_diff', 'away_goal_mean', 'away_goals_with_home',
+                  'goal_diff_with_away', 'home_goal_mean', 'home_goals_with_away']
+
 def get_player_attribute_query(team, date):
     return f"SELECT * from player_attribute where nationality='{team}' AND date < '{date}' ORDER BY date desc LIMIT 1;"
 
