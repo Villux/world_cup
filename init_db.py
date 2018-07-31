@@ -40,7 +40,7 @@ def import_match_results(filename='data/original/results.csv'):
     with get_connection() as conn:
         match_results.to_sql('match', con=conn, index=False, if_exists='append')
 
-def import_player_attributes(filename='data/generated/team_level_player_data.csv'):
+def import_player_attributes(filename='data/generated/team_level_player_data_daily.csv'):
     player_stats = pd.read_csv(filename)
     player_stats = player_stats.drop(['Unnamed: 0'], axis=1)
     with get_connection() as conn:
