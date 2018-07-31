@@ -1,27 +1,36 @@
+import os
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from db.db_interface import get_connection
 
+def get_player_attribute_query(team, date):
+    return f"SELECT * from player_attribute where nationality='{team}' AND date < '{date}' ORDER BY date desc LIMIT 1;"
+
 def append_player_data(df):
-    query = ''' SELECT * from player_attribute;'''
-    with get_connection() as conn:
-        df_player_attribute = pd.read_sql(query, conn)
-    df_player_attribute = df_player_attribute.drop(['id'], axis=1)
+    dataset = []
+    for i in range(df.shape[0]):
+        row = df.iloc[i].to_dict()
 
-    dataset_w = df.shape[1]
-    dataset = pd.merge(df, df_player_attribute,  how='left', left_on=['year','home_team'], right_on = ['year','nationality'])
-    new_names = [(i, 'home_' + i) for i in dataset.iloc[:, dataset_w:].columns.values]
-    dataset.rename(columns = dict(new_names), inplace=True)
-    dataset = dataset.drop(['home_nationality'], axis=1)
+        for prefix in ["home", "away"]:
+            team_key = f"{prefix}_team"
+            query = get_player_attribute_query(row[team_key], row["date"])
 
-    dataset_w = dataset.shape[1]
-    dataset = pd.merge(dataset, df_player_attribute,  how='left', left_on=['year','away_team'], right_on = ['year','nationality'])
-    new_names = [(i, 'away_' + i) for i in dataset.iloc[:, dataset_w:].columns.values]
-    dataset.rename(columns = dict(new_names), inplace=True)
-    dataset = dataset.drop(['away_nationality'], axis=1)
-    return dataset
+            with get_connection() as conn:
+                df_player_attribute = pd.read_sql(query, conn)
+            df_player_attribute = df_player_attribute.drop(['id', 'date', 'nationality'], axis=1)
+            if prefix == "home":
+                new_names = [(i, "home_" + i) for i in df_player_attribute.columns.values]
+            else:
+                new_names = [(i, "away_" + i) for i in df_player_attribute.columns.values]
+            df_player_attribute.rename(columns = dict(new_names), inplace=True)
+            if df_player_attribute.shape[0] > 0:
+                player_dict = df_player_attribute.iloc[0].to_dict()
+                row = {**row, **player_dict}
+        dataset.append(row)
+
+    return pd.DataFrame(dataset)
 
 def get_match_elo_and_goal():
     query = '''SELECT
@@ -40,6 +49,7 @@ def get_match_elo_and_goal():
                     ON away_e.match_id=m.id AND away_e.team=m.away_team
                 LEFT JOIN goal_feature AS goal
                     ON goal.match_id=m.id
+                WHERE m.date >= '2006-08-30'
                 ORDER BY date;'''
     with get_connection() as conn:
         return pd.read_sql(query, conn)
@@ -49,18 +59,19 @@ def merge_all_data():
     return append_player_data(df_match)
 
 def switch_home_and_away(df):
+    renamed = {}
+    for col in df.columns.values:
+        if col[0:4] == "home":
+            new_key = "away" + col[4:]
+            renamed[col] = new_key
+        elif col[0:4] == "away":
+            new_key = "home" + col[4:]
+            renamed[col] = new_key
+    df = df.rename(columns=renamed)
     df = df.rename(columns={
-        'home_team': 'away_team',
-        'away_team': 'home_team',
-        'home_score': 'away_score',
-        'away_score': 'home_score',
-        'home_elo': 'away_elo',
-        'away_elo': 'home_elo',
-        'home_goals_with_away': 'away_goals_with_home',
-        'away_goals_with_home': 'home_goals_with_away',
-        'home_goal_mean': 'away_goal_mean',
-        'away_goal_mean': 'home_goal_mean',
-        })
+        "home_goals_with_home": "home_goals_with_away",
+        "away_goals_with_away": "away_goals_with_home"
+    })
     df.loc[:, "goal_diff_with_away"] = df.loc[:, "goal_diff_with_away"].mul(-1)
     return df
 
@@ -71,16 +82,14 @@ def get_dataset_with_balanced_wins(dataset):
     flip_df = flip_wins(dataset)
     flip_df = switch_home_and_away(flip_df)
     dataset.update(flip_df)
-    return append_player_data(dataset)
+    return dataset
 
-def get_data(suffle=True, write_to_csv=False, save_filename="data/generated/master_data.csv"):
-    match_data = get_match_elo_and_goal()
-    if suffle:
-        master_data = get_dataset_with_balanced_wins(match_data)
+def get_original_data(cached_file="data/generated/master_data.csv"):
+    if os.path.isfile(cached_file):
+        master_data = pd.read_csv(cached_file)
     else:
         master_data = merge_all_data()
-    if write_to_csv:
-        master_data.to_csv(save_filename, index=False)
+        master_data.to_csv(cached_file, index=False)
     return master_data
 
 def calculate_relative_features(df):
@@ -133,24 +142,25 @@ def get_feature_vector(dataset):
     feature_columns = get_feature_columns()
     return dataset[feature_columns]
 
-def get_dataset(flip=False):
-    if flip:
-        df_match = get_match_elo_and_goal()
-        df_match = switch_home_and_away(df_match)
-        dataset = append_player_data(df_match)
-    else:
-        dataset = get_data(suffle=True)
+def get_dataset(flip=False, suffle=False):
+    dataset = get_original_data()
     dataset = dataset.dropna()
+
+    if suffle:
+        dataset = get_dataset_with_balanced_wins(dataset)
+    if flip:
+        dataset = switch_home_and_away(dataset)
     return dataset
 
 def get_train_test_wc_dataset(y_label, filter_start=None, filter_end=None):
     if y_label == "away_score":
-        dataset = get_dataset(flip=True)
+        dataset = get_dataset(flip=True, suffle=False)
         y_label = "home_score"
     else:
-        dataset = get_dataset()
+        dataset = get_dataset(flip=False)
 
     if y_label == "home_win":
+        dataset = get_dataset(suffle=True)
         dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
 
     if filter_start and filter_end:
