@@ -1,12 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier
 
-def get_model(params=None, X=None, y=None):
+def get_model(params=None, X=None, y=None, n_estimators=200):
     if not params:
         params = {
             'oob_score' : True,
             'bootstrap': True,
             'n_jobs':-1,
-            'n_estimators': 200,
+            'n_estimators': n_estimators,
             "max_depth": 5,
             "min_samples_leaf": 1,
             "max_features": "log2"
