@@ -21,6 +21,10 @@ simulation_name = os.path.splitext(os.path.basename(args.match_template))[0]
 simulation_id = f"{socket.gethostname()}_{round(time.time())}"
 simulation_model = "outcome" if args.outcome else "score"
 
+print(f"Simulation feature set: {'limited' if args.limited_features else 'full'}")
+print(f"Simulation model: {'outcome' if args.outcome else 'score'}")
+print(f"Simulation template: {args.match_template}\n")
+
 if args.limited_features:
     set_feature_columns(other_features)
     simulation_name = simulation_name + "_limfeatures"
@@ -43,7 +47,7 @@ for i in range(args.i):
         model = score_model.get_model(X=X, y=y)
         predictor = ScorePredictor(model)
 
-    print(f"Running match-level tournament simulation: {i}")
+    print(f"Running match-level tournament simulation: {i+1}/{args.i}")
 
     match_template = pd.read_csv(args.match_template)
     run_actual_tournament_simulation(match_template, predictor)
