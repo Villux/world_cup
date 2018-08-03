@@ -8,6 +8,7 @@ class Strategy():
         self.initial_capital = initial_capital
         self.balance = initial_capital
         self.single_bet_returns = []
+        self.costs = []
 
     def update_balance(self, net_flow):
         self.single_bet_returns.append(net_flow/self.balance)
@@ -15,6 +16,9 @@ class Strategy():
         if new_balance < 0:
             raise BankEmptyException("No balance to execute bet")
         self.balance = new_balance
+
+    def store_cost(self, cost):
+        self.costs.append(cost)
 
     def get_balance(self):
         return self.balance
@@ -25,3 +29,6 @@ class Strategy():
     def get_total_profit(self):
         assert self.initial_capital * np.prod(np.array(self.single_bet_returns) + 1) == self.balance
         return np.around(self.balance/self.initial_capital, 4)
+
+    def get_costs(self):
+        return self.costs

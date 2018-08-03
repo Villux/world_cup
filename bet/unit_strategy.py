@@ -24,3 +24,5 @@ class UnitStrategy(Strategy):
                 self.update_balance(profit)
             else:
                 self.update_balance(-self.bet_size)
+
+            self.store_cost(self.bet_size)
