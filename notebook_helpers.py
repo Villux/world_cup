@@ -8,14 +8,37 @@ from simulation.analyse import get_win_probabilities, get_simulations
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
 
-def plot_bank_and_bets(banks, bets):
+def print_report(accuracy, unit, kelly):
+    print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
+    print("AVG Unit bank: ", np.mean(unit), np.std(unit))
+    print("AVG Kelly bank: ", np.mean(kelly), np.std(kelly))
+
+def plot_bank_and_bets(strategy):
+    initial_capital = strategy.initial_capital
+    net_returns = np.array(strategy.get_returns())
+    returns = net_returns + 1
+    returns[0] *= initial_capital
+    costs = strategy.costs
+
+    balance_progression = np.cumprod(returns)
+    bar_labels = [1 if value > 0 else 0 for value in net_returns]
+
+    net_flows = balance_progression - np.insert(balance_progression, 0, initial_capital)[:-1]
+    winnnings = np.array([value if value > 0 else 0 for value in net_flows])
+
+    figsize = (12, 6)
     colors = {0: 'r', 1: 'g'}
-    fig, ax = plt.subplots(figsize=(12, 12))
-    index = np.arange(len(bets))
-    ax.bar(index, bets)
-    ax.plot(banks)
-    ax.set_xticks(np.arange(0, 64))
+    fig, ax = plt.subplots(figsize=figsize)
+    index = np.arange(len(costs))
+    ax.bar(index, costs, color='r')
+    ax.bar(index, winnnings, color='g', bottom=costs)
+    ax.set_xticks(np.arange(0, len(net_returns)))
     plt.xticks(rotation='vertical')
+
+    plt.subplots(figsize=figsize)
+    plt.xticks(np.arange(0, len(net_returns)))
+    plt.xticks(rotation='vertical')
+    plt.plot(balance_progression)
 
 def get_tournament_results(simulations_files, tournament_template_file, filename=None):
     tournament_template = pd.read_csv(tournament_template_file)
