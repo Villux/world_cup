@@ -3,7 +3,7 @@ from bet.strategy import Strategy
 class UnitStrategy(Strategy):
     def __init__(self, predicted_outcomes, outcomes, initial_capital=64, bet_size=1):
         assert len(predicted_outcomes) == len(outcomes)
-        super().__init__(self, initial_capital=initial_capital)
+        super().__init__(initial_capital=initial_capital)
 
         self.predicted_outcomes = predicted_outcomes
         self.outcomes = outcomes

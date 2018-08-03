@@ -11,9 +11,9 @@ def kelly_function(params, odds, probabilities):
     p1, p2, p3 = probabilities
     return -(p1 * np.log(1 + o1*a - b - c) + p2 * np.log(1 + o2*b - a - c) + p3*np.log(1 + o3*c - a - b))
 
-class KellyStratey(Strategy):
+class KellyStrategy(Strategy):
     def __init__(self, outcomes, initial_capital=64):
-        super().__init__(self, initial_capital=initial_capital)
+        super().__init__(initial_capital=initial_capital)
         self.outcomes = outcomes
         self.max_iterations = 20
 
