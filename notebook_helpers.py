@@ -5,29 +5,8 @@ import scipy.optimize as optimize
 
 from simulation.analyse import get_win_probabilities, get_simulations
 
-def kelly_function(params, odds, probabilities):
-    a, b, c = params
-    o1, o2, o3 = odds
-    p1, p2, p3 = probabilities
-    return -(p1 * np.log(1 + o1*a - b - c) + p2 * np.log(1 + o2*b - a - c) + p3*np.log(1 + o3*c - a - b))
-
-def get_optimal_kelly(odds, probabilities):
-    args = (odds, probabilities)
-    bounds = ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0))
-    max_iter = 20
-    for i in range(max_iter):
-        initial_guess = np.random.uniform(low=0.005, high=0.1, size=3)
-        result = optimize.minimize(kelly_function, initial_guess, bounds=bounds, args=args)
-        if result.success:
-            break
-        if i + 1 == max_iter:
-            return [0.0, 0.0, 0.0]
-
-    fs = result.x
-    for i, f in enumerate(fs):
-        if f < 0.0001:
-            fs[i] = 0
-    return fs
+def get_feature_by_importance(model, feature_columns):
+    return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
 
 def plot_bank_and_bets(banks, bets):
     colors = {0: 'r', 1: 'g'}
@@ -37,119 +16,6 @@ def plot_bank_and_bets(banks, bets):
     ax.plot(banks)
     ax.set_xticks(np.arange(0, 64))
     plt.xticks(rotation='vertical')
-
-def run_unit_strategy(y_pred, y_true, odds, initial_capital=64, bet_size=1, plot=False):
-    bets = []
-    banks = []
-    results = []
-
-    bank = initial_capital
-
-    for i in range(len(y_true)):
-        if bank <= bet_size:
-            print("Bank empty")
-            break
-
-        banks.append(bank)
-        bets.append(bet_size)
-
-        bank -= bet_size
-        predicted_outcome = y_pred[i]
-        if y_true[i] == predicted_outcome:
-            if predicted_outcome == 1:
-                odd = odds[i, 0]
-            elif predicted_outcome == 0:
-                odd = odds[i, 1]
-            else:
-                odd = odds[i, 2]
-            bank += odd * bet_size
-            results.append(1)
-        else:
-            results.append(0)
-
-    if plot:
-        print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
-        print("Balance: ", bank)
-        plot_bank_and_bets(banks, bets)
-    return bank
-
-def get_positive_kelly_fraction(b, p):
-    q = 1-p
-    f = max((b*p - q)/b, 0)
-    return f
-
-def run_kelly_strategy(y_true, odds, probabilities, initial_capital=64, plot=False, coef=0.3):
-    bank = initial_capital
-
-    bets = []
-    banks = []
-    for i, _ in enumerate(y_true):
-        match_odds = odds[i, :]
-        net_odds = match_odds - 1
-        conservative_prob = probabilities[i, :] * coef
-        fractions = get_optimal_kelly(net_odds, conservative_prob)
-
-        winnings = 0
-        total_bets = 0
-        for k, (odd, f) in enumerate(zip(match_odds, fractions)):
-            bet_size = bank * f * coef
-            if bet_size < 0.1:
-                bet_size = 0
-            total_bets += bet_size
-
-            outcome = 1 - k
-            if y_true[i] == outcome:
-                winnings = bet_size * odd
-        bank -= total_bets
-        bets.append(total_bets)
-
-        bank += winnings
-        banks.append(bank)
-
-    if plot:
-        print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
-        print("Balance: ", bank)
-        plot_bank_and_bets(banks, bets)
-    return bank
-
-def kelly_bet_most_probable(y_pred, y_true, odds, probabilities, initial_capital=64, plot=False):
-    bank = initial_capital
-
-    bets = []
-    banks = []
-    results = []
-    for i in range(len(y_true)):
-        predicted_outcome = y_pred[i]
-        if predicted_outcome == 1:
-            odd = odds[i, 0]
-            p = probabilities[i, 0]
-        elif predicted_outcome == 0:
-            odd = odds[i, 1]
-            p = probabilities[i, 1]
-        else:
-            odd = odds[i, 2]
-            p = probabilities[i, 2]
-
-        b = odd-1
-        f = get_positive_kelly_fraction(b, p)
-        bet_size = bank * f
-
-        bets.append(bet_size)
-        bank -= bet_size
-
-        if y_true[i] == predicted_outcome:
-            win = odd * bet_size
-            bank += win
-            results.append(1)
-        else:
-            results.append(0)
-        banks.append(bank)
-
-    if plot:
-        print(f"Profit: {np.around((bank/initial_capital - 1)*100, 4)}%")
-        print("Balance: ", bank)
-        plot_bank_and_bets(banks, bets)
-    return bank
 
 def get_tournament_results(simulations_files, tournament_template_file, filename=None):
     tournament_template = pd.read_csv(tournament_template_file)
