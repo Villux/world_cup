@@ -10,8 +10,8 @@ def get_feature_by_importance(model, feature_columns):
 
 def print_report(accuracy, unit, kelly):
     print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
-    print("AVG Unit bank: ", np.mean(unit), np.std(unit))
-    print("AVG Kelly bank: ", np.mean(kelly), np.std(kelly))
+    print("AVG Unit profit: ", np.mean(unit), np.std(unit))
+    print("AVG Kelly profit: ", np.mean(kelly), np.std(kelly))
 
 def plot_bank_and_bets(strategy):
     initial_capital = strategy.initial_capital
