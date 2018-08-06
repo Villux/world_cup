@@ -162,7 +162,7 @@ def get_dataset(flip=False, suffle=False):
         dataset = switch_home_and_away(dataset)
     return dataset
 
-def get_train_test_wc_dataset(y_label, filter_start=None, filter_end=None, interval=None):
+def get_train_and_test_dataset(y_label, filter_start=None, filter_end=None, interval=None):
     if y_label == "away_score":
         dataset = get_dataset(flip=True, suffle=False)
         y_label = "home_score"
@@ -190,26 +190,19 @@ def get_train_test_wc_dataset(y_label, filter_start=None, filter_end=None, inter
 
     X_train, X_test, y_train, y_test = get_train_test_split(X, y)
 
-    friendly_games = dataset[dataset["tournament"] == "Friendly"]
-    X_friendly = get_feature_vector(friendly_games)
-    y_friendly = friendly_games[y_label]
-
-    X_train = pd.concat([X_train, X_friendly])
-    y_train = pd.concat([y_train, y_friendly])
-
     wc_games = dataset[dataset["tournament"] == "FIFA World Cup"]
     X_wc = get_feature_vector(wc_games)
     y_wc = wc_games[y_label]
 
     X_test = pd.concat([X_test, X_wc])
     y_test = pd.concat([y_test, y_wc])
-    return X_train, y_train, X_test, y_test, X_wc, y_wc
+    return X_train, y_train, X_test, y_test
 
 def get_whole_dataset(y_label, filter_start=None, filter_end=None, interval=None):
-    X_train, y_train, X_test, y_test, X_wc, y_wc = get_train_test_wc_dataset(y_label, filter_start=filter_start, filter_end=filter_end, interval=interval)
+    X_train, y_train, X_test, y_test = get_train_and_test_dataset(y_label, filter_start=filter_start, filter_end=filter_end, interval=interval)
 
-    X = pd.concat([X_train, X_test, X_wc])
-    y = pd.concat([y_train, y_test, y_wc])
+    X = pd.concat([X_train, X_test])
+    y = pd.concat([y_train, y_test])
     return X, y
 
 def get_train_test_split(X, y, size=0.25):
