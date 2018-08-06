@@ -23,13 +23,6 @@ def get_score_from_goal_matrix(goal_matrix, outcome):
         assert home_score < away_score
     return home_score, away_score
 
-def get_outcome_probabilities(goal_matrix):
-    home_win = np.sum(np.tril(goal_matrix, -1))
-    draw = np.sum(np.diag(goal_matrix))
-    away_win = np.sum(np.triu(goal_matrix, 1))
-
-    return [away_win, draw, home_win]
-
 def get_match_feature_vector(match):
     data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
     data_merge_obj["year"] = parse(match.date).year
@@ -54,10 +47,8 @@ class OutcomePredictor():
     def __init__(self, model):
         self.model = model
 
-    def predict_outcome_probabilities(self, x):
-        return self.model.predict_proba(x)[0]
-
-    def predict_score(self, outcome):
+    @staticmethod
+    def predict_score(outcome):
         home_goals, away_goals = 0, 0
         if outcome == 1:
             home_goals = 1
@@ -65,8 +56,12 @@ class OutcomePredictor():
             away_goals = 1
         return home_goals, away_goals
 
-    def sample_outcome(self, outcome_probabilities):
+    @staticmethod
+    def sample_outcome(outcome_probabilities):
         return int(np.random.choice([-1, 0, 1], 1, p=outcome_probabilities)[0])
+
+    def predict_outcome_probabilities(self, x):
+        return self.model.predict_proba(x)[0]
 
     def predict(self, match):
         x = get_match_feature_vector(match)
@@ -81,50 +76,10 @@ class OutcomePredictor():
         match.set_score(home_score, away_score)
         return match
 
-class ScorePredictor():
+class MaxProbabilityOutcomePredictor(OutcomePredictor):
     def __init__(self, model):
+        super().__init__(model)
         self.model = model
-
-    def predict_score(self, x):
-        mu_score = self.model.predict(x)[0]
-        p = poisson(mu_score)
-        return p.rvs(), mu_score
-
-    def predict_outcome_probabilities(self, home_mu, away_mu):
-        home_goal_prob, away_goal_prob = [[poisson.pmf(i, team_avg) for i in range(0, 11)] for team_avg in [home_mu, away_mu]]
-        goal_matrix = np.outer(home_goal_prob, away_goal_prob)
-        return get_outcome_probabilities(goal_matrix)
-
-    def predict(self, match):
-        away_match = match.flip_and_copy()
-
-        home_x = get_match_feature_vector(match)
-        home_score, home_mu = self.predict_score(home_x)
-
-        away_x = get_match_feature_vector(away_match)
-        away_score, away_mu = self.predict_score(away_x)
-
-        outcome_probabilities = self.predict_outcome_probabilities(home_mu, away_mu)
-        match.set_outcome_probabilties(outcome_probabilities)
-
-        match.set_score(home_score, away_score)
-        match.set_outcome_from_score()
-        return match
-
-class MaxProbabilityOutcomePredictor():
-    def __init__(self, model):
-        self.model = model
-
-    def predict_outcome_probabilities(self, x):
-        return self.model.predict_proba(x)[0]
-
-    def predict_score(self, outcome):
-        home_goals, away_goals = 0, 0
-        if outcome == 1:
-            home_goals = 1
-        elif outcome == -1:
-            away_goals = 1
-        return home_goals, away_goals
 
     def predict(self, match):
         x = get_match_feature_vector(match)
@@ -139,19 +94,49 @@ class MaxProbabilityOutcomePredictor():
         match.set_score(home_score, away_score)
         return match
 
-class MaxProbabilityScorePredictor():
+class ScorePredictor():
     def __init__(self, model):
         self.model = model
+
+    @staticmethod
+    def get_goal_matrix(home_mu, away_mu):
+        home_goal_prob, away_goal_prob = [[poisson.pmf(i, team_avg) for i in range(0, 11)] for team_avg in [home_mu, away_mu]]
+        return np.outer(home_goal_prob, away_goal_prob)
+
+    @staticmethod
+    def get_outcome_probabilities(goal_matrix):
+        home_win = np.sum(np.tril(goal_matrix, -1))
+        draw = np.sum(np.diag(goal_matrix))
+        away_win = np.sum(np.triu(goal_matrix, 1))
+
+        return [away_win, draw, home_win]
 
     def predict_score(self, x):
         mu_score = self.model.predict(x)[0]
         p = poisson(mu_score)
         return p.rvs(), mu_score
 
-    def predict_outcome_probabilities(self, home_mu, away_mu):
-        home_goal_prob, away_goal_prob = [[poisson.pmf(i, team_avg) for i in range(0, 11)] for team_avg in [home_mu, away_mu]]
-        goal_matrix = np.outer(home_goal_prob, away_goal_prob)
-        return get_outcome_probabilities(goal_matrix), goal_matrix
+    def predict(self, match):
+        away_match = match.flip_and_copy()
+
+        home_x = get_match_feature_vector(match)
+        home_score, home_mu = self.predict_score(home_x)
+
+        away_x = get_match_feature_vector(away_match)
+        away_score, away_mu = self.predict_score(away_x)
+
+        goal_matrix = self.get_goal_matrix(home_mu, away_mu)
+        outcome_probabilities = self.get_outcome_probabilities(goal_matrix)
+        match.set_outcome_probabilties(outcome_probabilities)
+
+        match.set_score(home_score, away_score)
+        match.set_outcome_from_score()
+        return match
+
+class MaxProbabilityScorePredictor(ScorePredictor):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model = model
 
     def predict(self, match):
         away_match = match.flip_and_copy()
@@ -162,7 +147,8 @@ class MaxProbabilityScorePredictor():
         away_x = get_match_feature_vector(away_match)
         _, away_mu = self.predict_score(away_x)
 
-        outcome_probabilities, goal_matrix = self.predict_outcome_probabilities(home_mu, away_mu)
+        goal_matrix = self.get_goal_matrix(home_mu, away_mu)
+        outcome_probabilities = self.get_outcome_probabilities(goal_matrix)
         match.set_outcome_probabilties(outcome_probabilities)
 
         outcome = np.argmax(outcome_probabilities) - 1
