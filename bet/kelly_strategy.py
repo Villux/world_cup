@@ -53,5 +53,5 @@ class KellyStrategy(Strategy):
                     returns += bet_size * odd
 
             self.update_balance(returns - cost)
-            self.odds_and_fractions.append(odds_and_fractions)
+            self.odds_and_fractions.append(list(odds_and_fractions))
             self.store_cost(cost)
