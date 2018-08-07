@@ -3,6 +3,7 @@ import argparse
 import time
 import socket
 import pandas as pd
+import numpy as np
 
 from features.data_provider import get_whole_dataset, set_feature_columns, other_features
 from simulation.predictor import OutcomePredictor,ScorePredictor
@@ -11,14 +12,15 @@ from db.simulation_table import store_simulation_results
 from models import outcome_model, score_model
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--outcome', action="store_true")
-parser.add_argument('--limited-features', action="store_true")
+parser.add_argument('--outcome', action="store_true", default=False)
+parser.add_argument('--limited-features', action="store_true", default=False)
 parser.add_argument('--match-template', type=str, default='data/original/wc_2018_games_real.csv')
 parser.add_argument('-i', type=int, default=100)
 args = parser.parse_args()
 
+random_id = np.random.randint(1,1000)
 simulation_name = os.path.splitext(os.path.basename(args.match_template))[0]
-simulation_id = f"{socket.gethostname()}_{round(time.time())}"
+simulation_id = f"{socket.gethostname()}_{round(time.time())}_{random_id}"
 simulation_model = "outcome" if args.outcome else "score"
 
 print(f"Simulation feature set: {'limited' if args.limited_features else 'full'}")
