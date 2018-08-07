@@ -1,0 +1,52 @@
+
+
+\begin{figure}
+    \begin{bmatrix}
+    0-0 & 0-1 & \cdots & 0-N \\
+    1-0 & 1-1 & \cdots   &1-N \\
+    \vdots & \vdots   & \ddots & \vdots \\
+    N-0 & N-1 & \cdots & N-N\end{bmatrix}
+\caption{N by N Goal Matrix}
+\end{figure}
+
+\begin{sidewaystable}
+    \caption{Average results from 10 different simulation of three latest FIFA World Cups. From the prediction the most probable outcome is used as the predicted outcome for a match. Accuracy is the percentage of correctly predicted outcomes. Unit and kelly strategy's profit is the bankroll after the tournament devided by the initial value.}
+    \begin{tabular}{ | c |c| c | c |}
+    \hline
+    & World Cup 2018 & World Cup 2014 & World Cup 2010 \\
+    \hline
+    \textbf{Outcome model} \\
+    \hline
+    Accuracy & 57.8125\% $\pm$ 0.0 & 59.375\% $\pm$  0.0 & 56.25\% $\pm$ 0.0 \\
+    Unit strategy's profit& 7.6563\% $\pm$ 0.0 & 10.4063\% $\pm$ 0.0 & 6.8281\% $\pm$ 0.0 \\
+    Kelly strategy's profit& 12.1314\% $\pm$ 5.5794 & 26.5154\% $\pm$ 5.6938 & 8.2715\% $\pm$ 2.9054 \\
+    \hline
+    \textbf{Score model} \\
+    \hline
+    Accuracy & 59.375\% $\pm$ 0.0 & 57.8125\% $\pm$ 0.0 & 51.88\% $\pm$ 0.63 \\
+    Unit strategy's profit & 13.5156\% $\pm$ 0.0 & 4.89\%  $\pm$ 0.0 & 59.292 $\pm$ 1.024 \\
+    Kelly strategy's profit & 34.0475\% $\pm$ 17.96175 & 12.26\% $\pm$ 2.6797 & 78.7732 $\pm$ 1.0672 \\
+    \hline
+   \end{tabular}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+    \caption{Average results from 10 different simulation of FIFA World Cup 2018. Each model was trained with different training period. From the prediction the most probable outcome is used as the predicted outcome for a match. Accuracy is the percentage of correctly predicted outcomes. Unit and kelly strategy's profit is the bankroll after the tournament devided by the initial value.}
+    \begin{tabular}{ | c |c| c | c |}
+    \hline
+    & (- June 10th 2010) & (June 10th 2010 - June 11th 2014 ) & (June 11th 2014 - June 13th 2018) \\
+    \hline
+    \textbf{Outcome model} \\
+    \hline
+    Accuracy & 57.8125\% $\pm$ 0.0 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
+    Unit strategy profit& 68.9 $\pm$ 0.0 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
+    Kelly strategy profit& 84.1794 $\pm$ 3.9133 & 78.9732 $\pm$ 1.0191 & 78.7732 $\pm$ 1.0672 \\
+    \hline
+    \textbf{Score model} \\
+    \hline
+    Accuracy & 57.8125\% $\pm$ 0.0 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
+    Unit strategy profit& 68.9 $\pm$ 0.0 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
+    Kelly strategy profit& 84.1794 $\pm$ 3.9133 & 78.9732 $\pm$ 1.0191 & 78.7732 $\pm$ 1.0672 \\
+    \hline
+   \end{tabular}
+\end{sidewaystable}
