@@ -99,9 +99,30 @@
     \hline
     \textbf{Score model} \\
     \hline
-    Accuracy & 57.8125\% $\pm$ 0.0 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
-    Unit strategy profit& 68.9 $\pm$ 0.0 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
-    Kelly strategy profit& 84.1794 $\pm$ 3.9133 & 78.9732 $\pm$ 1.0191 & 78.7732 $\pm$ 1.0672 \\
+    Accuracy & 56.25\% $\pm$ 0.0 & 55\% $\pm$ 0.625 & 59.375\% $\pm$ 0.0 \\
+    Unit strategy profit& 4.203125\% $\pm$ 0.0 & -0.5375\% $\pm$ 2.1438 & 13.515625\% $\pm$ 0.0 \\
+    Kelly strategy profit& -27.526863\% $\pm$ 14.9685 & -2.56701\% $\pm$ 5.5517 & 30.580804\% $\pm$ 21.3659 \\
+    \hline
+   \end{tabular}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+    \caption{Average results from 10 different simulation of FIFA World Cup 2018. Each model was trained with different training period and with limited feature set (General features). From the prediction the most probable outcome is used as the predicted outcome for a match. Accuracy is the percentage of correctly predicted outcomes. Unit and Kelly strategy's profit is the bankroll after the tournament divided by the initial value.}
+    \begin{tabular}{ | c |c| c | c |}
+    \hline
+    & (- June 10th 2010) & (June 10th 2010 - June 11th 2014 ) & (June 11th 2014 - June 13th 2018) \\
+    \hline
+    \textbf{Outcome model} \\
+    \hline
+    Accuracy & 52.1875\% $\pm$ 0.7655 & 53.4375\% $\pm$ 0.625 & 51.0938 1.0005 \\
+    Unit strategy profit& -2.976563\% $\pm$ 1.5457 & -1.48125\% $\pm$ 1.3812 & -6.851562\% $\pm$ 3.0841 \\
+    Kelly strategy profit& -56.056694\% $\pm$ 6.9613 & -27.706858\% $\pm$ 3.2774 & -38.945519\% $\pm$ 17.1282 \\
+    \hline
+    \textbf{Score model} \\
+    \hline
+    Accuracy & 52.9688\% $\pm$ 0.8414 & 51.5625\% $\pm$ 0.625 & 54.6875\% $\pm$ 0.0 \\
+    Unit strategy profit& 3.545312\% $\pm$ 3.3416 & -3.875\% $\pm$ 0.0 & 4.90625\% $\pm$ 0.0 \\
+    Kelly strategy profit& 46.392749\% $\pm$ 27.7822 & -36.319987\% $\pm$ 3.0634 & 55.593868\% $\pm$ 26.7588 \\
     \hline
    \end{tabular}
 \end{sidewaystable}
