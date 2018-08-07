@@ -10,7 +10,7 @@
 \end{figure}
 
 \begin{sidewaystable}
-    \caption{Average results from 10 different simulation of three latest FIFA World Cups. From the prediction the most probable outcome is used as the predicted outcome for a match. Accuracy is the percentage of correctly predicted outcomes. Unit and kelly strategy's profit is the bankroll after the tournament devided by the initial value.}
+    \caption{Average results from 10 different simulation of three latest FIFA World Cups. From the prediction the most probable outcome is used as the predicted outcome for a match. Accuracy is the percentage of correctly predicted outcomes. Unit and Kelly strategy's profit is the bankroll after the tournament divided by the initial value.}
     \begin{tabular}{ | c |c| c | c |}
     \hline
     & World Cup 2018 & World Cup 2014 & World Cup 2010 \\
@@ -23,9 +23,9 @@
     \hline
     \textbf{Score model} \\
     \hline
-    Accuracy & 59.375\% $\pm$ 0.0 & 57.8125\% $\pm$ 0.0 & 51.88\% $\pm$ 0.63 \\
-    Unit strategy's profit & 13.5156\% $\pm$ 0.0 & 4.89\%  $\pm$ 0.0 & 59.292 $\pm$ 1.024 \\
-    Kelly strategy's profit & 34.0475\% $\pm$ 17.96175 & 12.26\% $\pm$ 2.6797 & 78.7732 $\pm$ 1.0672 \\
+    Accuracy & 59.375\% $\pm$ 0.0 & 57.8125\% $\pm$ 0.0 & 53.125\% $\pm$ 0.0 \\
+    Unit strategy's profit & 13.5156\% $\pm$ 0.0 & 4.89\%  $\pm$ 0.0 & -1.979687\% $\pm$ 0.5297 \\
+    Kelly strategy's profit & 34.0475\% $\pm$ 17.96175 & 12.26\% $\pm$ 2.6797 & 25.208937\% $\pm$ 3.8638 \\
     \hline
    \end{tabular}
 \end{sidewaystable}
@@ -38,8 +38,8 @@
     \hline
     \textbf{Outcome model} \\
     \hline
-    Accuracy & 57.8125\% $\pm$ 0.0 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
-    Unit strategy profit& 68.9 $\pm$ 0.0 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
+    Accuracy & 52.1875\% $\pm$ 0.7655 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
+    Unit strategy profit& -2.976563\% $\pm$ 1.5457 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
     Kelly strategy profit& 84.1794 $\pm$ 3.9133 & 78.9732 $\pm$ 1.0191 & 78.7732 $\pm$ 1.0672 \\
     \hline
     \textbf{Score model} \\
@@ -74,6 +74,33 @@
     Accuracy & 60.9375\% $\pm$ 0.0 & 60.1563\% $\pm$ 0.7813 & 53.9063\% $\pm$ 0.7813 \\
     Unit strategy's profit & 19.9531\% $\pm$ 0.0 & 13.1406\% $\pm$ 2.4396 & 1.5734\% $\pm$ 3.6331 \\
     Kelly strategy's profit & 62.3388 $\pm$ 7.8549 & 13.9843\% $\pm$ 1.4855 & 5.5762\% $\pm$ 19.3652 \\
+    \hline
+   \end{tabular}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+    \caption{Average results from 10 different simulation of three latest FIFA World Cups with score model which is trained with different feature sets.}
+    \begin{tabular}{ | c |c| c | c |}
+    \hline
+    & World Cup 2018 & World Cup 2014 & World Cup 2010 \\
+    \hline
+    \textbf{All Features} \\
+    \hline
+    Accuracy & 59.375\% $\pm$ 0.0 & 57.8125\% $\pm$ 0.0 & 53.125\% $\pm$ 0.0 \\
+    Unit strategy's profit & 13.5156\% $\pm$ 0.0 & 4.89\%  $\pm$ 0.0 & -1.979687\% $\pm$ 0.5297 \\
+    Kelly strategy's profit & 34.0475\% $\pm$ 17.96175 & 12.26\% $\pm$ 2.6797 & 25.208937\% $\pm$ 3.8638 \\
+    \hline
+    \textbf{General features} \\
+    \hline
+    Accuracy & 54.0625\% $\pm$ 1.0364 & 59.375\% $\pm$ 0.0 & 53.2813\% $\pm$ 0.4688 \\
+    Unit strategy's profit & 1.834375\% $\pm$ 3.1633 & 13.65625\% $\pm$ 0.0 & 1.015625\% $\pm$ 1.5 \\
+    Kelly strategy's profit & 31.701289\% $\pm$ 8.5675 & 140.929319\% $\pm$ 14.0135 & 104.258899\% $\pm$ 4.9663 \\
+    \hline
+    \textbf{FIFA Player Attribute features} \\
+    \hline
+    Accuracy & 61.7188\% $\pm$ 0.7813 & 57.8125\% $\pm$ 0.6988 & 54.6875\% $\pm$ 0.9882 \\
+    Unit strategy's profit & 21.4625\% $\pm$ 2.3188 & 6.915625\% $\pm$ 1.7203 & 3.584375\% $\pm$ 3.0724 \\
+    Kelly strategy's profit & 45.952264\% $\pm$ 5.4335 & 3.142858\% $\pm$ 4.7153 & 10.074762\% $\pm$ 8.9056 \\
     \hline
    \end{tabular}
 \end{sidewaystable}
