@@ -4,6 +4,55 @@ import matplotlib.pyplot as plt
 import scipy.optimize as optimize
 
 from simulation.analyse import get_win_probabilities, get_simulations
+from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor
+from simulation.simulation import run_actual_tournament_simulation
+from features.data_provider import get_whole_dataset, set_feature_columns
+from models import score_model, outcome_model
+from db.simulation_table import get_simulation_results, delete_all
+from bet.unit_strategy import UnitStrategy
+from bet.kelly_strategy import KellyStrategy
+
+def run_score_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=2000):
+    tournament_template = pd.read_csv(tt_file)
+    match_bets = pd.read_csv(match_bet_file)
+
+    set_feature_columns(features)
+    home = get_whole_dataset("home_score", filter_start=filter_start)
+    away = get_whole_dataset("away_score", filter_start=filter_start)
+    X = pd.concat([home[0], away[0]])
+    y = pd.concat([home[1], away[1]])
+    model = score_model.get_model(X=X, y=y, n_estimators=n_estimators)
+    predictor = MaxProbabilityScorePredictor(model)
+
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+
+def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=2000):
+    tournament_template = pd.read_csv(tt_file)
+    match_bets = pd.read_csv(match_bet_file)
+
+    set_feature_columns(features)
+    X, y = get_whole_dataset("home_win", filter_start=filter_start)
+    model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
+    predictor = MaxProbabilityOutcomePredictor(model)
+
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+
+def get_tournament_simulation_results(tournament_template, predictor, odds):
+    run_actual_tournament_simulation(tournament_template, predictor)
+    tournament_simulation = get_simulation_results()
+    tournament_simulation["true_outcome"] = np.sign(tournament_simulation["home_score"] - tournament_simulation["away_score"])
+    delete_all()
+
+    y_pred = tournament_simulation["outcome"].values
+    y_true = tournament_simulation["true_outcome"].values
+    unit_strategy = UnitStrategy(y_pred, y_true)
+    unit_strategy.run(odds)
+
+    kelly_strategy = KellyStrategy(y_true)
+    probabilities = tournament_simulation[["home_win_prob", "draw_prob", "away_win_prob"]].values
+    kelly_strategy.run(odds, probabilities)
+
+    return tournament_simulation, unit_strategy, kelly_strategy
 
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
