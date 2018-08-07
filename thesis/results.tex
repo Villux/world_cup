@@ -1,11 +1,11 @@
 
 
 \begin{figure}
-    \begin{bmatrix}
+    $\begin{bmatrix}
     0-0 & 0-1 & \cdots & 0-N \\
     1-0 & 1-1 & \cdots   &1-N \\
     \vdots & \vdots   & \ddots & \vdots \\
-    N-0 & N-1 & \cdots & N-N\end{bmatrix}
+    N-0 & N-1 & \cdots & N-N\end{bmatrix}$
 \caption{N by N Goal Matrix}
 \end{figure}
 
@@ -47,6 +47,33 @@
     Accuracy & 57.8125\% $\pm$ 0.0 & 62.1875\% $\pm$ 0.63 & 51.88\% $\pm$ 0.63 \\
     Unit strategy profit& 68.9 $\pm$ 0.0 & 77.298 $\pm$ 1.184 & 59.292 $\pm$ 1.024 \\
     Kelly strategy profit& 84.1794 $\pm$ 3.9133 & 78.9732 $\pm$ 1.0191 & 78.7732 $\pm$ 1.0672 \\
+    \hline
+   \end{tabular}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+    \caption{Average results from 10 different simulation of three latest FIFA World Cups with models that are trained with different feature sets.}
+    \begin{tabular}{ | c |c| c | c |}
+    \hline
+    & World Cup 2018 & World Cup 2014 & World Cup 2010 \\
+    \hline
+    \textbf{All Features} \\
+    \hline
+    Accuracy & 57.8125\% $\pm$ 0.0 & 59.375\% $\pm$  0.0 & 56.25\% $\pm$ 0.0 \\
+    Unit strategy's profit& 7.6563\% $\pm$ 0.0 & 10.4063\% $\pm$ 0.0 & 6.8281\% $\pm$ 0.0 \\
+    Kelly strategy's profit& 12.1314\% $\pm$ 5.5794 & 26.5154\% $\pm$ 5.6938 & 8.2715\% $\pm$ 2.9054 \\
+    \hline
+    \textbf{General features} \\
+    \hline
+    Accuracy & 52.9688\% $\pm$ 0.8414 & 58.90625 $\pm$ 1.0005 & 56.5625\% $\pm$ 0.625 \\
+    Unit strategy's profit & -0.6672\% $\pm$ 2.1081 & 11.0578\% $\pm$ 3.1007 & 9.0438\% $\pm$ 1.9625 \\
+    Kelly strategy's profit & -40.7241\% $\pm$ 3.0291 & 37.8487\% $\pm$ 7.3636 & 66.7183\% $\pm$ 16.0572 \\
+    \hline
+    \textbf{FIFA Player Attribute features} \\
+    \hline
+    Accuracy & 60.9375\% $\pm$ 0.0 & 60.1563\% $\pm$ 0.7813 & 53.9063\% $\pm$ 0.7813 \\
+    Unit strategy's profit & 19.9531\% $\pm$ 0.0 & 13.1406\% $\pm$ 2.4396 & 1.5734\% $\pm$ 3.6331 \\
+    Kelly strategy's profit & 62.3388 $\pm$ 7.8549 & 13.9843\% $\pm$ 1.4855 & 5.5762\% $\pm$ 19.3652 \\
     \hline
    \end{tabular}
 \end{sidewaystable}
