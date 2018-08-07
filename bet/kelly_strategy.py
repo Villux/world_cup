@@ -17,7 +17,7 @@ class KellyStrategy(Strategy):
         self.outcomes = outcomes
         self.max_iterations = 20
 
-        self.odds_and_fractions = []
+        self.opf = []
 
     def get_optimal_fractions(self, odds, probabilities):
         args = (odds, probabilities)
@@ -36,22 +36,24 @@ class KellyStrategy(Strategy):
                 fs[i] = 0
         return fs
 
+    def get_odds_probabilities_and_fractions(self):
+        return self.opf
+
     def run(self, odds, probabilities, coef=0.3):
         for _, (match_odds, match_probabilities, outcome) in enumerate(zip(odds, probabilities, self.outcomes)):
             net_match_odds = match_odds - 1
             bet_fractions = self.get_optimal_fractions(net_match_odds, match_probabilities)
 
+            self.opf.append(list(zip(match_odds, match_probabilities, bet_fractions)))
+
             cost = 0
             returns = 0
-            odds_and_fractions = zip(match_odds, bet_fractions)
-            for k, (odd, fraction) in enumerate(odds_and_fractions):
+            for k, (odd, fraction) in enumerate(zip(match_odds, bet_fractions)):
                 bet_size = self.balance * fraction * coef
                 if bet_size < 0.1:
                     bet_size = 0
                 cost += bet_size
                 if outcome == 1 - k:
                     returns += bet_size * odd
-
             self.update_balance(returns - cost)
-            self.odds_and_fractions.append(list(odds_and_fractions))
             self.store_cost(cost)
