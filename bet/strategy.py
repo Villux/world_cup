@@ -27,8 +27,7 @@ class Strategy():
         return self.single_bet_returns
 
     def get_total_profit(self):
-        assert self.initial_capital * np.prod(np.array(self.single_bet_returns) + 1) == self.balance
-        return np.around(self.balance/self.initial_capital, 4)
+        return self.balance/self.initial_capital
 
     def get_costs(self):
         return self.costs
