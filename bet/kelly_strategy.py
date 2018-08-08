@@ -11,6 +11,18 @@ def kelly_function(params, odds, probabilities):
     p1, p2, p3 = probabilities
     return -(p1 * np.log(1 + o1*a - b - c) + p2 * np.log(1 + o2*b - a - c) + p3*np.log(1 + o3*c - a - b))
 
+def kelly_function_deriv(params, odds, probabilities):
+    a, b, c = params
+    o1, o2, o3 = odds
+    p1, p2, p3 = probabilities
+    dfda = -(p1 * o1)/(o1*a-b-c+1) + p2/(o2*b-a-c+1) + p3/(o3*c-b-a+1)
+    dfdb = p1/(o1*a-b-c+1) - (p2 * o2)/(o2*b-a-c+1) + p3/(o3*c-b-a+1)
+    dfdc = p1/(o1*a-b-c+1) + p2/(o2*b-a-c+1) - (p3*o3)/(o3*c-b-a+1)
+    return np.array([dfda, dfdb, dfdc])
+
+def constraint(x):
+    return 1.00000001 - (x[0]+x[1]+x[2])
+
 class KellyStrategy(Strategy):
     def __init__(self, outcomes, initial_capital=64):
         super().__init__(initial_capital=initial_capital)
@@ -22,9 +34,18 @@ class KellyStrategy(Strategy):
     def get_optimal_fractions(self, odds, probabilities):
         args = (odds, probabilities)
         bounds = ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0))
+        cons = {'type': 'ineq', 'fun': constraint}
         for i in range(self.max_iterations):
-            initial_guess = np.random.uniform(low=0.005, high=0.1, size=3)
-            result = optimize.minimize(kelly_function, initial_guess, bounds=bounds, args=args)
+            initial_guess = [0.05, 0.05, 0.05]
+            result = optimize.minimize(
+                kelly_function,
+                initial_guess,
+                bounds=bounds,
+                constraints=cons,
+                args=args,
+                jac=kelly_function_deriv
+            )
+
             if result.success:
                 break
             if i + 1 == self.max_iterations:
