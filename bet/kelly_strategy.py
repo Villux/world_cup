@@ -48,6 +48,8 @@ class KellyStrategy(Strategy):
 
             if result.success:
                 break
+            else:
+                initial_guess = np.random.uniform(low=0.005, high=0.1, size=3)
             if i + 1 == self.max_iterations:
                 return [0.0, 0.0, 0.0]
 
