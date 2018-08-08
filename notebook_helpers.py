@@ -57,7 +57,7 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
 
-def print_report(accuracy, unit, kelly, header, filename):
+def write_report(accuracy, unit, kelly, header, filename):
     print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
     print("AVG Unit profit: ", np.mean(unit), np.std(unit))
     print("AVG Kelly profit: ", np.mean(kelly), np.std(kelly))
