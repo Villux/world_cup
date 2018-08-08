@@ -57,10 +57,17 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
 
-def print_report(accuracy, unit, kelly):
+def print_report(accuracy, unit, kelly, header, filename):
     print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
     print("AVG Unit profit: ", np.mean(unit), np.std(unit))
     print("AVG Kelly profit: ", np.mean(kelly), np.std(kelly))
+
+    with open(filename, "a") as myfile:
+        myfile.write(header + "\n")
+        myfile.write(f"Accuracy: {np.mean(accuracy)} {np.std(accuracy)} \n")
+        myfile.write(f"Unit profit: {np.mean(unit)} {np.std(unit)} \n")
+        myfile.write(f"Kelly profit: {np.mean(kelly)} {np.std(kelly)} \n")
+        myfile.write(f"\n\n\n")
 
 def plot_bank_and_bets(strategy):
     initial_capital = strategy.initial_capital
