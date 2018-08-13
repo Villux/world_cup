@@ -156,3 +156,40 @@ class MaxProbabilityScorePredictor(ScorePredictor):
         match.set_outcome(outcome)
         match.set_score(home_score, away_score)
         return match
+
+class OneVsRestPredictor():
+    def __init__(self, home_model, draw_model, away_model):
+        self.home_model = home_model
+        self.draw_model = draw_model
+        self.away_model = away_model
+
+    @staticmethod
+    def predict_score(outcome):
+        home_goals, away_goals = 0, 0
+        if outcome == 1:
+            home_goals = 1
+        elif outcome == -1:
+            away_goals = 1
+        return home_goals, away_goals
+
+
+    def predict_outcome_probabilities(self, x):
+        home_win_prob = self.home_model.predict_proba(x)[0][1]
+        draw_prob = self.draw_model.predict_proba(x)[0][1]
+        away_win_prob = self.away_model.predict_proba(x)[0][1]
+
+        probas = np.array([away_win_prob, draw_prob, home_win_prob])
+        probas = probas / probas.sum()
+        return probas
+
+    def predict(self, match):
+        x = get_match_feature_vector(match)
+        match.set_feature_vector(x)
+
+        outcome_probabilities = self.predict_outcome_probabilities(x)
+        match.set_outcome_probabilties(outcome_probabilities)
+        outcome = np.argmax(outcome_probabilities) - 1
+        match.set_outcome(outcome)
+        home_score, away_score = self.predict_score(outcome)
+        match.set_score(home_score, away_score)
+        return match
