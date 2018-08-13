@@ -2,17 +2,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.optimize as optimize
+from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss
 
 from simulation.analyse import get_win_probabilities, get_simulations
-from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor
+from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor
 from simulation.simulation import run_actual_tournament_simulation
-from features.data_provider import get_whole_dataset, set_feature_columns
-from models import score_model, outcome_model
+from features.data_provider import get_whole_dataset, set_feature_columns, get_train_and_test_dataset
+from models import score_model, outcome_model, one_vs_all_model
 from db.simulation_table import get_simulation_results, delete_all
 from bet.unit_strategy import UnitStrategy
 from bet.kelly_strategy import KellyStrategy
 
-def run_score_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=2000):
+DEFAULT_N_ESTIMATORS = 2000
+
+def run_score_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
@@ -26,7 +29,7 @@ def run_score_model_for_features(features, filter_start, tt_file, match_bet_file
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=2000):
+def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
@@ -34,6 +37,19 @@ def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_fi
     X, y = get_whole_dataset("home_win", filter_start=filter_start)
     model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
     predictor = MaxProbabilityOutcomePredictor(model)
+
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+
+def run_one_vs_rest_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+    tournament_template = pd.read_csv(tt_file)
+    match_bets = pd.read_csv(match_bet_file)
+
+    set_feature_columns(features)
+    X, y = get_whole_dataset("home_win", filter_start=filter_start)
+    home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators)
+    draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators)
+    away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators)
+    predictor = OneVsRestPredictor(home_model, draw_model, away_model)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
@@ -56,6 +72,9 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
+
+def get_accuracy(y_true, y_pred):
+    return accuracy_score(y_true, y_pred)
 
 def write_report(accuracy, unit, kelly, header, filename):
     print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
@@ -146,5 +165,68 @@ def get_tournament_results(simulations_files, tournament_template_file, filename
     if filename:
         tournament_simulation.to_csv(filename)
 
-    print("Accuracy:", sum(tournament_simulation["outcome"] == tournament_simulation["true_outcome"]) / tournament_template.shape[0])
+    print("Accuracy:", get_accuracy(tournament_simulation["true_outcome"], tournament_simulation["outcome"]))
     return tournament_simulation
+
+def fix_label(data, label):
+    y = data.copy()
+    if label == 1:
+        y.loc[y != 1] = 0
+    elif label == 0:
+        y.loc[y != 0] = -100
+        y.loc[y == 0] = 1
+        y.loc[y == -100] = 0
+    elif label == -1:
+        y.loc[y != -1] = 0
+        y.loc[y == -1] = 1
+    return y
+
+def get_onevsrest_dataset(label, filter_start=None):
+    X_train, y_train, X_test, y_test = get_train_and_test_dataset("home_win", filter_start=filter_start)
+    return X_train, fix_label(y_train, label), X_test, fix_label(y_test, label)
+
+def plot_reliability_diagram(probas, y):
+    data_matrix = np.hstack((probas, y.reshape(y.shape[0], 1)))
+
+    true_positive_rates = []
+    x = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    for ub in x:
+        true_positives = 0
+        all_outcomes = 0
+        lb = (ub-0.1)
+        for idx, (q, p, outcome) in enumerate(data_matrix):
+            if p > lb and p <= ub:
+                true_positives += outcome
+                all_outcomes += 1
+        if all_outcomes == 0:
+            true_positive_rates.append(0.0)
+        else:
+            true_positive_rates.append(true_positives / all_outcomes)
+
+    print("Brier Score", brier_score_loss(y, data_matrix[:, 0]))
+    print("Log loss", log_loss(y, data_matrix[:, 0:2]))
+
+    diagonal_line = np.linspace(0, 1, 100)
+    plt.plot(diagonal_line,diagonal_line)
+    plt.scatter(x, true_positive_rates)
+
+def plot_simulation(data):
+    tournament_simulation = data["simulation"]
+    print("Accuracy:", get_accuracy(tournament_simulation["true_outcome"], tournament_simulation["outcome"]))
+    plot_bank_and_bets(data["unit"])
+    plot_bank_and_bets(data["kelly"])
+
+def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, iter_n=10):
+    accuracies = np.zeros(iter_n)
+    unit_profit = np.zeros(iter_n)
+    kelly_profit = np.zeros(iter_n)
+
+
+    for i in range(10):
+        output = simulation_f(features, filter_start, tournament_template_file, bet_file)
+
+        accuracies[i] = get_accuracy(output["simulation"]["true_outcome"], output["simulation"]["outcome"])
+        unit_profit[i] = output["unit"].get_total_profit()
+        kelly_profit[i] = output["kelly"].get_total_profit()
+
+    return accuracies, unit_profit, kelly_profit
