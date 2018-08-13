@@ -230,3 +230,11 @@ def iterate_simulations(features, tournament_template_file, bet_file, simulation
         kelly_profit[i] = output["kelly"].get_total_profit()
 
     return accuracies, unit_profit, kelly_profit
+
+def get_best_params(results):
+    best_params_acc = results.loc[results['test_acc'].idxmax(), ["max_depth", "max_features", "min_samples_leaf"]]
+    best_params_logloss = results.loc[results['test_logloss'].idxmin(), ["max_depth", "max_features", "min_samples_leaf"]]
+
+    best_params_acc = best_params_acc.replace({np.nan:None})
+    best_params_logloss = best_params_logloss.replace({np.nan:None})
+    return best_params_acc.to_dict(), best_params_logloss.to_dict()
