@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+from time import time
 import matplotlib.pyplot as plt
 import scipy.optimize as optimize
 from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss
+from sklearn.ensemble import RandomForestClassifier
 
 from simulation.analyse import get_win_probabilities, get_simulations
 from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor
@@ -238,3 +240,38 @@ def get_best_params(results):
     best_params_acc = best_params_acc.replace({np.nan:None})
     best_params_logloss = best_params_logloss.replace({np.nan:None})
     return best_params_acc.to_dict(), best_params_logloss.to_dict()
+
+def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest):
+    start = time()
+
+    results = []
+    params = org_params.copy()
+
+    i = 0
+    for depth in [3, 5, 8, 12, None]:
+        for min_samples in [1, 3, 5, 10, 15]:
+            for max_features in ["sqrt", "log2"]:
+                    params["max_depth"] = depth
+                    params["min_samples_leaf"] = min_samples
+                    params["max_features"] = max_features
+
+                    model = RandomForestClassifier(**params)
+                    model.fit(Xtrain, ytrain)
+
+                    res = {
+                        "max_depth": depth,
+                        "min_samples_leaf": min_samples,
+                        "max_features": max_features,
+                    }
+                    y_true, y_pred = ytest, model.predict(Xtest)
+                    y_pred_prob = model.predict_proba(Xtest)
+                    res["test_acc"] = accuracy_score(y_true, y_pred)
+                    res["test_mae"] = mean_absolute_error(y_true, y_pred)
+                    res["test_mse"] = mean_squared_error(y_true, y_pred)
+                    res["test_logloss"] = log_loss(y_true, y_pred_prob, labels=[-1, 0, 1])
+
+                    results.append(res)
+                    i += 1
+
+    print("Parameter estimation took: ", time() - start)
+    return pd.DataFrame(results)
