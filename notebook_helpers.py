@@ -268,7 +268,7 @@ def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest):
                     res["test_acc"] = accuracy_score(y_true, y_pred)
                     res["test_mae"] = mean_absolute_error(y_true, y_pred)
                     res["test_mse"] = mean_squared_error(y_true, y_pred)
-                    res["test_logloss"] = log_loss(y_true, y_pred_prob, labels=[-1, 0, 1])
+                    res["test_logloss"] = log_loss(y_true, y_pred_prob)
 
                     results.append(res)
                     i += 1
