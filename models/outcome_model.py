@@ -15,4 +15,5 @@ def get_model(params=None, X=None, y=None, n_estimators=200):
     if (X is not None) and (y is not None):
         model.fit(X, y)
 
+    print(params)
     return model
