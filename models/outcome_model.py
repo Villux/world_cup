@@ -8,8 +8,8 @@ def get_model(params=None, X=None, y=None, n_estimators=200):
             'n_jobs':-1,
             'n_estimators': n_estimators,
             "max_depth": 5,
-            "min_samples_leaf": 5,
-            "max_features": "sqrt"
+            "min_samples_leaf": 15,
+            "max_features": "log2"
         }
     model = RandomForestClassifier(**params)
     if (X is not None) and (y is not None):
