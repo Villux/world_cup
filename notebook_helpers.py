@@ -223,11 +223,11 @@ def iterate_simulations(features, tournament_template_file, bet_file, simulation
 
 
     for i in range(10):
-        output = simulation_f(features, filter_start, tournament_template_file, bet_file)
+        simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
 
-        accuracies[i] = get_accuracy(output["simulation"]["true_outcome"], output["simulation"]["outcome"])
-        unit_profit[i] = output["unit"].get_total_profit()
-        kelly_profit[i] = output["kelly"].get_total_profit()
+        accuracies[i] = get_accuracy(simulation"true_outcome"], output["simulation"]["outcome"])
+        unit_profit[i] = unit.get_total_profit()
+        kelly_profit[i] = kelly.get_total_profit()
 
     return accuracies, unit_profit, kelly_profit
 
