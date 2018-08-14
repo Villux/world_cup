@@ -6,11 +6,11 @@ import scipy.optimize as optimize
 from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss, precision_score
 from sklearn.metrics import brier_score_loss, precision_score, f1_score, recall_score
 from sklearn.model_selection import KFold
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from multiprocessing import Pool, cpu_count
 
 from simulation.analyse import get_win_probabilities, get_simulations
-from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor
+from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor, ScorePredictor
 from simulation.simulation import run_actual_tournament_simulation
 from features.data_provider import get_whole_dataset, set_feature_columns, get_train_and_test_dataset
 from models import score_model, outcome_model, one_vs_all_model
@@ -276,7 +276,9 @@ def get_model_metrics(args):
     model.fit(Xtrain, ytrain)
     y_true, y_pred = ytest, model.predict(Xtest)
     y_pred_prob = model.predict_proba(Xtest)
-    return accuracy_score(y_true, y_pred), log_loss(y_true, y_pred_prob)
+
+    labels = np.unique(y_true)
+    return accuracy_score(y_true, y_pred), log_loss(y_true, y_pred_prob, labels=labels)
 
 def get_cv_grid_search_arguments(org_params, X):
     kf_splits = 5
@@ -305,6 +307,76 @@ def run_grid_search_for_outcome(arguments, X, y):
         cv_params = {}
         for (params, train_index, test_index) in cv_args:
             args.append((params, X.iloc[train_index], y.iloc[train_index], X.iloc[test_index], y.iloc[test_index]))
+            cv_params = params
+        results = pool.map(get_model_metrics, args)
+        metrics.append({
+            "max_depth": cv_params["max_depth"],
+            "min_samples_leaf": cv_params["min_samples_leaf"],
+            "max_features": cv_params["max_features"],
+            "test_acc": np.mean([result[0] for result in results]),
+            "test_logloss": np.mean([result[1] for result in results])
+        })
+    return pd.DataFrame(metrics)
+
+def get_score_model_metrics(args):
+    params = args[0]
+    Xhome_train, yhome_train = args[1], args[2]
+    Xhome_test = args[3]
+    Xaway_train, yaway_train = args[4], args[5]
+    Xaway_test = args[6]
+    outcome_test = args[7]
+
+    Xtrain = pd.concat([Xhome_train, Xaway_train])
+    ytrain = pd.concat([yhome_train, yaway_train])
+    model = RandomForestRegressor(**params)
+    model.fit(Xtrain, ytrain)
+
+    predicted_outcomes = []
+    predicted_outcome_probabilities = []
+    for i in range(Xhome_test.shape[0]):
+        home_fv = [Xhome_test.iloc[i].as_matrix()]
+        away_fv = [Xaway_test.iloc[i].as_matrix()]
+        home_mu = model.predict(home_fv)
+        away_mu = model.predict(away_fv)
+
+        goal_matrix = ScorePredictor.get_goal_matrix(home_mu, away_mu)
+        away_win, draw, home_win = ScorePredictor.get_outcome_probabilities(goal_matrix)
+
+        if home_win > away_win and home_win > draw:
+            outcome = 1
+        elif away_win > home_win and away_win > draw:
+            outcome = -1
+        elif draw > home_win and draw > away_win:
+            outcome = 0
+        else:
+            outcome = 1
+        predicted_outcomes.append(outcome)
+        predicted_outcome_probabilities.append([away_win, draw, home_win])
+
+    accuracy = accuracy_score(outcome_test.values, predicted_outcomes)
+    log_loss_score = log_loss(outcome_test.values, np.array(predicted_outcome_probabilities), labels=[-1, 0, 1])
+
+    return accuracy, log_loss_score
+
+def run_grid_search_for_score(arguments, Xhome, yhome, Xaway, yaway, outcomes):
+    metrics = []
+    pool = Pool(cpu_count())
+    for cv_args in arguments:
+        args = []
+        cv_params = {}
+        for (params, train_index, test_index) in cv_args:
+            Xhome_train = Xhome.iloc[train_index]
+            yhome_train = yhome.iloc[train_index]
+            Xhome_test = Xhome.iloc[test_index]
+
+            Xaway_train = Xaway.iloc[train_index]
+            yaway_train = yaway.iloc[train_index]
+            Xaway_test = Xaway.iloc[test_index]
+
+            outcomes_test = outcomes.iloc[test_index]
+
+            args.append((params, Xhome_train, yhome_train, Xhome_test,
+                   Xaway_train, yaway_train, Xaway_test, outcomes_test))
             cv_params = params
         results = pool.map(get_model_metrics, args)
         metrics.append({
