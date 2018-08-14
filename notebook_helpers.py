@@ -302,7 +302,7 @@ def run_grid_search_for_outcome(arguments, X, y):
     pool = Pool(cpu_count())
     for cv_args in arguments:
         args = []
-        cv_params
+        cv_params = {}
         for (params, train_index, test_index) in cv_args:
             args.append((params, X[train_index], y[train_index], X[test_index], y[test_index]))
             cv_params = params
