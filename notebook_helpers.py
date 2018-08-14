@@ -95,9 +95,13 @@ def get_feature_by_importance(model, feature_columns):
 def get_accuracy(y_true, y_pred):
     return accuracy_score(y_true, y_pred)
 
+def get_log_loss(y_true, y_pred_proba):
+    labels = np.unique(y_true)
+    return log_loss(y_true, y_pred_proba, labels=labels)
+
 def write_report(simulations, unit_strategies, kelly_strategies, header, filename):
     accuracies = [get_accuracy(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
-    log_losses = [log_loss(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
+    log_losses = [get_log_loss(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
     precisions = [precision_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
     recall_scores = [recall_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
     f1_scores = [f1_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
@@ -248,7 +252,7 @@ def plot_reliability_diagram(probas, y):
             true_positive_rates.append(true_positives / all_outcomes)
 
     print("Brier Score", brier_score_loss(y, data_matrix[:, 0]))
-    print("Log loss", log_loss(y, data_matrix[:, 0:2]))
+    print("Log loss", get_log_loss(y, data_matrix[:, 0]))
 
     diagonal_line = np.linspace(0, 1, 100)
     plt.plot(diagonal_line,diagonal_line)
@@ -278,7 +282,7 @@ def get_model_metrics(args):
     y_pred_prob = model.predict_proba(Xtest)
 
     labels = np.unique(y_true)
-    return accuracy_score(y_true, y_pred), log_loss(y_true, y_pred_prob, labels=labels)
+    return accuracy_score(y_true, y_pred), get_log_loss(y_true, y_pred_prob)
 
 def get_cv_grid_search_arguments(org_params, X):
     kf_splits = 5
@@ -354,7 +358,7 @@ def get_score_model_metrics(args):
         predicted_outcome_probabilities.append([away_win, draw, home_win])
 
     accuracy = accuracy_score(outcome_test.values, predicted_outcomes)
-    log_loss_score = log_loss(outcome_test.values, np.array(predicted_outcome_probabilities), labels=[-1, 0, 1])
+    log_loss_score = get_log_loss(outcome_test.values, np.array(predicted_outcome_probabilities))
 
     return accuracy, log_loss_score
 
