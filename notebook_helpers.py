@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import scipy.optimize as optimize
 from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss, precision_score
 from sklearn.metrics import brier_score_loss, precision_score, f1_score, recall_score
+from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
+from multiprocessing import Pool, cpu_count
 
 from simulation.analyse import get_win_probabilities, get_simulations
 from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor
@@ -266,37 +268,51 @@ def get_best_params(results):
     best_params_logloss = best_params_logloss.replace({np.nan:None})
     return best_params_acc.to_dict(), best_params_logloss.to_dict()
 
-def run_custom_grid_search(org_params, Xtrain, ytrain, Xtest, ytest):
-    start = time()
+def get_model_metrics(args):
+    params = args[0]
+    Xtrain, ytrain = args[1], args[2]
+    Xtest, ytest = args[3], args[4]
+    model = RandomForestClassifier(**params)
+    model.fit(Xtrain, ytrain)
+    y_true, y_pred = ytest, model.predict(Xtest)
+    y_pred_prob = model.predict_proba(Xtest)
+    return accuracy_score(y_true, y_pred), log_loss(y_true, y_pred_prob)
 
-    results = []
-    params = org_params.copy()
-
-    i = 0
+def get_cv_grid_search_arguments(org_params, X):
+    kf_splits = 5
+    kf = KFold(n_splits=kf_splits)
+    arguments = []
     for depth in [3, 5, 8, 12, None]:
         for min_samples in [1, 3, 5, 10, 15]:
             for max_features in ["sqrt", "log2"]:
-                    params["max_depth"] = depth
-                    params["min_samples_leaf"] = min_samples
-                    params["max_features"] = max_features
+                params = org_params.copy()
+                params["max_depth"] = depth
+                params["min_samples_leaf"] = min_samples
+                params["max_features"] = max_features
 
-                    model = RandomForestClassifier(**params)
-                    model.fit(Xtrain, ytrain)
+                arg_array = []
+                for train_index, test_index in kf.split(X):
+                    arg_array.append((params, train_index, test_index))
+                arguments.append(arg_array)
 
-                    res = {
-                        "max_depth": depth,
-                        "min_samples_leaf": min_samples,
-                        "max_features": max_features,
-                    }
-                    y_true, y_pred = ytest, model.predict(Xtest)
-                    y_pred_prob = model.predict_proba(Xtest)
-                    res["test_acc"] = accuracy_score(y_true, y_pred)
-                    res["test_mae"] = mean_absolute_error(y_true, y_pred)
-                    res["test_mse"] = mean_squared_error(y_true, y_pred)
-                    res["test_logloss"] = log_loss(y_true, y_pred_prob)
+    return arguments
 
-                    results.append(res)
-                    i += 1
+def run_grid_search_for_outcome(arguments, X, y):
+    metrics = []
+    pool = Pool(cpu_count())
+    for cv_args in arguments:
+        args = []
+        cv_params
+        for (params, train_index, test_index) in cv_args:
+            args.append((params, X[train_index], y[train_index], X[test_index], y[test_index]))
+            cv_params = params
+        results = pool.map(get_model_metrics, args)
+        metrics.append({
+            "max_depth": cv_params["max_depth"],
+            "min_samples_leaf": cv_params["min_samples_leaf"],
+            "max_features": cv_params["max_features"],
+            "test_acc": np.mean([result[0] for result in results]),
+            "test_logloss": np.mean([result[1] for result in results])
+        })
+    return pd.DataFrame(metrics)
 
-    print("Parameter estimation took: ", time() - start)
-    return pd.DataFrame(results)
