@@ -3,7 +3,8 @@ import pandas as pd
 from time import time
 import matplotlib.pyplot as plt
 import scipy.optimize as optimize
-from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss
+from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss, precision_score
+from sklearn.metrics import brier_score_loss, precision_score, f1_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
 
 from simulation.analyse import get_win_probabilities, get_simulations
@@ -72,22 +73,61 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 
     return tournament_simulation, unit_strategy, kelly_strategy
 
+def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, iter_n=10):
+    simulations = np.zeros(iter_n)
+    unit_strategies = np.zeros(iter_n)
+    kelly_strategies = np.zeros(iter_n)
+
+
+    for i in range(iter_n):
+        simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
+        simulations[i] = simulation
+        unit_strategies[i] = unit
+        kelly_strategies[i] = kelly
+
+    return simulations, unit_strategies, kelly_strategies
+
 def get_feature_by_importance(model, feature_columns):
     return sorted(zip(feature_columns, model.feature_importances_), key = lambda t: t[1], reverse=True)
 
 def get_accuracy(y_true, y_pred):
     return accuracy_score(y_true, y_pred)
 
-def write_report(accuracy, unit, kelly, header, filename):
-    print("AVG Accuracy: ", np.mean(accuracy), np.std(accuracy))
-    print("AVG Unit profit: ", np.mean(unit), np.std(unit))
-    print("AVG Kelly profit: ", np.mean(kelly), np.std(kelly))
+def write_report(simulations, unit_strategies, kelly_strategies, header, filename):
+    accuracies = [get_accuracy(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
+    log_losses = [log_loss(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
+    precisions = [precision_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
+    recall_scores = [recall_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
+    f1_scores = [f1_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
+
+    unit_profits = [unit.get_total_profit() for unit in unit_strategies]
+    kelly_profits = [kelly.get_total_profit() for kelly in kelly_strategies]
+
+    accuracy_mu, accuracy_std = np.mean(accuracies), np.std(accuracies)
+    logloss_mu, logloss_std = np.mean(log_losses), np.std(log_losses)
+    precision_mu, precision_std = np.mean(precisions, axis=0), np.std(precisions, axis=0)
+    recall_mu, recall_std = np.mean(recall_scores, axis=0), np.std(recall_scores, axis=0)
+    f1_mu, f1_std = np.mean(f1_scores, axis=0), np.std(f1_scores, axis=0)
+    unit_mu, unit_std = np.mean(unit_profits), np.std(unit_profits)
+    kelly_mu, kelly_std = np.mean(kelly_profits), np.std(kelly_profits)
+
+    print("AVG Accuracy: ", accuracy_mu, accuracy_std)
+    print("AVG Log loss: ", logloss_mu, logloss_std)
+    print("AVG Precision: ", precision_mu, precision_std)
+    print("AVG Recall: ", recall_mu, recall_std)
+    print("AVG F1 Score: ", f1_mu, f1_std)
+    print("AVG Unit profit: ", unit_mu, unit_std)
+    print("AVG Kelly profit: ", kelly_mu, kelly_std)
 
     with open(filename, "a") as myfile:
         myfile.write(header + "\n")
-        myfile.write(f"Accuracy: {np.mean(accuracy)} {np.std(accuracy)} \n")
-        myfile.write(f"Unit profit: {np.mean(unit)} {np.std(unit)} \n")
-        myfile.write(f"Kelly profit: {np.mean(kelly)} {np.std(kelly)} \n")
+        myfile.write(f"Accuracy: {accuracy_mu} {accuracy_std} \n")
+        myfile.write(f"Log loss: {logloss_mu} {logloss_std} \n")
+        myfile.write(f"Precision: {precision_mu} {precision_std} \n")
+        myfile.write(f"Recall: {recall_mu} {recall_std} \n")
+        myfile.write(f"F1 Score: {f1_mu} {f1_std} \n")
+        myfile.write(f"Unit profit: {unit_mu} {unit_std} \n")
+        myfile.write(f"Kelly profit: {kelly_mu} {kelly_std} \n")
         myfile.write(f"\n\n\n")
 
 def plot_bank_and_bets(strategy):
@@ -217,21 +257,6 @@ def plot_simulation(data):
     print("Accuracy:", get_accuracy(tournament_simulation["true_outcome"], tournament_simulation["outcome"]))
     plot_bank_and_bets(data["unit"])
     plot_bank_and_bets(data["kelly"])
-
-def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, iter_n=10):
-    accuracies = np.zeros(iter_n)
-    unit_profit = np.zeros(iter_n)
-    kelly_profit = np.zeros(iter_n)
-
-
-    for i in range(10):
-        simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
-
-        accuracies[i] = get_accuracy(simulation["true_outcome"], simulation["outcome"])
-        unit_profit[i] = unit.get_total_profit()
-        kelly_profit[i] = kelly.get_total_profit()
-
-    return accuracies, unit_profit, kelly_profit
 
 def get_best_params(results):
     best_params_acc = results.loc[results['test_acc'].idxmax(), ["max_depth", "max_features", "min_samples_leaf"]]
