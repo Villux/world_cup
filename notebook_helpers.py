@@ -74,7 +74,7 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
     return tournament_simulation, unit_strategy, kelly_strategy
 
 def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, iter_n=10):
-    simulations = np.zeros(iter_n)
+    simulations = np.empty(iter_n, dtype=object)
     unit_strategies = np.zeros(iter_n)
     kelly_strategies = np.zeros(iter_n)
 
