@@ -21,7 +21,7 @@ def get_home(params=None, calibration=None, X=None, y=None, n_estimators=200):
             'bootstrap': True,
             'n_jobs':-1,
             'n_estimators': n_estimators,
-            "max_depth": None,
+            "max_depth": 8,
             "min_samples_leaf": 15,
             "max_features": "sqrt"
             }
@@ -34,7 +34,7 @@ def get_draw(params=None, calibration=None, X=None, y=None, n_estimators=200):
             'bootstrap': True,
             'n_jobs':-1,
             'n_estimators': n_estimators,
-            "max_depth": 5,
+            "max_depth": 8,
             "min_samples_leaf": 15,
             "max_features": "sqrt"
         }
@@ -50,6 +50,6 @@ def get_away(params=None, calibration=None, X=None, y=None, n_estimators=200):
             'n_estimators': n_estimators,
             "max_depth": 8,
             "min_samples_leaf": 10,
-            "max_features": "sqrt"
+            "max_features": "log2"
         }
     return get_model(params, "Away", calibration=calibration, X=X, y=y)
