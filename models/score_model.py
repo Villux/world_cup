@@ -7,8 +7,8 @@ def get_model(params=None, X=None, y=None, n_estimators=200):
             'bootstrap': True,
             'n_jobs':-1,
             'n_estimators': n_estimators,
-            "max_depth": 8,
-            "min_samples_leaf": 5,
+            "max_depth": 5,
+            "min_samples_leaf": 3,
             "max_features": "log2"
         }
     model = RandomForestRegressor(**params)
