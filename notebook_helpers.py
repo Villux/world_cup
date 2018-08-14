@@ -101,7 +101,7 @@ def get_log_loss(y_true, y_pred_proba):
 
 def write_report(simulations, unit_strategies, kelly_strategies, header, filename):
     accuracies = [get_accuracy(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
-    log_losses = [get_log_loss(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
+    log_losses = [get_log_loss(simulation["true_outcome"], simulation[['away_win_prob', 'draw_prob', 'home_win_prob']]) for simulation in simulations]
     precisions = [precision_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
     recall_scores = [recall_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
     f1_scores = [f1_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
