@@ -304,7 +304,7 @@ def run_grid_search_for_outcome(arguments, X, y):
         args = []
         cv_params = {}
         for (params, train_index, test_index) in cv_args:
-            args.append((params, X[train_index], y[train_index], X[test_index], y[test_index]))
+            args.append((params, X.iloc[train_index], y.iloc[train_index], X.iloc[test_index], y.iloc[test_index]))
             cv_params = params
         results = pool.map(get_model_metrics, args)
         metrics.append({
