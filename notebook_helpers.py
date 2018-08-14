@@ -378,7 +378,7 @@ def run_grid_search_for_score(arguments, Xhome, yhome, Xaway, yaway, outcomes):
             args.append((params, Xhome_train, yhome_train, Xhome_test,
                    Xaway_train, yaway_train, Xaway_test, outcomes_test))
             cv_params = params
-        results = pool.map(get_model_metrics, args)
+        results = pool.map(get_score_model_metrics, args)
         metrics.append({
             "max_depth": cv_params["max_depth"],
             "min_samples_leaf": cv_params["min_samples_leaf"],
