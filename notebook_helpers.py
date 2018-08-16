@@ -51,9 +51,9 @@ def run_one_vs_rest_for_features(features, filter_start, tt_file, match_bet_file
 
     set_feature_columns(features)
     X, y = get_whole_dataset("home_win", filter_start=filter_start)
-    home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators)
-    draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators)
-    away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators)
+    home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators, calibration="sigmoid")
+    draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators, calibration="sigmoid")
+    away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators, calibration="sigmoid")
     predictor = OneVsRestPredictor(home_model, draw_model, away_model)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
