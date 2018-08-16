@@ -1,18 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
+from dateutil.parser import parse
 from sklearn.model_selection import train_test_split
 
+from features.elo import get_elo
+from features.generate_goal_features import calculate_goal_features_for_match
 from db.db_interface import get_connection
-
-feature_columns = ["elo_diff", "rating_diff", "potential_diff","height_diff", "weight_diff", "age_diff", "weak_foot_diff",
-            "internationl_repuatiotion_diff", "crossing_diff", "finishing_diff", "heading_accuracy_diff",
-            "short_passing_diff", "dribbling_diff", "fk_accuracy_diff", "long_passing_diff",
-            'ball_control_diff', 'acceleration_diff', 'sprint_speed_diff', "reactions_diff",
-            'shot_power_diff', 'stamina_diff', 'strength_diff', 'long_shots_diff',
-            "aggression_diff", "penalties_diff", "marking_diff", "standing_tackle_diff",
-            "away_goal_mean", "away_goals_with_home", "goal_diff_with_away", "home_goal_mean",
-            "home_goals_with_away", "gk_diving_diff", "gk_handling_diff", "gk_kicking_diff", "gk_reflexes_diff"]
 
 other_features = ['elo_diff', 'away_goal_mean', 'away_goals_with_home',
                   'goal_diff_with_away', 'home_goal_mean', 'home_goals_with_away']
@@ -24,6 +18,8 @@ player_features = ['rating_diff', 'potential_diff', 'height_diff','weight_diff',
                    'reactions_diff','shot_power_diff','stamina_diff','strength_diff','long_shots_diff',
                    'aggression_diff','penalties_diff','marking_diff','standing_tackle_diff',
                   'gk_diving_diff', 'gk_handling_diff', 'gk_kicking_diff', 'gk_reflexes_diff']
+
+all_features = other_features + player_features
 
 def get_player_attribute_query(team, date):
     return f"SELECT * from player_attribute where nationality='{team}' AND date < '{date}' ORDER BY date desc LIMIT 1;"
@@ -147,18 +143,9 @@ def calculate_relative_features(df):
     dataset.loc[:, "gk_reflexes_diff"] = dataset.home_GK_Reflexes - dataset.away_GK_Reflexes
     return dataset
 
-def get_feature_columns():
-    return feature_columns
-
-def set_feature_columns(columns):
-    # TODO fix this nasty hack
-    global feature_columns
-    feature_columns = columns
-
-def get_feature_vector(dataset):
+def get_feature_vector(dataset, feature_columns):
     dataset = calculate_relative_features(dataset)
-    fc = get_feature_columns()
-    return dataset[fc]
+    return dataset[feature_columns]
 
 def get_dataset(flip=False, suffle=False):
     dataset = get_original_data()
@@ -170,51 +157,94 @@ def get_dataset(flip=False, suffle=False):
         dataset = switch_home_and_away(dataset)
     return dataset
 
-def get_train_and_test_dataset(y_label, filter_start=None, filter_end=None, interval=None):
+def get_train_test_split(X, y, size=0.25):
+    return train_test_split(X, y, test_size=size, random_state=42)
+
+def load_all_data_by_label(y_label):
     if y_label == "away_score":
         dataset = get_dataset(flip=True, suffle=False)
         y_label = "home_score"
     else:
         dataset = get_dataset(flip=False)
-
     if y_label == "home_win":
         dataset = get_dataset(suffle=True)
         dataset.loc[:, y_label] = np.sign(dataset.home_score - dataset.away_score)
 
-    if filter_start and filter_end:
-        dataset = dataset.loc[(dataset['date'] < filter_start) | (dataset['date'] > filter_end)]
-    elif filter_start:
-        dataset = dataset.loc[dataset['date'] < filter_start]
-    elif filter_end:
-        dataset = dataset.loc[dataset['date'] > filter_end]
+    return dataset, y_label
 
-    if interval:
-        dataset = dataset.loc[(dataset['date'] > interval[0]) & (dataset['date'] < interval[1])]
+class DataLoader():
+    def __init__(self, features, filter_start=None, filter_end=None, interval=None):
+        self.feature_columns = features
+        self.filter_start = filter_start
+        self.filter_end = filter_end
+        self.interval = interval
 
-    no_friendly_or_wc = dataset[(dataset["tournament"] != "Friendly") & (dataset["tournament"] != "FIFA World Cup")]
+    def filter_data(self, dataset):
+        if self.filter_start and self.filter_end:
+            dataset = dataset.loc[(dataset['date'] < self.filter_start) | (dataset['date'] > self.filter_end)]
+        elif self.filter_start:
+            dataset = dataset.loc[dataset['date'] < self.filter_start]
+        elif self.filter_end:
+            dataset = dataset.loc[dataset['date'] > self.filter_end]
 
-    X = get_feature_vector(no_friendly_or_wc)
-    y = no_friendly_or_wc[y_label]
+        if self.interval:
+            dataset = dataset.loc[(dataset['date'] > self.interval[0]) & (dataset['date'] < self.interval[1])]
 
-    X_train, X_test, y_train, y_test = get_train_test_split(X, y)
+        return dataset
 
-    wc_games = dataset[dataset["tournament"] == "FIFA World Cup"]
-    X_wc = get_feature_vector(wc_games)
-    y_wc = wc_games[y_label]
+    def get_train_and_test_dataset(self, y_label):
+        dataset, y_label = load_all_data_by_label(y_label)
+        dataset = self.filter_data(dataset)
 
-    X_test = pd.concat([X_test, X_wc])
-    y_test = pd.concat([y_test, y_wc])
-    return X_train, y_train, X_test, y_test
+        no_friendly_or_wc = dataset[(dataset["tournament"] != "Friendly") & (dataset["tournament"] != "FIFA World Cup")]
 
-def get_whole_dataset(y_label, filter_start=None, filter_end=None, interval=None):
-    X_train, y_train, X_test, y_test = get_train_and_test_dataset(y_label, filter_start=filter_start, filter_end=filter_end, interval=interval)
+        X = get_feature_vector(no_friendly_or_wc, self.feature_columns)
+        y = no_friendly_or_wc[y_label]
 
-    X = pd.concat([X_train, X_test])
-    y = pd.concat([y_train, y_test])
-    return X, y
+        X_train, X_test, y_train, y_test = get_train_test_split(X, y)
 
-def get_train_test_split(X, y, size=0.25):
-    return train_test_split(X, y, test_size=size, random_state=42)
+        wc_games = dataset[dataset["tournament"] == "FIFA World Cup"]
+        X_wc = get_feature_vector(wc_games, self.feature_columns)
+        y_wc = wc_games[y_label]
 
-if __name__ == "__main__":
-    merge_all_data()
+        X_test = pd.concat([X_test, X_wc])
+        y_test = pd.concat([y_test, y_wc])
+        return X_train, y_train, X_test, y_test
+
+    def get_merged_dataset(self, y_label):
+        X_train, y_train, X_test, y_test = self.get_train_and_test_dataset(y_label)
+
+        X = pd.concat([X_train, X_test])
+        y = pd.concat([y_train, y_test])
+
+        return X, y
+
+    def get_all_data(self, y_label):
+        if isinstance(y_label, list):
+            A, b = self.get_merged_dataset(y_label[0])
+            C, d = self.get_merged_dataset(y_label[1])
+            return A, b, C, d
+        return self.get_merged_dataset(y_label)
+
+    def get_match_feature_vector(self, match):
+        data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
+        data_merge_obj["year"] = parse(match.date).year
+
+        # ELO
+        home_elo = get_elo(match.home_team, match.date)
+        away_elo = get_elo(match.away_team, match.date)
+        data_merge_obj["home_elo"] = home_elo
+        data_merge_obj["away_elo"] = away_elo
+
+        # Goals
+        goal_data = calculate_goal_features_for_match(match.date, match.home_team, match.away_team)
+        for key, value in goal_data.items():
+            data_merge_obj[key] = value
+
+        # Player data
+        data_merge_obj = pd.DataFrame([data_merge_obj])
+        data_merge_obj = append_player_data(data_merge_obj)
+        return get_feature_vector(data_merge_obj, self.feature_columns)
+
+    def set_filter_start(self, start):
+        self.filter_start = start
