@@ -12,7 +12,7 @@ from multiprocessing import Pool, cpu_count
 from simulation.analyse import get_win_probabilities, get_simulations
 from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor, ScorePredictor
 from simulation.simulation import run_actual_tournament_simulation
-from features.data_provider import get_whole_dataset, set_feature_columns, get_train_and_test_dataset
+from features.data_provider import DataLoader
 from models import score_model, outcome_model, one_vs_all_model
 from db.simulation_table import get_simulation_results, delete_all
 from bet.unit_strategy import UnitStrategy
@@ -20,44 +20,40 @@ from bet.kelly_strategy import KellyStrategy
 
 DEFAULT_N_ESTIMATORS = 2000
 
-def run_score_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+def run_score_model_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
-    set_feature_columns(features)
-    home = get_whole_dataset("home_score", filter_start=filter_start)
-    away = get_whole_dataset("away_score", filter_start=filter_start)
-    X = pd.concat([home[0], away[0]])
-    y = pd.concat([home[1], away[1]])
+    Xhome, yhome, Xaway, yaway = data_loader.get_all_data(["home_score", "away_score"])
+    X = pd.concat([Xhome, Xaway])
+    y = pd.concat([yhome, yaway])
     model = score_model.get_model(X=X, y=y, n_estimators=n_estimators)
-    predictor = MaxProbabilityScorePredictor(model)
+    predictor = MaxProbabilityScorePredictor(model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS, params=None):
+def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS, params=None):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
-    set_feature_columns(features)
-    X, y = get_whole_dataset("home_win", filter_start=filter_start)
+    X, y = data_loader.get_all_data()
     if not params:
         model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
     else:
         model = outcome_model.get_model(X=X, y=y, params=params)
-    predictor = MaxProbabilityOutcomePredictor(model)
+    predictor = MaxProbabilityOutcomePredictor(model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_one_vs_rest_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
-    set_feature_columns(features)
-    X, y = get_whole_dataset("home_win", filter_start=filter_start)
+    X, y = data_loader.get_all_data()
     home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators)
     draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators)
     away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators)
-    predictor = OneVsRestPredictor(home_model, draw_model, away_model)
+    predictor = OneVsRestPredictor(home_model, draw_model, away_model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
@@ -78,7 +74,7 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 
     return tournament_simulation, unit_strategy, kelly_strategy
 
-def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, params=None, iter_n=10):
+def iterate_simulations(data_loader, tournament_template_file, bet_file, simulation_f, params=None, iter_n=10):
     simulations = np.empty(iter_n, dtype=object)
     unit_strategies = np.empty(iter_n, dtype=object)
     kelly_strategies = np.empty(iter_n, dtype=object)
@@ -86,9 +82,9 @@ def iterate_simulations(features, tournament_template_file, bet_file, simulation
 
     for i in range(iter_n):
         if not params:
-            simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
+            simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file)
         else:
-            simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file, params=params)
+            simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file, params=params)
         simulations[i] = simulation
         unit_strategies[i] = unit
         kelly_strategies[i] = kelly
