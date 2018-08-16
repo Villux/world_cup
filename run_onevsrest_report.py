@@ -32,16 +32,16 @@ for (name, feature_set) in feature_sets:
     write_log(file_name, f"Running test for feature set: {name}", print_text=True)
 
     data_loader = DataLoader(feature_set)
-    X, y = data_loader.get_all_data("home_win")
 
     optimal = []
     for label in [1, 0, -1]:
+        X, y = data_loader.get_all_data("home_win")
         y = fix_label(y, label)
 
         params = get_default_parameters()
         arguments = get_cv_grid_search_arguments(params, X)
         results = run_grid_search_for_outcome(arguments, X, y)
-        results.to_csv(f"onevsrest_hyperparam_optimization_home_{name}.csv")
+        results.to_csv(f"onevsrest_hy_fix_labelperparam_optimization_home_{name}.csv")
         best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
         best_params_dict = best_params.to_dict()
         write_log(file_name, str(best_params_dict), print_text=True)
