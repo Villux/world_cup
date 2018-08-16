@@ -36,7 +36,7 @@ def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, n_estim
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
-    X, y = data_loader.get_all_data()
+    X, y = data_loader.get_all_data("home_win")
     if not params:
         model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
     else:
@@ -49,7 +49,7 @@ def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, n_estimat
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
-    X, y = data_loader.get_all_data()
+    X, y = data_loader.get_all_data("home_win")
     home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators, calibration="sigmoid")
     draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators, calibration="sigmoid")
     away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators, calibration="sigmoid")
