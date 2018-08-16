@@ -41,7 +41,7 @@ for (name, feature_set) in feature_sets:
     results.to_csv(f"outcome_hyperparam_optimization_{name}.csv")
     best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
     best_params_dict = best_params.to_dict()
-    write_log(file_name, best_params_dict)
+    write_log(file_name, str(best_params_dict), print_text=True)
 
     optimal_params = params.copy()
     optimal_params["max_depth"] = best_params_dict["max_depth"]
@@ -57,7 +57,7 @@ for (name, feature_set) in feature_sets:
                                                          params=optimal_params)
         report = simulation_iteration_report(simulations, units, kellys)
 
-        write_log(file_name, report, print_text=True)
+        write_log(file_name, str(report), print_text=True)
         reports.append(report)
 
 pd.DataFrame(reports).to_csv("outcome_model_report.csv")
