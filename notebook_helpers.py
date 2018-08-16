@@ -30,7 +30,7 @@ def run_score_model_for_features(data_loader, tt_file, match_bet_file, params):
     model = score_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityScorePredictor(model, data_loader)
 
-    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
 
 def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, params):
     tournament_template = pd.read_csv(tt_file)
@@ -40,7 +40,7 @@ def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, params)
     model = outcome_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityOutcomePredictor(model, data_loader)
 
-    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
 
 def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, params):
     tournament_template = pd.read_csv(tt_file)
@@ -54,7 +54,7 @@ def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, params):
 
     predictor = OneVsRestPredictor(home_model, draw_model, away_model, data_loader)
 
-    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
 
 def get_tournament_simulation_results(tournament_template, predictor, odds):
     run_actual_tournament_simulation(tournament_template, predictor)
@@ -80,7 +80,7 @@ def iterate_simulations(data_loader, tournament_template_file, bet_file, simulat
 
 
     for i in range(iter_n):
-        simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file, params)
+        simulation, unit, kelly, _ = simulation_f(data_loader, tournament_template_file, bet_file, params)
         simulations[i] = simulation
         unit_strategies[i] = unit
         kelly_strategies[i] = kelly
