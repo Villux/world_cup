@@ -17,7 +17,7 @@ def get_best_params(results, verbose=False):
         print()
         print("BEST COMBO")
         print(best_params)
-     
+
     best_params = best_params.replace({np.nan:None})
     return best_params.to_dict()
 
@@ -27,4 +27,7 @@ def get_feature_importance(feature_importances, feature_columns):
     for feature, importance in zipped:
         D[feature] = round(importance, 5)
     return D
+
+def get_default_parameters():
+    return {"oob_score":True, "bootstrap":True, "n_jobs":-1, "n_estimators": 2000}
 

@@ -50,7 +50,7 @@ for (name, feature_set) in feature_sets:
                                                          filter_start=filter_start)
         report = simulation_iteration_report(simulations, units, kellys)
 
-        write_log(file_name, report)
+        write_log(file_name, report, print_text=True)
         reports.append(report)
 
 pd.DataFrame(reports).to_csv("outcome_model_report.csv")
