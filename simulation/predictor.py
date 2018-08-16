@@ -1,12 +1,5 @@
-import time
 import numpy as np
-import pandas as pd
-from dateutil.parser import parse
 from scipy.stats import poisson
-
-from features.elo import get_elo
-from features.generate_goal_features import calculate_goal_features_for_match
-from features.data_provider import append_player_data, get_feature_vector
 
 def get_score_from_goal_matrix(goal_matrix, outcome):
     if outcome == 1:
@@ -23,29 +16,10 @@ def get_score_from_goal_matrix(goal_matrix, outcome):
         assert home_score < away_score
     return home_score, away_score
 
-def get_match_feature_vector(match):
-    data_merge_obj = {"home_team": match.home_team, "away_team": match.away_team, "date": match.date}
-    data_merge_obj["year"] = parse(match.date).year
-
-    # ELO
-    home_elo = get_elo(match.home_team, match.date)
-    away_elo = get_elo(match.away_team, match.date)
-    data_merge_obj["home_elo"] = home_elo
-    data_merge_obj["away_elo"] = away_elo
-
-    # Goals
-    goal_data = calculate_goal_features_for_match(match.date, match.home_team, match.away_team)
-    for key, value in goal_data.items():
-        data_merge_obj[key] = value
-
-    # Player data
-    data_merge_obj = pd.DataFrame([data_merge_obj])
-    data_merge_obj = append_player_data(data_merge_obj)
-    return get_feature_vector(data_merge_obj)
-
 class OutcomePredictor():
-    def __init__(self, model):
+    def __init__(self, model, data_loader):
         self.model = model
+        self.data_loader = data_loader
 
     @staticmethod
     def predict_score(outcome):
@@ -64,7 +38,7 @@ class OutcomePredictor():
         return self.model.predict_proba(x)[0]
 
     def predict(self, match):
-        x = get_match_feature_vector(match)
+        x = self.data_loader.get_match_feature_vector(match)
         match.set_feature_vector(x)
 
         outcome_probabilities = self.predict_outcome_probabilities(x)
@@ -77,12 +51,13 @@ class OutcomePredictor():
         return match
 
 class MaxProbabilityOutcomePredictor(OutcomePredictor):
-    def __init__(self, model):
-        super().__init__(model)
+    def __init__(self, model, data_loader):
+        super().__init__(model, data_loader)
         self.model = model
+        self.data_loader = data_loader
 
     def predict(self, match):
-        x = get_match_feature_vector(match)
+        x = self.data_loader.get_match_feature_vector(match)
         match.set_feature_vector(x)
 
         outcome_probabilities = self.predict_outcome_probabilities(x)
@@ -95,8 +70,9 @@ class MaxProbabilityOutcomePredictor(OutcomePredictor):
         return match
 
 class ScorePredictor():
-    def __init__(self, model):
+    def __init__(self, model, data_loader):
         self.model = model
+        self.data_loader = data_loader
 
     @staticmethod
     def get_goal_matrix(home_mu, away_mu):
@@ -119,10 +95,10 @@ class ScorePredictor():
     def predict(self, match):
         away_match = match.flip_and_copy()
 
-        home_x = get_match_feature_vector(match)
+        home_x = self.data_loader.get_match_feature_vector(match)
         home_score, home_mu = self.predict_score(home_x)
 
-        away_x = get_match_feature_vector(away_match)
+        away_x = self.data_loader.get_match_feature_vector(away_match)
         away_score, away_mu = self.predict_score(away_x)
 
         goal_matrix = self.get_goal_matrix(home_mu, away_mu)
@@ -134,17 +110,18 @@ class ScorePredictor():
         return match
 
 class MaxProbabilityScorePredictor(ScorePredictor):
-    def __init__(self, model):
-        super().__init__(model)
+    def __init__(self, model, data_loader):
+        super().__init__(model, data_loader)
         self.model = model
+        self.data_loader = data_loader
 
     def predict(self, match):
         away_match = match.flip_and_copy()
 
-        home_x = get_match_feature_vector(match)
+        home_x = self.data_loader.get_match_feature_vector(match)
         _, home_mu = self.predict_score(home_x)
 
-        away_x = get_match_feature_vector(away_match)
+        away_x = self.data_loader.get_match_feature_vector(away_match)
         _, away_mu = self.predict_score(away_x)
 
         goal_matrix = self.get_goal_matrix(home_mu, away_mu)
@@ -158,10 +135,11 @@ class MaxProbabilityScorePredictor(ScorePredictor):
         return match
 
 class OneVsRestPredictor():
-    def __init__(self, home_model, draw_model, away_model):
+    def __init__(self, home_model, draw_model, away_model, data_loader):
         self.home_model = home_model
         self.draw_model = draw_model
         self.away_model = away_model
+        self.data_loader = data_loader
 
     @staticmethod
     def predict_score(outcome):
@@ -183,7 +161,7 @@ class OneVsRestPredictor():
         return probas
 
     def predict(self, match):
-        x = get_match_feature_vector(match)
+        x = self.data_loader.get_match_feature_vector(match)
         match.set_feature_vector(x)
 
         outcome_probabilities = self.predict_outcome_probabilities(x)
