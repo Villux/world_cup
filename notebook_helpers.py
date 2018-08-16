@@ -20,39 +20,38 @@ from bet.kelly_strategy import KellyStrategy
 
 DEFAULT_N_ESTIMATORS = 2000
 
-def run_score_model_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+def run_score_model_for_features(data_loader, tt_file, match_bet_file, params):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
     Xhome, yhome, Xaway, yaway = data_loader.get_all_data(["home_score", "away_score"])
     X = pd.concat([Xhome, Xaway])
     y = pd.concat([yhome, yaway])
-    model = score_model.get_model(X=X, y=y, n_estimators=n_estimators)
+    model = score_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityScorePredictor(model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS, params=None):
+def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, params):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
     X, y = data_loader.get_all_data("home_win")
-    if not params:
-        model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
-    else:
-        model = outcome_model.get_model(X=X, y=y, params=params)
+    model = outcome_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityOutcomePredictor(model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, params):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
     X, y = data_loader.get_all_data("home_win")
-    home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), n_estimators=n_estimators, calibration="sigmoid")
-    draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), n_estimators=n_estimators, calibration="sigmoid")
-    away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), n_estimators=n_estimators, calibration="sigmoid")
+
+    home_model = one_vs_all_model.get_home(X=X, y=fix_label(y, 1), params=params[0], calibration="sigmoid")
+    draw_model = one_vs_all_model.get_draw(X=X, y=fix_label(y, 0), params=params[1], calibration="sigmoid")
+    away_model = one_vs_all_model.get_away(X=X, y=fix_label(y, -1), params=params[2], calibration="sigmoid")
+
     predictor = OneVsRestPredictor(home_model, draw_model, away_model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
@@ -74,17 +73,14 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 
     return tournament_simulation, unit_strategy, kelly_strategy
 
-def iterate_simulations(data_loader, tournament_template_file, bet_file, simulation_f, params=None, iter_n=10):
+def iterate_simulations(data_loader, tournament_template_file, bet_file, simulation_f, params, iter_n=10):
     simulations = np.empty(iter_n, dtype=object)
     unit_strategies = np.empty(iter_n, dtype=object)
     kelly_strategies = np.empty(iter_n, dtype=object)
 
 
     for i in range(iter_n):
-        if not params:
-            simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file)
-        else:
-            simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file, params=params)
+        simulation, unit, kelly = simulation_f(data_loader, tournament_template_file, bet_file, params)
         simulations[i] = simulation
         unit_strategies[i] = unit
         kelly_strategies[i] = kelly

@@ -54,7 +54,7 @@ for (name, feature_set) in feature_sets:
                                                          tt_file,
                                                          bet_file,
                                                          run_score_model_for_features,
-                                                         params=optimal_params)
+                                                         optimal_params)
         report = simulation_iteration_report(simulations, units, kellys)
         report["id"] = f"{name}_{filter_start}"
         report["max_depth"] = optimal_params["max_depth"]
@@ -64,4 +64,4 @@ for (name, feature_set) in feature_sets:
         write_log(file_name, str(report), print_text=True)
         reports.append(report)
 
-pd.DataFrame(reports).to_csv("outcome_model_report.csv")
+pd.DataFrame(reports).to_csv("score_model_report.csv")

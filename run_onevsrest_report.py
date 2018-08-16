@@ -3,8 +3,8 @@ import pandas as pd
 
 from features.data_provider import all_features, other_features, player_features, DataLoader
 from models.helpers import get_default_parameters
-from notebook_helpers import run_grid_search_for_outcome, get_cv_grid_search_arguments
-from notebook_helpers import iterate_simulations, run_outcome_model_for_features, simulation_iteration_report
+from notebook_helpers import run_grid_search_for_outcome, get_cv_grid_search_arguments, fix_label
+from notebook_helpers import iterate_simulations, run_one_vs_rest_for_features, simulation_iteration_report
 
 def write_log(filename, text, print_text=False):
     with open(filename, "a") as f:
@@ -24,7 +24,7 @@ feature_sets = [
     ("player_features", player_features)
 ]
 
-file_name = "outcome_report_full.txt"
+file_name = "onevsrest_report_full.txt"
 
 reports = []
 for (name, feature_set) in feature_sets:
@@ -34,33 +34,35 @@ for (name, feature_set) in feature_sets:
     data_loader = DataLoader(feature_set)
     X, y = data_loader.get_all_data("home_win")
 
-    params = get_default_parameters()
-    arguments = get_cv_grid_search_arguments(params, X)
-    results = run_grid_search_for_outcome(arguments, X, y)
-    results.to_csv(f"outcome_hyperparam_optimization_{name}.csv")
-    best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
-    best_params_dict = best_params.to_dict()
-    write_log(file_name, str(best_params_dict), print_text=True)
+    optimal = []
+    for label in [1, 0, -1]:
+        y = fix_label(y, label)
 
-    optimal_params = params.copy()
-    optimal_params["max_depth"] = best_params_dict["max_depth"]
-    optimal_params["min_samples_leaf"] = best_params_dict["min_samples_leaf"]
-    optimal_params["max_features"] = best_params_dict["max_features"]
+        params = get_default_parameters()
+        arguments = get_cv_grid_search_arguments(params, X)
+        results = run_grid_search_for_outcome(arguments, X, y)
+        results.to_csv(f"onevsrest_hyperparam_optimization_home_{name}.csv")
+        best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
+        best_params_dict = best_params.to_dict()
+        write_log(file_name, str(best_params_dict), print_text=True)
+
+        optimal_params = params.copy()
+        optimal_params["max_depth"] = best_params_dict["max_depth"]
+        optimal_params["min_samples_leaf"] = best_params_dict["min_samples_leaf"]
+        optimal_params["max_features"] = best_params_dict["max_features"]
+
+        optimal.append(optimal_params)
 
     for (tt_file, bet_file, filter_start) in tournament_parameters:
         data_loader.set_filter_start(filter_start)
         simulations, units, kellys = iterate_simulations(data_loader,
                                                          tt_file,
                                                          bet_file,
-                                                         run_outcome_model_for_features,
-                                                         optimal_params)
+                                                         run_one_vs_rest_for_features,
+                                                         optimal)
         report = simulation_iteration_report(simulations, units, kellys)
         report["id"] = f"{name}_{filter_start}"
-        report["max_depth"] = optimal_params["max_depth"]
-        report["min_samples_leaf"] = optimal_params["min_samples_leaf"]
-        report["max_features"] = optimal_params["max_features"]
-
         write_log(file_name, str(report), print_text=True)
         reports.append(report)
 
-pd.DataFrame(reports).to_csv("outcome_model_report.csv")
+pd.DataFrame(reports).to_csv("onevsrest_model_report.csv")
