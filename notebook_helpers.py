@@ -34,13 +34,16 @@ def run_score_model_for_features(features, filter_start, tt_file, match_bet_file
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
 
-def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS):
+def run_outcome_model_for_features(features, filter_start, tt_file, match_bet_file, n_estimators=DEFAULT_N_ESTIMATORS, params=None):
     tournament_template = pd.read_csv(tt_file)
     match_bets = pd.read_csv(match_bet_file)
 
     set_feature_columns(features)
     X, y = get_whole_dataset("home_win", filter_start=filter_start)
-    model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
+    if not params:
+        model = outcome_model.get_model(X=X, y=y, n_estimators=n_estimators)
+    else:
+        model = outcome_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityOutcomePredictor(model)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values)
@@ -75,14 +78,17 @@ def get_tournament_simulation_results(tournament_template, predictor, odds):
 
     return tournament_simulation, unit_strategy, kelly_strategy
 
-def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, iter_n=10):
+def iterate_simulations(features, tournament_template_file, bet_file, simulation_f, filter_start=None, params=None, iter_n=10):
     simulations = np.empty(iter_n, dtype=object)
     unit_strategies = np.empty(iter_n, dtype=object)
     kelly_strategies = np.empty(iter_n, dtype=object)
 
 
     for i in range(iter_n):
-        simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
+        if not params:
+            simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file)
+        else:
+            simulation, unit, kelly = simulation_f(features, filter_start, tournament_template_file, bet_file, params=params)
         simulations[i] = simulation
         unit_strategies[i] = unit
         kelly_strategies[i] = kelly
@@ -99,7 +105,7 @@ def get_log_loss(y_true, y_pred_proba):
     labels = np.unique(y_true)
     return log_loss(y_true, y_pred_proba, labels=labels)
 
-def write_report(simulations, unit_strategies, kelly_strategies, header, filename):
+def simulation_iteration_report(simulations, unit_strategies, kelly_strategies):
     accuracies = [get_accuracy(simulation["true_outcome"], simulation["outcome"]) for simulation in simulations]
     log_losses = [get_log_loss(simulation["true_outcome"], simulation[['away_win_prob', 'draw_prob', 'home_win_prob']]) for simulation in simulations]
     precisions = [precision_score(simulation["true_outcome"], simulation["outcome"], average=None) for simulation in simulations]
@@ -117,24 +123,23 @@ def write_report(simulations, unit_strategies, kelly_strategies, header, filenam
     unit_mu, unit_std = np.mean(unit_profits), np.std(unit_profits)
     kelly_mu, kelly_std = np.mean(kelly_profits), np.std(kelly_profits)
 
-    print("AVG Accuracy: ", accuracy_mu, accuracy_std)
-    print("AVG Log loss: ", logloss_mu, logloss_std)
-    print("AVG Precision: ", precision_mu, precision_std)
-    print("AVG Recall: ", recall_mu, recall_std)
-    print("AVG F1 Score: ", f1_mu, f1_std)
-    print("AVG Unit profit: ", unit_mu, unit_std)
-    print("AVG Kelly profit: ", kelly_mu, kelly_std)
-
-    with open(filename, "a") as myfile:
-        myfile.write(header + "\n")
-        myfile.write(f"Accuracy: {accuracy_mu} {accuracy_std} \n")
-        myfile.write(f"Log loss: {logloss_mu} {logloss_std} \n")
-        myfile.write(f"Precision: {precision_mu} {precision_std} \n")
-        myfile.write(f"Recall: {recall_mu} {recall_std} \n")
-        myfile.write(f"F1 Score: {f1_mu} {f1_std} \n")
-        myfile.write(f"Unit profit: {unit_mu} {unit_std} \n")
-        myfile.write(f"Kelly profit: {kelly_mu} {kelly_std} \n")
-        myfile.write(f"\n\n\n")
+    report = {
+        "acc_mu":accuracy_mu,
+        "acc_std":accuracy_std,
+        "logloss_mu": logloss_mu,
+        "logloss_std": logloss_std,
+        "precision_mu":precision_mu,
+        "precision_std": precision_std,
+        "recall_mu": recall_mu,
+        "recall_std":recall_std,
+        "f1_mu": f1_mu,
+        "f1_std": f1_std,
+        "unit_mu": unit_mu,
+        "unit_std": unit_std,
+        "kelly_mu": kelly_mu,
+        "kelly_std": kelly_std
+    }
+    return report
 
 def plot_bank_and_bets(strategy):
     initial_capital = strategy.initial_capital
