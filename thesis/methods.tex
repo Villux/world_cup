@@ -53,16 +53,35 @@ Main usecases for Random forest are \textit{classification} and \textit{regressi
     \caption{\footnotesize Random Forest for Regression or Classification.}
     \label{alg:random_forest}
 \end{algorithm}
+
 \subsection{Random forest hyperparameter selection}
-Random forest, as implemented in most of the programming libraries, can be used out-of-the-box with fairly good perfomance. Reason for this is that the default values for certain hyperparameters work well in most of the cases. Lot of effort has been used to study the effects of hyperparamater selection in random forest. Main idea in hyperparameter selection with random forest is to keep the correlation between the trees small while maintaining reasonable strength. In this section I will share some light to this process of hyperparameter selection and introduce an algorithm that will be used to select the most optimal hyperparamters for the prediction model.
+Many machine learning algorithm have parameters that are not optimized within the algorithm itself. These parameters are called hyperparameters. Optimizing these hyperparameters is one way to improve the models performance, since optimal parameters are often problem specific. Random forest is no exception, even though in many cases its performance is relatively decent with default parameters \cite{probst2018hyperparameters}.
 
-One key hyperparameter in random forest is the number of randomly drawn candidate predictors, denoted as $K$. As mentioned in \ref{ss:randomforest} this part of random forest algorithm is critical if it's important to achieve low correlation between the trees in the forest. Bernard et al. \cite{bernard2009influence} investigated Breiman's Forest-RI algorithm's performance with different K values using several datasets. Their conclusion was that $K=\sqrt(M)$, where $M$ is the predictor space, is a reasonable setting to induct near-optimal random forest. In cases where there are many or only few relevant predictor variables, choosing the K can have high influence on the results. For example in the case of minuscule $K$ with a dataset that has only small number of important predictors most of the trees are built without the important predictor and have low prediction accuracy. \cite{bernard2009influence} Most of the time while running the algorithm is used to choose the split variables. When number of candidate variables is decreased computation time approximately decreases linearly. \cite{wright2017unbiased}
+For this problem I decided to optimize three hyperparameters: \textit{number of candidate predictors}, \textit{minimum samples at terminal node} and \textit{maximum depth of a tree}. Idea behind this is keep the correlation between the trees low and improve the models ability to handle noise.
 
-Another hyperparameter that has the correlation lowering effect is the subsample size. Typically the subsample size is the same as the dataset's size, even when subset is formed with replacements. In their emprical analysis Martinez et al. \cite{martinez2010out} concluded that selecting the subsample size with out-of-bag error can increase the performance of the model and the correct value for subsample size hyperparameter is problem dependent.
+\textit{Number of candidate predictors}, denoted as $K$, is one of the key hyperparameters to control the correlation between forest's trees \cite{probst2018hyperparameters}.
+In cases where there are many or only few relevant predictor variables, choosing the $K$ can have high influence on the results. For example in the case of minuscule $K$ with a dataset that has only small number of important predictors most of the trees are built without the important predictor and have low prediction accuracy. \cite{bernard2009influence} Often best values for $K$ are $\sqrt(M)$ and $\log_2(M)$, where $M$ is the number of predictor variables \cite{bernard2009influence}.
 
-Two important hyperparameter related to node splitting are node size and splitting criterion. Segal \cite{segal2004machine} showed that increasing the amount of noise variables lead to higher optimal node size. For splitting criterion most of the software packages use gini impurity for classification and MSE for regression, which were suggested by Breiman \cite{breiman2001random}. Probst et al. \cite{probst2018hyperparameters} concluded from multiple studies that not a single criterion has been proven superior to the others regarding the predictive performance.
+Segal \cite{segal2004machine} showed that increasing the amount of noise variables lead to higher optimal terminal node size. For this reason I chose to optimize the \textit{minimum samples at terminal node}. Good default values for this hyperparameter are 1 for classification and 5 for regression \cite{probst2018hyperparameters}. Last optimized hyperparamater - \textit{maximum depth of a tree} - is related to \textit{minimum samples at terminal node} since controlling the maximum depth of the tree the algorithm might be forced to have some terminal nodes to have more samples than the minimum value requires.
 
-Since random forest is an ensemble method, the number of estimators (trees) can be changed. For this hyperparameter it's important to set the value as high enough, since after a certain point the variance can't be lowered anymore and the computation time used in training grows beyond resonable \cite{probst2018hyperparameters}.
+\begin{table}
+    \caption{Optimized hyperparameters and the tested values.}
+    \begin{tabular}{ | c | c |}
+    \hline
+    Hyperparameter & Values\\
+    \hline
+    number of candidate predictors & $\sqrt(M)$, $\log_2(M)$\\
+    minimum samples at terminal node & 1, 3, 5, 10, 15\\
+    maximum depth of the tree & 3, 5, 8, 12, None\\
+    \hline
+   \end{tabular}
+   \label{tab:hyperparam}
+\end{table}
+
+I used two metrics to evaluate models performance. Accuracy was used to see how many observations were classified correctly. Cross entropy loss, defined as $- \sum _ { n = 1 } ^ { N }\sum _ { c = 1 } ^ { M } y _ { nc } \log \left( p _ { nc } \right)$, where N is the number of observations, M is the number of classes, y is the binary indicator for correct class and p is the probability for that class \cite{nasrabadi2007pattern}, was used to evaluate how good models probability estimates were.
+
+Grid search was use to test every parameter combination with a model. Cross validation of 5 folds was used. Best hyperparameter combination was chosen by looking first the highest average accuracy and then by the lowest average cross entropy loss.
+
 
 \subsection{Variable importance in Random Forest}
 \subsection{Model specifications}
@@ -78,3 +97,11 @@ UNIT, KELLY
 
 
 
+\begin{figure}
+    $\begin{bmatrix}
+    0-0 & 0-1 & \cdots & 0-N \\
+    1-0 & 1-1 & \cdots   &1-N \\
+    \vdots & \vdots   & \ddots & \vdots \\
+    N-0 & N-1 & \cdots & N-N\end{bmatrix}$
+\caption{N by N Goal Matrix}
+\end{figure}
