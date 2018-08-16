@@ -56,6 +56,7 @@ for (name, feature_set) in feature_sets:
                                                          filter_start=filter_start,
                                                          params=optimal_params)
         report = simulation_iteration_report(simulations, units, kellys)
+        report["id"] = f"{name}_{filter_start}"
 
         write_log(file_name, str(report), print_text=True)
         reports.append(report)
