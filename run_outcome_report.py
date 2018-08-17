@@ -2,7 +2,7 @@ import datetime
 import pandas as pd
 
 from features.data_provider import all_features, other_features, player_features, DataLoader
-from models.helpers import get_default_parameters
+from models.helpers import get_default_parameters, get_best_params
 from notebook_helpers import run_grid_search_for_outcome, get_cv_grid_search_arguments
 from notebook_helpers import iterate_simulations, run_outcome_model_for_features, simulation_iteration_report
 
