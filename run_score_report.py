@@ -1,6 +1,6 @@
 import datetime
-import pandas as pd
 import os.path
+import pandas as pd
 
 from features.data_provider import all_features, other_features, player_features, DataLoader
 from models.helpers import get_default_parameters
@@ -33,6 +33,7 @@ for (name, feature_set, fname) in feature_sets:
     write_log(file_name, f"Running test for feature set: {name}", print_text=True)
 
     data_loader = DataLoader(feature_set)
+    params = get_default_parameters()
 
     if os.path.isfile(fname):
         write_log(file_name, f"Hyperparameters found for: {name}", print_text=True)
@@ -41,7 +42,6 @@ for (name, feature_set, fname) in feature_sets:
         Xhome, yhome, Xaway, yaway = data_loader.get_all_data(["home_score", "away_score"])
         _, outcomes = data_loader.get_all_data("home_win")
 
-        params = get_default_parameters()
         arguments = get_cv_grid_search_arguments(params, Xhome)
         results = run_grid_search_for_score(arguments, Xhome, yhome, Xaway, yaway, outcomes)
         results.to_csv(f"score_hyperparam_optimization_{name}.csv")
