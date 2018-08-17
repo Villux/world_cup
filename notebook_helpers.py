@@ -54,7 +54,7 @@ def run_one_vs_rest_for_features(data_loader, tt_file, match_bet_file, params):
 
     predictor = OneVsRestPredictor(home_model, draw_model, away_model, data_loader)
 
-    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), (home_model, draw_model, away_model)
 
 def get_tournament_simulation_results(tournament_template, predictor, odds):
     run_actual_tournament_simulation(tournament_template, predictor)
@@ -261,14 +261,6 @@ def plot_simulation(data):
     print("Accuracy:", get_accuracy(tournament_simulation["true_outcome"], tournament_simulation["outcome"]))
     plot_bank_and_bets(data["unit"])
     plot_bank_and_bets(data["kelly"])
-
-def get_best_params(results):
-    best_params_acc = results.loc[results['test_acc'].idxmax(), ["max_depth", "max_features", "min_samples_leaf"]]
-    best_params_logloss = results.loc[results['test_logloss'].idxmin(), ["max_depth", "max_features", "min_samples_leaf"]]
-
-    best_params_acc = best_params_acc.replace({np.nan:None})
-    best_params_logloss = best_params_logloss.replace({np.nan:None})
-    return best_params_acc.to_dict(), best_params_logloss.to_dict()
 
 def get_model_metrics(args):
     params = args[0]
