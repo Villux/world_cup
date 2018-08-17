@@ -3,7 +3,7 @@ import os.path
 import pandas as pd
 
 from features.data_provider import all_features, other_features, player_features, DataLoader
-from models.helpers import get_default_parameters
+from models.helpers import get_default_parameters, get_best_params
 from notebook_helpers import run_grid_search_for_score, get_cv_grid_search_arguments
 from notebook_helpers import iterate_simulations, run_score_model_for_features, simulation_iteration_report
 
@@ -46,8 +46,7 @@ for (name, feature_set, fname) in feature_sets:
         results = run_grid_search_for_score(arguments, Xhome, yhome, Xaway, yaway, outcomes)
         results.to_csv(f"score_hyperparam_optimization_{name}.csv")
 
-    best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
-    best_params_dict = best_params.to_dict()
+    best_params_dict = get_best_params(results)
     write_log(file_name, str(best_params_dict), print_text=True)
 
     optimal_params = params.copy()

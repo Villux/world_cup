@@ -38,8 +38,7 @@ for (name, feature_set) in feature_sets:
     arguments = get_cv_grid_search_arguments(params, X)
     results = run_grid_search_for_outcome(arguments, X, y)
     results.to_csv(f"outcome_hyperparam_optimization_{name}.csv")
-    best_params = results.sort_values(['test_acc', 'test_logloss'], ascending=[False, True]).iloc[0]
-    best_params_dict = best_params.to_dict()
+    best_params_dict = get_best_params(results)
     write_log(file_name, str(best_params_dict), print_text=True)
 
     optimal_params = params.copy()
