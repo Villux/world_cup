@@ -1,4 +1,5 @@
 import datetime
+import os.path
 import pandas as pd
 
 from features.data_provider import all_features, other_features, player_features, DataLoader
@@ -19,29 +20,44 @@ tournament_parameters = [
     ('data/original/wc_2010_games_real.csv', 'data/original/wc_2010_bets.csv', "2010-06-11")
 ]
 feature_sets = [
-    ("all_features", all_features),
-    ("general_features", other_features),
-    ("player_features", player_features)
+    ("all_features", all_features, "onevsrest_hyperparam_optimization_all_features"),
+    ("general_features", other_features, "onevsrest_hyperparam_optimization_general_features"),
+    ("player_features", player_features, "onevsrest_hyperparam_optimization_player_features")
 ]
 
 file_name = "onevsrest_report_full.txt"
 
 reports = []
-for (name, feature_set) in feature_sets:
+for (name, feature_set, fprefix) in feature_sets:
     write_log(file_name, str(datetime.datetime.now()))
     write_log(file_name, f"Running test for feature set: {name}", print_text=True)
 
     data_loader = DataLoader(feature_set)
 
+    params = get_default_parameters()
     optimal = []
     for label in [1, 0, -1]:
-        X, y = data_loader.get_all_data("home_win")
-        y = fix_label(y, label)
+        if label == 1:
+            label_name = "home"
+        elif label == 0:
+            label_name = "draw"
+        else:
+            label_name = "away"
 
-        params = get_default_parameters()
-        arguments = get_cv_grid_search_arguments(params, X)
-        results = run_grid_search_for_outcome(arguments, X, y)
-        results.to_csv(f"onevsrest_hy_fix_labelperparam_optimization_home_{name}.csv")
+        fname = fprefix + f"_{label_name}.csv"
+
+        if os.path.isfile(fname):
+            write_log(file_name, f"Hyperparameters found for: {name}", print_text=True)
+            results = pd.read_csv(fname)
+        else:
+            X, y = data_loader.get_all_data("home_win")
+            y = fix_label(y, label)
+
+            params = get_default_parameters()
+            arguments = get_cv_grid_search_arguments(params, X)
+            results = run_grid_search_for_outcome(arguments, X, y)
+
+            results.to_csv(fname)
         best_params_dict = get_best_params(results)
         write_log(file_name, str(best_params_dict), print_text=True)
 
