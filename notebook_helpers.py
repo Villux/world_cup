@@ -80,7 +80,7 @@ def iterate_simulations(data_loader, tournament_template_file, bet_file, simulat
 
 
     for i in range(iter_n):
-        simulation, unit, kelly, _ = simulation_f(data_loader, tournament_template_file, bet_file, params)
+        (simulation, unit, kelly), _ = simulation_f(data_loader, tournament_template_file, bet_file, params)
         simulations[i] = simulation
         unit_strategies[i] = unit
         kelly_strategies[i] = kelly
