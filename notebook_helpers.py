@@ -1,18 +1,14 @@
+from multiprocessing import Pool, cpu_count
 import numpy as np
 import pandas as pd
-from time import time
 import matplotlib.pyplot as plt
-import scipy.optimize as optimize
-from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss, brier_score_loss, precision_score
-from sklearn.metrics import brier_score_loss, precision_score, f1_score, recall_score
+from sklearn.metrics import accuracy_score, log_loss, brier_score_loss, precision_score, f1_score, recall_score
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from multiprocessing import Pool, cpu_count
 
 from simulation.analyse import get_win_probabilities, get_simulations
 from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor, ScorePredictor
 from simulation.simulation import run_actual_tournament_simulation
-from features.data_provider import DataLoader
 from models import score_model, outcome_model, one_vs_all_model
 from db.simulation_table import get_simulation_results, delete_all
 from bet.unit_strategy import UnitStrategy
@@ -226,10 +222,6 @@ def fix_label(data, label):
         y.loc[y != -1] = 0
         y.loc[y == -1] = 1
     return y
-
-def get_onevsrest_dataset(label, filter_start=None):
-    X_train, y_train, X_test, y_test = get_train_and_test_dataset("home_win", filter_start=filter_start)
-    return X_train, fix_label(y_train, label), X_test, fix_label(y_test, label)
 
 def plot_reliability_diagram(probas, y):
     data_matrix = np.hstack((probas, y.reshape(y.shape[0], 1)))
