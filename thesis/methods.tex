@@ -4,13 +4,13 @@ What is is done. Why random forest? What are the alternative methods
 \label{ss:randomforest}
 In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relathionship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
-Decision tree is one of the most popular model type used in classification problems. Decision tree is a directed tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edge are called the \textit{leave nodes}. Internal nodes in decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leave nodes}. When new input is given tree is navigated from the \textit{root node} to a \textit{leave node} which determinates the predicted class label. In regression these target values can take continuous values. \cite{rokach2005top}
+Decision tree is one of the most popular model type used in classification problems. Decision tree is a directed tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edge are called the \textit{leaf nodes}. Internal nodes in decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leaf nodes}. When new input is given tree is navigated from the \textit{root node} to a \textit{leave node} which determinates the predicted class label. In regression these target values can take continuous values. \cite{rokach2005top}
 
 Decision trees have many benefits and are very useful "off-the-shelf" predictors. Outliers in the dataset or many irrelevant predictors are not problematic for the trees. Scaling or any other general transformation can be done to the input space since trees are invariant under transformation of the individual predictors. \cite{friedman2001elements} Decision trees have good interpretability if the trees are small.
 
 On main disadvantage of the decision trees is bad prediction accuracy \cite{friedman2001elements}. Decision trees can express the training data well, but have high variance which means that prediction accuracy for unseen data is often worse compared to other models.
 
-Bootstrap aggragating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the  average is taken over the output of a multiple estimators:
+Bootstrap aggragating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the average is taken over the output of a multiple estimators:
 \begin{align}
     \hat {f_{bag}}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*b}(x)
 \end{align}
@@ -25,11 +25,6 @@ Main usecases for Random forest are \textit{classification} and \textit{regressi
 \begin{algorithm}
     \footnotesize
     \begin{minipage}{.92\linewidth}
-    Here I have some text that I need to have within the algorithm that
-    sets up the problem, and the text stretches over two  lines.
-    \textbf{Note that the second line has a weird indentation.}
-    \BlankLine
-    For all the of the seconds in the day:
     \begin{enumerate}
         \item For $b = 1$ to $B$:
         \begin{enumerate}
@@ -84,7 +79,6 @@ Grid search was use to test every parameter combination with a model. Cross vali
 
 
 \subsection{Variable importance in Random Forest}
-\subsection{Model specifications}
 \section{Forecasting procedure and measuments of model's forecasting accuracy}
 \subsection{Description of our forecasting procedure}
 \subsection{Forecast accuracy measurements}
