@@ -80,15 +80,12 @@ Grid search was use to test every parameter combination with a model. Cross vali
 
 \subsection{Variable importance in Random Forest}
 \section{Forecasting procedure and measuments of model's forecasting accuracy}
-\subsection{Description of our forecasting procedure}
-\subsection{Forecast accuracy measurements}
-Precision, recall, F-score, accuracy of probabilistic prediction: Brier score, label ranking loss
-\subsection{Evaluating betting strategy}
-UNIT, KELLY
-% https://ac-els-cdn-com.libproxy.aalto.fi/S0169207009001708/1-s2.0-S0169207009001708-main.pdf?_tid=ad56a7bb-de9d-4230-bcde-1359866f7b5d&acdnat=1531135889_11cc5428173cb5f67c64d3e19d9f1ae3
-% Stopping rule? https://search-proquest-com.libproxy.aalto.fi/docview/1986130682?pq-origsite=gscholar
 
+\section{Prediction models}
+\subsection{Score Model}
+\textit{Score model} is highly influenced by Groll et al.'s \cite{groll2018prediction} model that used random forest regression and Poisson distribution to simulate each match in World Cup 2018. They used random forest regression to get the expected number of goals for both of the teams. To simulate the tournament correctly they needed to have probabilities for different end results for each match. To overcome this issue they used expected number of goals from random forest regression as intensity parameter $\lambda$ in Poisson distribution $Po(\lambda)$ to draw a random number of goals for both of the teams. Both teams had their own intensity value which meant that both of the Poisson distributions were independent but conditional on the features.
 
+Since I need the probabilities for each outcome, sampling just one possible end result for a match is not enough. For this reason, for each team, the probabilities of scoring number of goals between 0 to 10 is calculated from Poisson probability mass function. As an end result both teams have their own probabilities for scoring goals between 0 and 10 in the form of probability vector $score_prob = \left( h _ { 1 } , h _ { 2 } , \dots , h _ { n - 1 } , h _ { n } \right)$, where N is 10. The outer product of these two score probability vectors, called the \textit{goal matrix}, has the probability estimates for each unique end result as illustrated in the figure \ref{fig:goal_matrix}. Instead of probabilities, this figure has the end result to clarify the matrix's structure.
 
 
 \begin{figure}
@@ -98,4 +95,15 @@ UNIT, KELLY
     \vdots & \vdots   & \ddots & \vdots \\
     N-0 & N-1 & \cdots & N-N\end{bmatrix}$
 \caption{N by N Goal Matrix}
+\label{fig:goal_matrix}
 \end{figure}
+
+Probabilities for match outcome are simple sums from this goal matrix, since $\sum_{i=1}\sum_{j=1}p_{ij} = 1$. Lower triangular is the probability of the home team winning, sum of diagonal is the probability of a draw and sum of upper triangular is the probability of the away team winning.
+
+\subsection{Description of our forecasting procedure}
+\subsection{Forecast accuracy measurements}
+Precision, recall, F-score, accuracy of probabilistic prediction: Brier score, label ranking loss
+\subsection{Evaluating betting strategy}
+UNIT, KELLY
+% https://ac-els-cdn-com.libproxy.aalto.fi/S0169207009001708/1-s2.0-S0169207009001708-main.pdf?_tid=ad56a7bb-de9d-4230-bcde-1359866f7b5d&acdnat=1531135889_11cc5428173cb5f67c64d3e19d9f1ae3
+% Stopping rule? https://search-proquest-com.libproxy.aalto.fi/docview/1986130682?pq-origsite=gscholar
