@@ -192,7 +192,7 @@ class DataLoader():
 
         return dataset
 
-    def get_train_and_test_dataset(self, y_label):
+    def get_train_and_test_dataset(self, y_label, random_state=42):
         dataset, y_label = load_all_data_by_label(y_label)
         dataset = self.filter_data(dataset)
 
@@ -201,7 +201,7 @@ class DataLoader():
         X = get_feature_vector(no_friendly_or_wc, self.feature_columns)
         y = no_friendly_or_wc[y_label]
 
-        X_train, X_test, y_train, y_test = get_train_test_split(X, y)
+        X_train, X_test, y_train, y_test = get_train_test_split(X, y, random_state=random_state)
 
         wc_games = dataset[dataset["tournament"] == "FIFA World Cup"]
         X_wc = get_feature_vector(wc_games, self.feature_columns)
