@@ -5,6 +5,7 @@ from features.data_provider import all_features, other_features, player_features
 from notebook_helpers import iterate_simulations, run_gboost_model_for_features, simulation_iteration_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import make_scorer, accuracy_score, log_loss
 
 def write_log(filename, text, print_text=False):
     with open(filename, "a") as f:
@@ -23,10 +24,11 @@ def get_optimal_params():
         'min_samples_leaf': [1, 3, 5, 10, 15]
     }
 
+    scoring = {'Accuracy': make_scorer(accuracy_score), "LogLoss": make_scorer(log_loss)}
     tuning = GridSearchCV(
         estimator=GradientBoostingClassifier(random_state=10),
         param_grid = param_grid,
-        scoring=['accuracy', 'neg_log_loss'],
+        scoring=scoring,
         n_jobs=12,
         cv=5)
     tuning.fit(X, y)
