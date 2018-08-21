@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from simulation.analyse import get_win_probabilities, get_simulations
 from simulation.predictor import MaxProbabilityScorePredictor, MaxProbabilityOutcomePredictor, OneVsRestPredictor, ScorePredictor
 from simulation.simulation import run_actual_tournament_simulation
-from models import score_model, outcome_model, one_vs_all_model
+from models import score_model, outcome_model, one_vs_all_model, gboost_model
 from db.simulation_table import get_simulation_results, delete_all
 from bet.unit_strategy import UnitStrategy
 from bet.kelly_strategy import KellyStrategy
@@ -34,6 +34,16 @@ def run_outcome_model_for_features(data_loader, tt_file, match_bet_file, params)
 
     X, y = data_loader.get_all_data("home_win")
     model = outcome_model.get_model(X=X, y=y, params=params)
+    predictor = MaxProbabilityOutcomePredictor(model, data_loader)
+
+    return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
+
+def run_gboost_model_for_features(data_loader, tt_file, match_bet_file, params):
+    tournament_template = pd.read_csv(tt_file)
+    match_bets = pd.read_csv(match_bet_file)
+
+    X, y = data_loader.get_all_data("home_win")
+    model = gboost_model.get_model(X=X, y=y, params=params)
     predictor = MaxProbabilityOutcomePredictor(model, data_loader)
 
     return get_tournament_simulation_results(tournament_template, predictor, match_bets[["1", "X", "2"]].values), model
