@@ -95,7 +95,7 @@ for (name, feature_set) in feature_sets:
 
     arguments = get_grid_search_arguments(X)
     results = run_grid_search(arguments, X, y)
-    results.to_csv(f"outcome_hyperparam_optimization_{name}.csv")
+    results.to_csv(f"gboost_hyperparam_optimization_{name}.csv")
     best_params_dict = get_best_params(results)
     optimal_params = {'n_estimators': 250}
     optimal_params["learning_rate"] = best_params_dict["learning_rate"]
