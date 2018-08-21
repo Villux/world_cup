@@ -29,7 +29,7 @@ feature_sets = [
     ("player_features", player_features)
 ]
 
-file_name = "outcome_report_full.txt"
+file_name = "lr_report_full.txt"
 
 reports = []
 for (name, feature_set) in feature_sets:
@@ -54,4 +54,4 @@ for (name, feature_set) in feature_sets:
         write_log(file_name, str(report), print_text=True)
         reports.append(report)
 
-pd.DataFrame(reports).to_csv("gboost_outcome_model_report.csv")
+pd.DataFrame(reports).to_csv("lr_model_report.csv")
