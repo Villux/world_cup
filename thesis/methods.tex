@@ -116,7 +116,24 @@ Probability estimates from binary classifier can be calibrated. This is particul
 \subsection{Description of our forecasting procedure}
 \subsection{Forecast accuracy measurements}
 Precision, recall, F-score, accuracy of probabilistic prediction: Brier score, label ranking loss
-\subsection{Evaluating betting strategy}
-UNIT, KELLY
-% https://ac-els-cdn-com.libproxy.aalto.fi/S0169207009001708/1-s2.0-S0169207009001708-main.pdf?_tid=ad56a7bb-de9d-4230-bcde-1359866f7b5d&acdnat=1531135889_11cc5428173cb5f67c64d3e19d9f1ae3
-% Stopping rule? https://search-proquest-com.libproxy.aalto.fi/docview/1986130682?pq-origsite=gscholar
+\subsection{Evaluating model using betting strategies}
+One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run.  Betting market odds provide a good benchmark since they have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
+
+First strategy \textit{unit strategy} is the simplest strategy. This Strategy is named as \textit{unit strategy} since for all the games one unit is placed for the predicted winner. This strategy benefits from high accuracy. Bookmaker's profit is included in the published odds, which means that if my model would have similar performance as bookmaker's models I should end up losing money in the long run as much as the average commission taken by the bookmaker is. Profitable results from \textit{unit strategy} indicate that the model is more accurate or that the model is correct more often in the matches that have more uniform probabilities for the outcomes.
+
+The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler - how much to bet and which team(s) -  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction to bet is calculated $f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }$, where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$, if the fraction is positive, to get the size of the bet. If the probabilities given by the model are close to true probabilities gambler should end up exponential increasing her wealth in the long run. To utilize the whole potential of the model more complex way to calculate the optimal fraction is used. To get the optimal fractions for bets 1, X and 2 (home win, draw and away in) the simple formula of Kelly criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{fig:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
+
+It's common to bet only a fraction of the optimal bet size since the short-term risk of losing a big proportion of the bankroll is high \cite{maclean2011medium}. For this reason, only 30\% of the suggested bet size is used.
+\begin{figure}
+    \caption{Optimal bet size formula (Kelly). \Textit{P}s are outcome probabilities, \textit{o}s are net odds and \textit{f}s are optimal fractions from total bankroll to bet. }
+     \begin{align*}
+     \max_{f_1, f_2, f_3} p_1  \log(1 + o_1 f_1 - f_2 - f_3) + p_2 \log(1 + o_2 f_2 - f_1 - f_3) + p_3 \log(1 + o_3 f_3 - f_1 - f_2)
+    \end{align*}
+    \begin{align*}
+        \text { subject to: }  f_1 + f_2 + f_3 \leq 1 \\
+         0 \geq f_1, f_2, f_3 \leq 1
+    \end{align*}
+    \label{eq:kelly}
+\end{figure}
+
+
