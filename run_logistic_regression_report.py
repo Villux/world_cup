@@ -39,7 +39,7 @@ for (name, feature_set) in feature_sets:
     data_loader = DataLoader(feature_set)
     X, y = data_loader.get_all_data("home_win")
 
-    params = {'n_jobs': cpu_count(), "solver": "newton-cg"}
+    params = {'n_jobs': cpu_count(), "solver": "newton-cg", 'C': 0.001}
 
     for (tt_file, bet_file, filter_start) in tournament_parameters:
         data_loader.set_filter_start(filter_start)
