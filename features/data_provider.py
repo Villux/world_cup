@@ -157,8 +157,8 @@ def get_dataset(flip=False, suffle=False):
         dataset = switch_home_and_away(dataset)
     return dataset
 
-def get_train_test_split(X, y, size=0.25):
-    return train_test_split(X, y, test_size=size, random_state=42)
+def get_train_test_split(X, y, size=0.25, random_state=42):
+    return train_test_split(X, y, test_size=size, random_state=42) if random_state else train_test_split(X, y, test_size=size)
 
 def load_all_data_by_label(y_label):
     if y_label == "away_score":
