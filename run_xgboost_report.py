@@ -26,7 +26,7 @@ def get_optimal_params():
     tuning = GridSearchCV(
         estimator=GradientBoostingClassifier(random_state=10),
         param_grid = param_grid,
-        scoring='accuracy',
+        scoring=['accuracy', 'neg_log_loss'],
         n_jobs=12,
         cv=5)
     tuning.fit(X, y)
