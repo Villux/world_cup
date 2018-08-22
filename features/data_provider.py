@@ -25,6 +25,7 @@ rfe_feature = ['elo_diff', 'away_goal_mean', 'away_goals_with_home', 'home_goal_
                'ball_control_diff', 'reactions_diff', 'gk_diving_diff']
 
 all_features = other_features + player_features
+no_elo_features = all_features[1:]
 
 def get_player_attribute_query(team, date):
     return f"SELECT * from player_attribute where nationality='{team}' AND date < '{date}' ORDER BY date desc LIMIT 1;"
