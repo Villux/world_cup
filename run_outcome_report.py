@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 
-from features.data_provider import all_features, other_features, player_features, DataLoader
+from features.data_provider import all_features, other_features, player_features, rfe_feature, DataLoader
 from models.helpers import get_default_parameters, get_best_params
 from notebook_helpers import run_grid_search_for_outcome, get_cv_grid_search_arguments
 from notebook_helpers import iterate_simulations, run_outcome_model_for_features, simulation_iteration_report
@@ -21,7 +21,8 @@ tournament_parameters = [
 feature_sets = [
     ("all_features", all_features),
     ("general_features", other_features),
-    ("player_features", player_features)
+    ("player_features", player_features),
+    ("rfe_features", rfe_feature)
 ]
 
 file_name = "outcome_report_full.txt"
