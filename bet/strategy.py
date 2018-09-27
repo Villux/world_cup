@@ -26,8 +26,19 @@ class Strategy():
     def get_returns(self):
         return self.single_bet_returns
 
+    def get_inclusive_returns(self):
+        net_returns = np.array(self.get_returns())
+        return net_returns + 1
+
+    def get_balance_progression(self):
+        returns = self.get_inclusive_returns()
+        return np.cumprod(np.insert(returns, 0, self.initial_capital))
+
     def get_total_profit(self):
         return self.balance/self.initial_capital
 
     def get_costs(self):
         return self.costs
+
+    def get_fractions(self):
+        return self.costs / self.get_balance_progression()[:-1]
