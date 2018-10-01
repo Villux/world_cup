@@ -37,25 +37,25 @@ Just looking at the results from the tables doesn't really tell you much. There 
 
 \begin{table}
     \caption{Results for Outcome model}
-    \begin{tabular}{| c  c| c| c| c|}
+    \begin{tabular}{| c  c| c| c| c|c|}
         \hline
-        Metric& Feature set & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
+        Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
         \hline
-        Accuracy & All features & 57.34\% $\pm$ 0.72 & 60.94\% $\pm$ 1.71 & 54.84\% $\pm$ 1.09 \\
- & General features & 52.03\% $\pm$ 1.22 & 56.56\% $\pm$ 0.62 & 55.47\% $\pm$ 1.05 \\
- & Player features & 60.47\% $\pm$ 1.41 & 59.69\% $\pm$ 0.94 & 54.22\% $\pm$ 2.22 \\
- &  & & &  \\
-Log Loss & All features & 0.97 $\pm$ 0.0 & 0.94 $\pm$ 0.0 & 0.99 $\pm$ 0.01 \\
- & General features & 1.01 $\pm$ 0.0 & 0.95 $\pm$ 0.01 & 0.97 $\pm$ 0.01 \\
- & Player features & 0.94 $\pm$ 0.0 & 0.95 $\pm$ 0.0 & 1.01 $\pm$ 0.0 \\
- &  & & &  \\
-Unit profit & All features & 6.39\% $\pm$ 1.96 & 15.65\% $\pm$ 5.21 & 2.93\% $\pm$ 4.43 \\
- & General features & -3.48\% $\pm$ 3.4 & 5.17\% $\pm$ 1.52 & 5.04\% $\pm$ 3.67 \\
- & Player features & 18.38\% $\pm$ 4.26 & 12.72\% $\pm$ 2.22 & 3.32\% $\pm$ 8.33 \\
- &  & & &  \\
-Kelly profit & All features & -10.58\% $\pm$ 7.01 & 18.55\% $\pm$ 10.13 & 23.26\% $\pm$ 18.96 \\
- & General features & -47.32\% $\pm$ 4.1 & 2.86\% $\pm$ 8.15 & 48.9\% $\pm$ 16.64 \\
- & Player features & 46.63\% $\pm$ 8.79 & 12.26\% $\pm$ 6.57 & 2.75\% $\pm$ 9.05 \\
+        Accuracy & AF & 57.34\% $\pm$ 0.72 & 60.94\% $\pm$ 1.71 & 54.84\% $\pm$ 1.09& 57.71 \\
+         & GF & 52.03\% $\pm$ 1.22 & 56.56\% $\pm$ 0.62 & 55.47\% $\pm$ 1.05& 54.69 \\
+         & PF & 60.47\% $\pm$ 1.41 & 59.69\% $\pm$ 0.94 & 54.22\% $\pm$ 2.22& 58.13 \\
+         & & & & & \\
+        Log Loss & AF & 0.9673 $\pm$ 0.0037 & 0.9362 $\pm$ 0.0047 & 0.9922 $\pm$ 0.0075& 0.9652 \\
+         & GF & 1.0122 $\pm$ 0.0045 & 0.9549 $\pm$ 0.0053 & 0.9676 $\pm$ 0.0052& 0.9782 \\
+         & PF & 0.9406 $\pm$ 0.0026 & 0.9503 $\pm$ 0.0024 & 1.0118 $\pm$ 0.0045& 0.9676 \\
+         & & & & & \\
+        Unit profit & AF & 6.39\% $\pm$ 1.96 & 15.65\% $\pm$ 5.21 & 2.93\% $\pm$ 4.43& 8.32 \\
+         & GF & -3.48\% $\pm$ 3.4 & 5.17\% $\pm$ 1.52 & 5.04\% $\pm$ 3.67& 2.24 \\
+         & PF & 18.38\% $\pm$ 4.26 & 12.72\% $\pm$ 2.22 & 3.32\% $\pm$ 8.33& 11.47 \\
+         & & & & & \\
+        Kelly profit & AF & -10.58\% $\pm$ 7.01 & 18.55\% $\pm$ 10.13 & 23.26\% $\pm$ 18.96& 10.41 \\
+         & GF & -47.32\% $\pm$ 4.1 & 2.86\% $\pm$ 8.15 & 48.9\% $\pm$ 16.64& 1.48 \\
+         & PF & 46.63\% $\pm$ 8.79 & 12.26\% $\pm$ 6.57 & 2.75\% $\pm$ 9.05& 20.55 \\
  \hline
     \end{tabular}
     \label{table:outcomemodel}
@@ -64,25 +64,25 @@ Kelly profit & All features & -10.58\% $\pm$ 7.01 & 18.55\% $\pm$ 10.13 & 23.26\
 
 \begin{table}
     \caption{Results for Score model}
-    \begin{tabular}{| c  c| c| c| c|}
+    \begin{tabular}{| c  c| c| c| c|c|}
         \hline
-        Metric& Feature set & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
+        Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
         \hline
-        Accuracy & All features & 59.38\% $\pm$ 0.0 & 58.13\% $\pm$ 0.62 & 52.81\% $\pm$ 0.62 \\
- & General features & 52.03\% $\pm$ 1.0 & 59.38\% $\pm$ 0.0 & 50.94\% $\pm$ 0.77 \\
- & Player features & 58.44\% $\pm$ 1.74 & 61.09\% $\pm$ 0.84 & 53.91\% $\pm$ 0.78 \\
- &  & & &  \\
-Log Loss & All features & 0.95 $\pm$ 0.0 & 0.94 $\pm$ 0.0 & 0.98 $\pm$ 0.0 \\
- & General features & 0.98 $\pm$ 0.0 & 0.91 $\pm$ 0.0 & 0.95 $\pm$ 0.0 \\
- & Player features & 0.96 $\pm$ 0.0 & 0.94 $\pm$ 0.0 & 1.0 $\pm$ 0.0 \\
- &  & & &  \\
-Unit profit & All features & 13.52\% $\pm$ 0.0 & 5.94\% $\pm$ 2.11 & -2.8\% $\pm$ 1.29 \\
- & General features & -5.4\% $\pm$ 2.57 & 13.66\% $\pm$ 0.0 & -5.08\% $\pm$ 2.45 \\
- & Player features & 12.26\% $\pm$ 5.1 & 16.11\% $\pm$ 2.64 & 2.23\% $\pm$ 2.09 \\
- &  & & &  \\
-Kelly profit & All features & 35.59\% $\pm$ 4.45 & 12.37\% $\pm$ 1.02 & 24.2\% $\pm$ 4.43 \\
- & General features & -19.06\% $\pm$ 1.87 & 107.61\% $\pm$ 4.47 & 99.75\% $\pm$ 3.63 \\
- & Player features & 2.04\% $\pm$ 2.62 & 10.82\% $\pm$ 4.87 & 8.3\% $\pm$ 2.1 \\
+        Accuracy & AF & 59.38\% $\pm$ 0.0 & 58.13\% $\pm$ 0.62 & 52.81\% $\pm$ 0.62& 56.77 \\
+         & GF & 52.03\% $\pm$ 1.0 & 59.38\% $\pm$ 0.0 & 50.94\% $\pm$ 0.77& 54.12 \\
+         & PF & 58.44\% $\pm$ 1.74 & 61.09\% $\pm$ 0.84 & 53.91\% $\pm$ 0.78& 57.81 \\
+         & & & & & \\
+        Log Loss & AF & 0.9508 $\pm$ 0.0016 & 0.935 $\pm$ 0.0005 & 0.9788 $\pm$ 0.0016& 0.9549 \\
+         & GF & 0.9831 $\pm$ 0.0012 & 0.9133 $\pm$ 0.0011 & 0.9522 $\pm$ 0.001& 0.9495 \\
+         & PF & 0.9566 $\pm$ 0.0013 & 0.9446 $\pm$ 0.0024 & 0.9996 $\pm$ 0.0009& 0.9669 \\
+         & & & & & \\
+        Unit profit & AF & 13.52\% $\pm$ 0.0 & 5.94\% $\pm$ 2.11 & -2.8\% $\pm$ 1.29& 5.55 \\
+         & GF & -5.4\% $\pm$ 2.57 & 13.66\% $\pm$ 0.0 & -5.08\% $\pm$ 2.45& 1.06 \\
+         & PF & 12.26\% $\pm$ 5.1 & 16.11\% $\pm$ 2.64 & 2.23\% $\pm$ 2.09& 10.2 \\
+         & & & & & \\
+        Kelly profit & AF & 35.59\% $\pm$ 4.45 & 12.37\% $\pm$ 1.02 & 24.2\% $\pm$ 4.43& 24.05 \\
+         & GF & -19.06\% $\pm$ 1.87 & 107.61\% $\pm$ 4.47 & 99.75\% $\pm$ 3.63& 62.77 \\
+         & PF & 2.04\% $\pm$ 2.62 & 10.82\% $\pm$ 4.87 & 8.3\% $\pm$ 2.1& 7.05 \\
  \hline
     \end{tabular}
     \label{table:scoreresults}
@@ -90,51 +90,25 @@ Kelly profit & All features & 35.59\% $\pm$ 4.45 & 12.37\% $\pm$ 1.02 & 24.2\% $
 
 \begin{table}
     \caption{Results for OneVsRest model}
-    \begin{tabular}{| c  c| c| c| c|}
+    \begin{tabular}{| c  c| c| c| c|c|}
         \hline
-        Metric& Feature set & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
+        Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
         \hline
-        Accuracy & All features & 57.66\% $\pm$ 0.47 & 57.34\% $\pm$ 1.22 & 56.09\% $\pm$ 0.84 \\
- & General features & 51.25\% $\pm$ 1.95 & 55.16\% $\pm$ 1.57 & 57.03\% $\pm$ 1.05 \\
- & Player features & 61.09\% $\pm$ 1.3 & 60.16\% $\pm$ 1.05 & 54.37\% $\pm$ 1.36 \\
- &  & & &  \\
-Log Loss & All features & 0.96 $\pm$ 0.0 & 0.94 $\pm$ 0.0 & 0.98 $\pm$ 0.01 \\
- & General features & 1.01 $\pm$ 0.01 & 0.95 $\pm$ 0.01 & 0.96 $\pm$ 0.01 \\
- & Player features & 0.94 $\pm$ 0.0 & 0.96 $\pm$ 0.0 & 1.01 $\pm$ 0.01 \\
- &  & & &  \\
-Unit profit & All features & 7.31\% $\pm$ 1.04 & 5.01\% $\pm$ 2.93 & 6.52\% $\pm$ 2.97 \\
- & General features & -5.03\% $\pm$ 4.84 & 3.04\% $\pm$ 4.31 & 10.38\% $\pm$ 3.38 \\
- & Player features & 19.83\% $\pm$ 4.01 & 14.14\% $\pm$ 2.82 & 3.88\% $\pm$ 5.11 \\
- &  & & &  \\
-Kelly profit & All features & -2.6\% $\pm$ 6.57 & 9.34\% $\pm$ 8.69 & 26.26\% $\pm$ 10.92 \\
- & General features & -44.81\% $\pm$ 3.96 & 14.61\% $\pm$ 13.1 & 83.44\% $\pm$ 23.89 \\
- & Player features & 61.65\% $\pm$ 9.88 & -3.92\% $\pm$ 4.68 & 0.77\% $\pm$ 7.02 \\
- \hline
-    \end{tabular}
-    \label{table:onevsrestresults}
-\end{table}
-
-\begin{table}
-    \caption{Results for GradientBoost model}
-    \begin{tabular}{| c  c| c| c| c|}
-        \hline
-        Metric& Feature set & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
-        \hline
-       Accuracy & All features & 57.97\% $\pm$ 0.84 & 59.38\% $\pm$ 1.56 & 54.69\% $\pm$ 2.71 \\
- & General features & 52.34\% $\pm$ 1.05 & 56.41\% $\pm$ 1.63 & 55.0\% $\pm$ 1.36 \\
- & Player features & 60.0\% $\pm$ 1.74 & 59.84\% $\pm$ 1.0 & 53.44\% $\pm$ 2.6 \\
- &  & & &  \\
-Log Loss & All features & 0.97 $\pm$ 0.01 & 0.94 $\pm$ 0.01 & 1.0 $\pm$ 0.01 \\
- & General features & 1.02 $\pm$ 0.0 & 0.95 $\pm$ 0.0 & 0.97 $\pm$ 0.01 \\
- & Player features & 0.94 $\pm$ 0.0 & 0.96 $\pm$ 0.0 & 1.03 $\pm$ 0.01 \\
- &  & & &  \\
-Unit profit & All features & 10.32\% $\pm$ 2.51 & 13.42\% $\pm$ 4.27 & 4.18\% $\pm$ 9.87 \\
- & General features & -2.79\% $\pm$ 3.12 & 6.41\% $\pm$ 3.91 & 5.32\% $\pm$ 4.0 \\
- & Player features & 17.22\% $\pm$ 5.15 & 13.19\% $\pm$ 2.11 & 6.03\% $\pm$ 9.49 \\
- &  & & &  \\
-Kelly profit & All features & -2.39\% $\pm$ 12.86 & 21.99\% $\pm$ 8.52 & 30.88\% $\pm$ 26.35 \\
- & General features & -49.3\% $\pm$ 4.23 & 17.84\% $\pm$ 15.34 & 43.93\% $\pm$ 14.94 \\
- & Player features & 45.27\% $\pm$ 10.48 & -8.79\% $\pm$ 5.58 & -5.08\% $\pm$ 17.59 \\
+        Accuracy & AF & 57.66\% $\pm$ 0.47 & 57.34\% $\pm$ 1.22 & 56.09\% $\pm$ 0.84& 57.03 \\
+         & GF & 51.25\% $\pm$ 1.95 & 55.16\% $\pm$ 1.57 & 57.03\% $\pm$ 1.05& 54.48 \\
+         & PF & 61.09\% $\pm$ 1.3 & 60.16\% $\pm$ 1.05 & 54.37\% $\pm$ 1.36& 58.54 \\
+         & & & & & \\
+        Log Loss & AF & 0.9646 $\pm$ 0.0035 & 0.9382 $\pm$ 0.0039 & 0.9831 $\pm$ 0.005& 0.962 \\
+         & GF & 1.012 $\pm$ 0.0052 & 0.9515 $\pm$ 0.0068 & 0.9583 $\pm$ 0.0059& 0.9739 \\
+         & PF & 0.9365 $\pm$ 0.0023 & 0.9564 $\pm$ 0.0032 & 1.0083 $\pm$ 0.0052& 0.9671 \\
+         & & & & & \\
+        Unit profit & AF & 7.31\% $\pm$ 1.04 & 5.01\% $\pm$ 2.93 & 6.52\% $\pm$ 2.97& 6.28 \\
+         & GF & -5.03\% $\pm$ 4.84 & 3.04\% $\pm$ 4.31 & 10.38\% $\pm$ 3.38& 2.8 \\
+         & PF & 19.83\% $\pm$ 4.01 & 14.14\% $\pm$ 2.82 & 3.88\% $\pm$ 5.11& 12.62 \\
+         & & & & &  \\
+        Kelly profit & AF & -2.6\% $\pm$ 6.57 & 9.34\% $\pm$ 8.69 & 26.26\% $\pm$ 10.92& 11.0 \\
+         & GF & -44.81\% $\pm$ 3.96 & 14.61\% $\pm$ 13.1 & 83.44\% $\pm$ 23.89& 17.75 \\
+         & PF & 61.65\% $\pm$ 9.88 & -3.92\% $\pm$ 4.68 & 0.77\% $\pm$ 7.02& 19.5 \\
  \hline
     \end{tabular}
     \label{table:onevsrestresults}
@@ -142,25 +116,25 @@ Kelly profit & All features & -2.39\% $\pm$ 12.86 & 21.99\% $\pm$ 8.52 & 30.88\%
 
 \begin{table}
     \caption{Results for Logistic Regression model}
-    \begin{tabular}{| c  c| c| c| c|}
+    \begin{tabular}{| c  c| c| c| c|c|}
         \hline
-        Metric&Features& \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
+        Metric & & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}& Mean\\
         \hline
-        Accuracy & AF & 54.84\% $\pm$ 0.84 & 63.59\% $\pm$ 0.72 & 51.41\% $\pm$ 1.3 \\
- & GF & 51.72\% $\pm$ 1.09 & 63.28\% $\pm$ 1.26 & 54.37\% $\pm$ 1.53 \\
- & PF & 59.69\% $\pm$ 0.62 & 62.19\% $\pm$ 0.62 & 50.78\% $\pm$ 0.78 \\
- \hline
-Log Loss & AF & 0.97 $\pm$ 0.0 & 0.88 $\pm$ 0.0 & 1.04 $\pm$ 0.01 \\
- & GF & 1.0 $\pm$ 0.0 & 0.91 $\pm$ 0.0 & 0.98 $\pm$ 0.0 \\
- & PF & 0.93 $\pm$ 0.0 & 0.93 $\pm$ 0.0 & 1.06 $\pm$ 0.01 \\
- \hline
-Unit ret & AF & 0.79\% $\pm$ 1.51 & 27.73\% $\pm$ 3.09 & -5.11\% $\pm$ 3.88 \\
- & GF & -3.75\% $\pm$ 2.07 & 24.57\% $\pm$ 4.51 & -0.28\% $\pm$ 5.87 \\
- & PF & 14.73\% $\pm$ 1.93 & 21.98\% $\pm$ 2.7 & -8.95\% $\pm$ 2.03 \\
- \hline
-Kelly ret & AF & -20.29\% $\pm$ 5.49 & 271.57\% $\pm$ 25.03 & -43.87\% $\pm$ 5.37 \\
- & GF & -36.47\% $\pm$ 3.66 & 125.73\% $\pm$ 11.94 & 8.75\% $\pm$ 10.44 \\
- & PF & 55.93\% $\pm$ 4.8 & 52.77\% $\pm$ 8.74 & -49.56\% $\pm$ 4.26 \\
+        Accuracy & AF & 54.84\% $\pm$ 0.84 & 63.59\% $\pm$ 0.72 & 51.41\% $\pm$ 1.3& 56.61 \\
+         & GF & 51.72\% $\pm$ 1.09 & 63.28\% $\pm$ 1.26 & 54.37\% $\pm$ 1.53& 56.46 \\
+         & PF & 59.69\% $\pm$ 0.62 & 62.19\% $\pm$ 0.62 & 50.78\% $\pm$ 0.78& 57.55 \\
+         & & & & & \\
+        Log Loss & AF & 0.9719 $\pm$ 0.0043 & 0.8791 $\pm$ 0.0025 & 1.0418 $\pm$ 0.0071& 0.9643 \\
+         & GF & 0.9953 $\pm$ 0.0041 & 0.9112 $\pm$ 0.0035 & 0.9837 $\pm$ 0.0028& 0.9634 \\
+         & PF & 0.9334 $\pm$ 0.0017 & 0.9311 $\pm$ 0.0032 & 1.0563 $\pm$ 0.0064& 0.9736 \\
+         & & & & & \\
+        Unit profit & AF & 0.79\% $\pm$ 1.51 & 27.73\% $\pm$ 3.09 & -5.11\% $\pm$ 3.88& 7.8 \\
+         & GF & -3.75\% $\pm$ 2.07 & 24.57\% $\pm$ 4.51 & -0.28\% $\pm$ 5.87& 6.85 \\
+         & PF & 14.73\% $\pm$ 1.93 & 21.98\% $\pm$ 2.7 & -8.95\% $\pm$ 2.03& 9.25 \\
+         & & & & & \\
+        Kelly profit & AF & -20.29\% $\pm$ 5.49 & 271.57\% $\pm$ 25.03 & -43.87\% $\pm$ 5.37& 69.14 \\
+         & GF & -36.47\% $\pm$ 3.66 & 125.73\% $\pm$ 11.94 & 8.75\% $\pm$ 10.44& 32.67 \\
+         & PF & 55.93\% $\pm$ 4.8 & 52.77\% $\pm$ 8.74 & -49.56\% $\pm$ 4.26& 19.71 \\
  \hline
     \end{tabular}
     \label{table:linearmodel}
@@ -268,7 +242,41 @@ Figure \ref{fig:unit_model_comparison} shows interesting fact: models predict ou
 \end{figure}
 
 
-\section{}
+\section{Feature set differences}
+It's interesting that narrower feature sets can produce better accuracy. How can less describe more - it's against common sense. Every single tree in random forest is a decision tree, which are very prone to overfit - like mentioned in previous chapter. Random forest's trees with limited subsample of predictors and big size of the forest should tackle that problem. All these characteristics argue that adding more features or features that are strong predictors should not harm the models performance.
+
+These problems are only visible if models' accuracy is compared. Being one of the most important metrics, it's still not the most important for the sophisticated betting strategies like kelly. Log loss measures model's probability distributions accuracy- smaller value indicates more accurate estimate. When log loss is compared per tournament model trained with limited feature set can have lower log loss value than the same model that is trained with all features. But when average performance from every tournament is considered training model with all features seems to output the lowest log loss score with \textit{Outcome model} and \textit{OVR model} and second lowest (only 0.0009 difference at highest) with \textit{Score model} and \textit{Linear model}. This indicates that even-though increasing accuracy might not benefit from using all features probability distribution prediction clearly benefits. Football as a sport can often end with a surprise result so accuracy as the de facto metric anyway is a bad idea.
+
+
+is considered using all features to train any of the tree based models achieves the best average log loss value. With \textit{linear model} using general features outputs the best log loss average, but barely.
+
+\begin{table}
+    \caption{Hyperparameter selection results for random forest models.}
+    \begin{tabular}{| c  c| c| c| c|}
+        \hline
+        Model & Features & \# of predictors & Min samples at leaf & Max depth\\
+        \hline
+        Score & AF & $\sqrt{M}$ & 1 & 8 \\
+         & GF & $\log_2{M}$ & 10 & 8 \\
+         & PF & $\sqrt{M}$ & 5 & Na \\
+         \hline
+        Outcome & AF & $\sqrt{M}$ & 3 & 8 \\
+         & GF & $\log_2{M}$ & 15 & 5 \\
+         & PF & $\log_2{M}$ & 3 & 8 \\
+        \hline
+        OVR & AF home win & $\sqrt{M}$ & 3 & 5 \\
+        OVR & AF draw & $\sqrt{M}$ & 5 & Na \\
+        OVR & AF away win & $\sqrt{M}$ & 3 & 5 \\
+        OVR & GF home win & $\sqrt{M}$ & 10 & 12 \\
+        OVR & GF draw & $\log_2{M}$ & 15 & 8 \\
+        OVR & GF away win & $\log_2{M}$ & 10 & 5 \\
+        OVR & PF home win & $\log_2{M}$ & 3 & 5 \\
+        OVR & PF draw & $\log_2{M}$ & 15 & 5 \\
+        OVR & PF away win & $\log_2{M}$ & 5 & 8 \\
+        \hline
+    \end{tabular}
+    \label{table:hyperparam_results}
+\end{table}
 \subsection{Match-level betting activity}
 \subsection{Feature elimination}
 \subsection{Probability distribution comparison}
