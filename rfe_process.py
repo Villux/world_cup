@@ -20,7 +20,7 @@ while len(feature_set) > 0:
     accuracies = []
     log_losses = []
     feature_values = {}
-    for i in range(10):
+    for i in range(100):
         model = RandomForestClassifier(**params)
 
         X_train, y_train, X_test, y_test = data_loader.get_train_and_test_dataset("home_win", random_state=None)
@@ -57,5 +57,5 @@ data = {
     "log_loss": avg_log_lossss
 }
 
-with open('rfe_without_elo_outcome.pickle', 'wb') as handle:
+with open('rfe_outcome_model.pickle', 'wb') as handle:
     pickle.dump(data, handle)
