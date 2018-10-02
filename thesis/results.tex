@@ -150,7 +150,7 @@ Figure \ref{fig:unit_model_comparison} shows interesting fact: models predict ou
     \caption{Means, standard deviations, and correlations of home win probability predictions for World cup 2018.}
     \label{table:home_win_metrics}
     \noindent
-    \begin{tabular}{@{}lld{3.3}d{5.3}d{3.5}d{2.5}d{1.5}d{1.3}@{}}
+    \begin{tabular}{c c c c c c c c c c}
     \toprule
     & Measure
       & \multicolumn{1}{r}{mean}
@@ -175,7 +175,7 @@ Figure \ref{fig:unit_model_comparison} shows interesting fact: models predict ou
     \caption{Means, standard deviations, and correlations of draw probability predictions for World cup 2018.}
     \label{table:draw_metrics}
     \noindent
-    \begin{tabular}{@{}lld{3.3}d{5.3}d{3.5}d{2.5}d{1.5}d{1.3}@{}}
+    \begin{tabular}{c c c c c c c c c c}
     \toprule
     & Measure
       & \multicolumn{1}{r}{mean}
@@ -200,7 +200,7 @@ Figure \ref{fig:unit_model_comparison} shows interesting fact: models predict ou
     \caption{Means, standard deviations, and correlations of away win probability predictions for World cup 2018.}
     \label{table:away_win_metrics}
     \noindent
-    \begin{tabular}{@{}lld{3.3}d{5.3}d{3.5}d{2.5}d{1.5}d{1.3}@{}}
+    \begin{tabular}{c c c c c c c c c c}
     \toprule
     & Measure
       & \multicolumn{1}{r}{mean}
@@ -248,7 +248,7 @@ It's interesting that narrower feature sets can produce better accuracy. How can
 These problems are visible if models' accuracy is compared. Being one of the most important metrics, it's still not the most important for the sophisticated betting strategies like kelly, which utilizes model's probability estimates. Log loss
 is a metric that can be used to compare probability distributions' accuracy. A smaller value indicates a more accurate estimate. When log loss is compared per tournament model trained with limited feature set can have lower log loss value than the same model that is trained using all of the features. But when average performance from every tournament is considered training model with all features seems to output the lowest log loss score with \textit{Outcome model} and \textit{OVR model} and second lowest (only 0.0009 difference at highest) with \textit{Score model} and \textit{Linear model}. This indicates that even-though increasing accuracy might not benefit from using all features probability distribution prediction clearly benefits. Since football games often have low scores can last minute surprises change the whole game. Underdog can beat the favourite or at least square the game. This means that achieving high accuracy is hard, but fixing probabilities to match the true ones has more room to improve.
 
-Random forest includes the information on feature importance. These values can give insight on models reasoning. This data combined with optimal hyperparameters is one way to interpret the models since there inspecting every single tree in the forest would be too cumbersome. Segal \cite{segal2004machine} showed that noisy variable can lead to higher optimal value for minimum samples at leaf hyperparameter. With generic features models seem to prefer higher value for the hyperparameter minimum samples at leaf as we can see from the table \ref{table:hyperparam_results}. Figure \ref{fig:outcome_feature_importance_gf} lists feature's importance for Outcome model trained with generic features. Difference between elo rating dominates the others, but by just looking at the plot it's impossible to say if any of the features could be considered to be just noise. Lower importance features like \textit{home_goal} and \textit{away_goal} seem to be in the middle tier when model is trained with all features. Comparing figures \ref{fig:outcome_feature_importance_af}, \ref{fig:outcome_feature_importance_gf} and \ref{fig:outcome_feature_importance_pf} only confirms that elo is very important feature and shows that some of the player attributes rank high. So it's clear what are important but not that clear are there unuseful features or are eventual all features needed for best performance.
+Random forest includes the information on feature importance. These values can give insight on models reasoning. This data combined with optimal hyperparameters is one way to interpret the models since inspecting every single tree in the forest would be too cumbersome. Segal \cite{segal2004machine} showed that noisy variable can lead to higher optimal value for minimum samples at leaf hyperparameter. With generic features models seem to prefer higher value for the hyperparameter minimum samples at leaf as we can see from the table \ref{table:hyperparam_results}.  Figure \ref{fig:outcome_feature_importance_gf} lists feature's importance for Outcome model trained with generic features. Difference between elo rating dominates the others, but just by looking at the plot it's impossible to say if any of the features could be considered to be just noise. Lower importance features like \textit{home\_goal} and \textit{away\_goal} seem to be in the middle tier when model is trained with all features. This higher importance compared to other features could mean that these features have predicting power. Comparing figures \ref{fig:outcome_feature_importance_af}, \ref{fig:outcome_feature_importance_gf} and \ref{fig:outcome_feature_importance_pf} only confirms that elo is very important feature and shows that some of the player attributes rank high. So it's clear what features are important but not that clear what features are unimportant - if any of them are.
 
 \begin{table}
     \caption{Hyperparameter selection results for random forest models.}
@@ -300,15 +300,5 @@ Random forest includes the information on feature importance. These values can g
 \end{figure}
 
 
-\subsection{Match-level betting activity}
-\subsection{Feature elimination}
-\subsection{Probability distribution comparison}
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_score_2014_kelly.eps}
-    \caption{50\% and 95\% tolerance ellipses.}
-    \label{fig:50_95}
-\end{figure}
+\subsection{Match-level betting activity - what drives the profits?}
+\subsection{RFE for best model}
