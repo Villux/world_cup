@@ -8,7 +8,15 @@ from models.helpers import get_feature_importance
 
 feature_set = all_features.copy()
 
-params = {'oob_score' : True, 'bootstrap': True,'n_jobs':-1, 'n_estimators': 1000, "max_features": "sqrt"}
+params = {
+    'oob_score' : True,
+    'bootstrap': True,
+    'n_jobs':-1,
+    'n_estimators': 1000,
+    "max_features": "sqrt",
+    "max_depth": 8,
+    "min_samples_leaf": 3
+}
 
 avg_accuracies = []
 avg_log_lossss = []
