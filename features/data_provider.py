@@ -19,10 +19,9 @@ player_features = ['rating_diff', 'potential_diff', 'height_diff','weight_diff',
                    'aggression_diff','penalties_diff','marking_diff','standing_tackle_diff',
                   'gk_diving_diff', 'gk_handling_diff', 'gk_kicking_diff', 'gk_reflexes_diff']
 
-rfe_feature = ['elo_diff', 'away_goal_mean', 'away_goals_with_home', 'home_goal_mean',
-               'rating_diff', 'potential_diff', 'height_diff', 'crossing_diff',
-               'finishing_diff', 'short_passing_diff', 'fk_accuracy_diff', 'long_passing_diff',
-               'ball_control_diff', 'reactions_diff', 'gk_diving_diff']
+rfe_feature = ['away_goals_with_home','finishing_diff','height_diff','crossing_diff','potential_diff',
+               'fk_accuracy_diff','home_goal_mean','away_goal_mean','ball_control_diff','long_passing_diff',
+               'short_passing_diff','reactions_diff','rating_diff','elo_diff']
 
 all_features = other_features + player_features
 no_elo_features = all_features[1:]

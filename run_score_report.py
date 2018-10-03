@@ -20,9 +20,10 @@ tournament_parameters = [
     ('data/original/wc_2010_games_real.csv', 'data/original/wc_2010_bets.csv', "2010-06-11")
 ]
 feature_sets = [
-    ("all_features", all_features, "score_hyperparam_optimization_all_features.csv"),
-    ("general_features", other_features, "score_hyperparam_optimization_general_features.csv"),
-    ("player_features", player_features, "score_hyperparam_optimization_player_features.csv")
+    # ("all_features", all_features, "score_hyperparam_optimization_all_features.csv"),
+    # ("general_features", other_features, "score_hyperparam_optimization_general_features.csv"),
+    # ("player_features", player_features, "score_hyperparam_optimization_player_features.csv")
+    ("rfe_features", rfe_feature, "score_hyperparam_optimization_rfe.csv"))
 ]
 
 file_name = "score_report_full.txt"
@@ -70,4 +71,4 @@ for (name, feature_set, fname) in feature_sets:
         write_log(file_name, str(report), print_text=True)
         reports.append(report)
 
-pd.DataFrame(reports).to_csv("score_model_report.csv")
+pd.DataFrame(reports).to_csv("score_model_report_rfe.csv")
