@@ -299,6 +299,72 @@ Random forest includes the information on feature importance. These values can g
     \label{fig:outcome_feature_importance_pf}
 \end{figure}
 
+If some of the features are just noise, those features can be removed without harming the models probability estimates. One way to do this is recursive feature elimination where one by one features are eliminated and models performance is measured for every  elimination round. Test is done 100 times for every elimination round to guarantee that variation in the results won't cause feature to be eliminated to early. I did the recursive feature elimination process the \textit{Outcome model}.
+
+\section{Recursive feature elimination}
+Idea behind recursive feature elimination (RFE) is to fit the model multiple times and see which has the least amount of predictive power on average. That feature is then eliminated and process is started again until there are no features left. Average accuracy and log loss are stored for each feature set. I fitted models 100 times and used feature importance metric to compare the features. All of the feature test were done with \textit{Outcome model}.
+
+First test included default parameters for \textit{Outcome model}: 1000 for number of estimators, number of predictors $\sqrt{}$, maximum depth Na and minimum samples at leaf 1. From figure \ref{fig:def_avg_accu} we can see that after \textit{gk\_diving} accuracy starts to decrease slowly. If we compare this result to figure \ref{fig:def_avg_loss}
+it's evident that the log loss increases after \textit{gk\_diving}. For comparison I run the same test with \textit{Outcome model} using optimal parameters used in all feature setup in the table \ref{table:outcomemodel}. Results are visible in the figures \ref{fig:optimal_avg_accu} and \ref{fig:optimal_avg_loss}. With optimal hyperparameters model performs better through out the whole RFE porcess. Also, model peaks the highest accuracy with only just four features. Improvement with this same feature set is not visible in the average log loss. The average log loss has a clear performance drop only when there is a single feature left.
+
+Since with default hyperparameters decrease in accuracy and in log loss was visible I ran the World cup simulation for \textit{Outcome model} using limited feature set that contained features: \textit{'away\_goals\_with\_home','finishing\_diff','height\_diff','crossing\_diff','potential\_diff','fk\_accuracy\_diff','home\_goal\_mean','away\_goal\_mean','ball\_control\_diff','long\_passing\_diff', 'short\_passing\_diff','reactions\_diff','rating\_diff','elo\_diff'}. Optimal hyperparameters for this feature set are listed on the table \ref{table:hyperparam_results_rfe} and World Cup simulation results are in the table \ref{table:outcomemodel_rfe}. Based on the results model's performance according to accuracy and log loss doesn't differ significantly from the model that was trained using all features setup.
+
+Based on the progression of average accuracy and average log loss models do not perform better when features are removed from the original feature set. Eventually performance decreases but never increases during feature elimination. Most of the time results just have natural variance, which causes small changes. It seems that using every available feature doesn't harm random forest's performance, even though there is no guarantee that all of the features are useful.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/default_avg_accuracy.eps}
+    \caption{Mean accuracy for recursive feature elimination on outcome model with default parameters.}
+    \label{fig:def_avg_accu}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/default_avg_lloss.eps}
+    \caption{Mean log loss for recursive feature elimination on outcome model with default parameters. Only features from first round to the 30th round are list to ensure figure's readability.}
+    \label{fig:def_avg_loss}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/optimal_avg_accuracy.eps}
+    \caption{Mean accuracy for recursive feature elimination on outcome model with optimal parameters for all features setup in the table \ref{table:outcomemodel}.}
+    \label{fig:optimal_avg_accu}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/optimal_avg_lloss.eps}
+    \caption{Mean log loss for recursive feature elimination on outcome model with optimal parameters for all features setup in the table \ref{table:outcomemodel}.}
+    \label{fig:optimal_avg_loss}
+\end{figure}
+
+\begin{table}
+    \caption{Results for Outcome model with limited features from RFE.}
+    \begin{tabular}{| c | c| c| c|c|}
+        \hline
+        Metric& \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
+        \hline
+        Accuracy  & 52.97\% $\pm$ 2.36 & 59.69\% $\pm$ 2.3 & 56.09\% $\pm$ 2.47& 56.25 \\
+        Log Loss & 0.9953 $\pm$ 0.0087 & 0.9282 $\pm$ 0.0061 & 0.9743 $\pm$ 0.0069& 0.9659 \\
+        Unit profit  & -1.79\% $\pm$ 6.16 & 14.12\% $\pm$ 6.02 & 8.82\% $\pm$ 7.47& 7.05 \\
+        Kelly profit  & -37.19\% $\pm$ 11.43 & 61.45\% $\pm$ 15.42 & 77.87\% $\pm$ 12.98& 34.04 \\
+ \hline
+    \end{tabular}
+    \label{table:outcomemodel_rfe}
+\end{table}
+
+\begin{table}
+    \caption{Optimal hyperparameters for Outcome model trained with RFE feature set.}
+    \begin{tabular}{| c | c| c| c|}
+        \hline
+         \# of predictors & Min samples at leaf & Max depth\\
+        \hline
+         $\sqrt{M}$ & 10 & Na \\
+        \hline
+    \end{tabular}
+    \label{table:hyperparam_results_rfe}
+\end{table}
+
 
 \subsection{Match-level betting activity - what drives the profits?}
-\subsection{RFE for best model}
+
