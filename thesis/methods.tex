@@ -1,6 +1,4 @@
-\section{Predicting football match outcome with Random Forest Classifier}
-What is is done. Why random forest? What are the alternative methods
-\subsection{Random Forest}
+\section{Random Forest}
 \label{ss:randomforest}
 In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relathionship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
@@ -103,34 +101,58 @@ Since I need the probabilities for each outcome, sampling just one possible end 
 
 Probabilities for match outcome are simple sums from this goal matrix, since $\sum_{i=1}\sum_{j=1}p_{ij} = 1$. Lower triangular is the probability of the home team winning, sum of diagonal is the probability of a draw and sum of upper triangular is the probability of the away team winning.
 
-\subsection{OneVsRest model}
-A multiclass classifier can be formed by combining multiple binary classifiers if outputs from binary classifiers can be merged. With random forest this is possible since each forest gives probabilities for each class. This architecture of multiple binary classifiers offers more freedom since individual classifiers can be tuned independently from the others. The idea of my \textit{OneVsRest model} is to form a multiclass classifier by combining multiple binary classifiers.
+\subsection{One-vs-rest model}
+One-vs-rest model (OVR model) is a model architecture that splits multiclass classifier (three or more classes) into multiple binary classifiers. Each of the classes have their own binary classifier. Multiclass classifier is then formed from trained binary classifier. Requirement is that the output of binary classifier can be used with the other outputs to form a multiclass classifier. Often this means that the outputs are probabilities.
 
-With \textit{OneVsRest model} I train single binary classifier for each outcome. A binary classifier that predicts the probability for home team's win will label all true classes (the matches where the home team won) as 1 and rest of the matches as 0. The same operation is done to predict draw and away win with correct true classes. Probability of the true class $P(c_i = 1 | x)$ is taken from each binary classifier $i$. To form the probability distribution for the match's outcome these probabilities are normalized \cite{zadrozny2002transforming}. For example probability of the home team winning is $\frac{P(c_{home_win}| x)}{P(c_{home_win}| x) + P(c_{draw}| x) + P(c_{away_win}| x)}$.
+With \textit{OVR model} I train a single binary classifier for each match's outcome. A binary classifier that predicts the probability for home team's win will label all true classes (the matches where the home team won) as 1 and rest of the matches as 0. The same operation is done to predict draw and away win with correct true classes. Probability of the true class $P(c_i = 1 | x)$ is taken from each binary classifier $i$. To form the probability distribution for the match's outcome these probabilities are normalized \cite{zadrozny2002transforming}. For example probability of the home team winning is calculated:
+\begin{align*}
+\frac{P(c_{home\_win}| x)}{P(c_{home\_win}| x) + P(c_{draw}| x) + P(c_{away\_win}| x)}
+\end{align*}.
 
-Probability estimates from binary classifier can be calibrated. This is particularly useful since some classifiers are biased with their estimates. For example, boosted trees rarely give probability estimates close to 0 or 1. This is not the case with random forest and with random forest benefiting from calibration is more problem specific. \cite{niculescu2005predicting} Two well-known calibration methods exists for binary classifiers. Platt scaling, named afterward by the inventor Platt himself \cite{platt1999probabilistic}, uses a sigmoid function to calibrate binary classifier probabilities. Probability estimates are passed through a sigmoid function $P ( c = 1 | f ) = \frac { 1 } { 1 + \exp ( A f + B ) }$ which is fitted for the problem. Here $f(x)$ is the output from the binary classifier and $A$ and $B$ are parameters that are fitted using the maximum likelihood estimation. With Platt scaling normally the assumption is that the non-calibrated probabilities tend to act like sigmoid function illustrated in the figure \ref{INSERT IMAGE}. Isotonic regression is more general calibration method. Basic assumption with isotonic regression is that function $c _ { i } = m \left( f _ { i } \right) + \epsilon _ { i }$ where $m$ is an isotonic function, is used to calibrate the probabilities. Optimal function $m$ is problem specific and learned by minimizing $\hat { m } = \arg \min _ { z } \sum \left( c _ { i } - z \left( f _ { i } \right) \right) ^ { 2 }$. \cite{zadrozny2002transforming}
+One advantage of a binary classifier is that the probability estimates from the model can be calibrated. This is particularly useful since some classifiers are biased with their estimates. For example, boosted trees rarely give probability estimates close to 0 or 1. This is not the case with random forest and with random forest benefiting from calibration is more problem specific. \cite{niculescu2005predicting} Two well-known calibration methods exists for binary classifiers. Platt scaling, named afterward by the inventor Platt himself \cite{platt1999probabilistic}, uses a sigmoid function to calibrate binary classifier probabilities. Probability estimates are passed through a sigmoid function:
+\begin{align*}
+P ( c = 1 | f ) = \frac { 1 } { 1 + \exp ( A f + B ) }
+\end{align*}
+which is fitted for the problem. Here $f(x)$ is the output from the binary classifier and $A$ and $B$ are parameters that are fitted using the maximum likelihood estimation. With Platt scaling normally the assumption is that the non-calibrated probabilities tend to act like sigmoid function. Isotonic regression is more general calibration method. Basic assumption with isotonic regression is that function
+\begin{align*}
+c _ { i } = m \left( f _ { i } \right) + \epsilon _ { i }
+\end{align*}
+where $m$ is an isotonic function, is used to calibrate the probabilities. Optimal function $m$ is problem specific and learned by minimizing
+\begin{align*}
+\hat { m } = \arg \min _ { z } \sum \left( c _ { i } - z \left( f _ { i } \right) \right) ^ { 2 }
+\end{align*}
+. \cite{zadrozny2002transforming} During preface experiments using Platt scaling turned out to be the best way. It outperformed isotonic scaling and no-scaling alternatives.
 
 \subsection{Linear Model}
-With linear models idea is to approximate the problem using linear functions. To predict match outcome classes, model needs to be able to output probabilities for each class. Logistic regression is a model that uses linear functions to predict probabilities for classes $y$ using input vector $x$. In multiclass problem predicted posterior probability comes from softmax function $P ( y = j | \mathbf { x } ) = \frac { e ^ { \mathbf { x } ^ { T } \mathbf { w } _ { j } } } { \sum _ { k = 1 } ^ { K } e ^ { \mathbf { T } } \mathbf { w } _ { k } }$ where $\mathbf{w}$ are the weights for optimal vector for each one-vs-rest linear regression. One-vs-rest means that each target class is labeled 1 and rest of the classes are labeled as 0. \cite{friedman2001elements} To fit the weights I use scikit learn's \textit{newton-cg} method \cite{scipy}. L2 regularization is used to keep the weights small. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
+With linear models idea is to approximate the problem using linear functions. To predict match outcome classes, model needs to be able to output probabilities for each class. Logistic regression is a model that uses linear functions to predict probabilities for classes $y$ using input vector $x$. In multiclass problem predicted posterior probability comes from a softmax function
+\begin{align*}
+P ( y = j | \mathbf { x } ) = \frac { e ^ { \mathbf { x } ^ { T } \mathbf { w } _ { j } } } { \sum _ { k = 1 } ^ { K } e ^ { \mathbf { T } } \mathbf { w } _ { k } }
+\end{align*}
+where $\mathbf{w}$ are the weights for optimal vector for each one-vs-rest linear regression. One-vs-rest means that each target class is labeled 1 and rest of the classes are labeled as 0. \cite{friedman2001elements} To fit the weights I use scikit learn's \textit{newton-cg} method \cite{scipy}. L2 regularization is used to keep the weights small. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
 
-\subsection{Linear Model}
+\section{Evaluating model using betting strategies}
+One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run. Betting market odds provide a good benchmark since bookmakers have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
 
-\subsection{Description of our forecasting procedure}
-\subsection{Forecast accuracy measurements}
-Precision, recall, F-score, accuracy of probabilistic prediction: Brier score, label ranking loss
-\subsection{Evaluating model using betting strategies}
-One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run.  Betting market odds provide a good benchmark since they have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
+\subsection{Unit strategy}
+First strategy \textit{unit strategy} is the simplest strategy. This strategy is named as \textit{unit strategy} since for all the games one unit is placed for the predicted winner. Since bookmaker's profit is included in the published odds I should end up winning money with this strategy only if my model's outperforms bookmaker's model. This happens since bookmarker's include their profit into the odds. If their model says that the probability to win is 25\% they add their commission, for example 3\%, on top of it. This means that the final odd is $1/0.28 = 3.57$. Unit strategy's main weakness is that it doesn't use all the available information in betting. It doesn't use the probabilities to change the bet size or targets. For this reason I have a second betting strategy.
 
-First strategy \textit{unit strategy} is the simplest strategy. This Strategy is named as \textit{unit strategy} since for all the games one unit is placed for the predicted winner. This strategy benefits from high accuracy. Bookmaker's profit is included in the published odds, which means that if my model would have similar performance as bookmaker's models I should end up losing money in the long run as much as the average commission taken by the bookmaker is. Profitable results from \textit{unit strategy} indicate that the model is more accurate or that the model is correct more often in the matches that have more uniform probabilities for the outcomes.
-
-The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler - how much to bet and which team(s) -  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction to bet is calculated $f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }$, where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$, if the fraction is positive, to get the size of the bet. If the probabilities given by the model are close to true probabilities gambler should end up exponential increasing her wealth in the long run. To utilize the whole potential of the model more complex way to calculate the optimal fraction is used. To get the optimal fractions for bets 1, X and 2 (home win, draw and away in) the simple formula of Kelly criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{fig:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
+\subsection{Kelly strategy}
+The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. Many times it's referred also as Kelly criterion. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler - "how much to bet" and "what are the favourable betting targets" -  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction to bet is calculated
+\begin{align*}
+f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }
+\end{align*}
+, where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$ to get the size of the bet - if the fraction is positive. If the probabilities given by the model are close to true probabilities gambler should end up exponentially increasing her wealth in the long run. To utilize the whole potential of the model a more complex function is used to calculate the optimal fraction. To get the optimal fractions for bets 1, X and 2 (home win, draw and away in) the simple formula of Kelly criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{fig:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
 
 It's common to bet only a fraction of the optimal bet size since the short-term risk of losing a big proportion of the bankroll is high \cite{maclean2011medium}. For this reason, only 30\% of the suggested bet size is used.
 \begin{figure}
-    \caption{Optimal bet size formula (Kelly). \Textit{P}s are outcome probabilities, \textit{o}s are net odds and \textit{f}s are optimal fractions from total bankroll to bet. }
-     \begin{align*}
-     \max_{f_1, f_2, f_3} p_1  \log(1 + o_1 f_1 - f_2 - f_3) + p_2 \log(1 + o_2 f_2 - f_1 - f_3) + p_3 \log(1 + o_3 f_3 - f_1 - f_2)
-    \end{align*}
+    \caption{Optimal bet size formula (Kelly). \textit{P}s are outcome probabilities, \textit{o}s are net odds and \textit{f}s are optimal fractions from total bankroll to bet.}
+     \begin{equation}
+        \begin{split}
+            \max_{f_1, f_2, f_3} p_1  \log(1 + o_1 f_1 - f_2 - f_3) + p_2 \log(1 + o_2 f_2 - f_1 - f_3)  \\
+            + p_3 \log(1 + o_3 f_3 - f_1 - f_2)
+        \end{split}
+     \end{equation}
+
     \begin{align*}
         \text { subject to: }  f_1 + f_2 + f_3 \leq 1 \\
          0 \geq f_1, f_2, f_3 \leq 1
@@ -138,4 +160,5 @@ It's common to bet only a fraction of the optimal bet size since the short-term 
     \label{eq:kelly}
 \end{figure}
 
-
+\section{Simulation process}
+Before I can run any simulations I perform hyperparameter optimization for the model that I'm using with all the existing data that is available before the opening game of the tournament. During training all of my models can end up to different optimal solutions. This means that even with the same hyperparameters I need to run simulation multiple times to see how the model performs on average. In this study I run the simulation 10 times for each of the models.
