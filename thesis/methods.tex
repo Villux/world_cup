@@ -1,6 +1,6 @@
 \section{Random Forest}
 \label{ss:randomforest}
-In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relathionship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
+In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relationship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
 Decision tree is one of the most popular model type used in classification problems. Decision tree is a directed tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edge are called the \textit{leaf nodes}. Internal nodes in decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leaf nodes}. When new input is given tree is navigated from the \textit{root node} to a \textit{leave node} which determinates the predicted class label. In regression these target values can take continuous values. \cite{rokach2005top}
 
@@ -8,7 +8,7 @@ Decision trees have many benefits and are very useful "off-the-shelf" predictors
 
 On main disadvantage of the decision trees is bad prediction accuracy \cite{friedman2001elements}. Decision trees can express the training data well, but have high variance which means that prediction accuracy for unseen data is often worse compared to other models.
 
-Bootstrap aggragating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the average is taken over the output of a multiple estimators:
+Bootstrap aggregating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the average is taken over the output of a multiple estimators:
 \begin{align}
     \hat {f_{bag}}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*b}(x)
 \end{align}
@@ -77,7 +77,6 @@ Grid search was use to test every parameter combination with a model. Cross vali
 
 
 \subsection{Variable importance in Random Forest}
-\section{Forecasting procedure and measuments of model's forecasting accuracy}
 
 \section{Prediction models}
 
@@ -87,7 +86,6 @@ A football match can have three different outcomes: \textit{home win}, \textit{d
 \textit{Score model} is highly influenced by Groll et al.'s \cite{groll2018prediction} model that used random forest regression and Poisson distribution to simulate each match in World Cup 2018. They used random forest regression to get the expected number of goals for both of the teams. To simulate the tournament correctly they needed to have probabilities for different end results for each match. To overcome this issue they used expected number of goals from random forest regression as intensity parameter $\lambda$ in Poisson distribution $Po(\lambda)$ to draw a random number of goals for both of the teams. Both teams had their own intensity value which meant that both of the Poisson distributions were independent but conditional on the features.
 
 Since I need the probabilities for each outcome, sampling just one possible end result for a match is not enough. For this reason, for each team, the probabilities of scoring number of goals between 0 to 10 is calculated from Poisson probability mass function. As an end result both teams have their own probabilities for scoring goals between 0 and 10 in the form of probability vector $score\_prob = \left( h _ { 1 } , h _ { 2 } , \dots , h _ { n - 1 } , h _ { n } \right)$, where N is 10. The outer product of these two score probability vectors, called the \textit{goal matrix}, has the probability estimates for each unique end result as illustrated in the figure \ref{fig:goal_matrix}. Instead of probabilities, this figure has the end result to clarify the matrix's structure.
-
 
 \begin{figure}
     $\begin{bmatrix}
@@ -105,32 +103,44 @@ Probabilities for match outcome are simple sums from this goal matrix, since $\s
 One-vs-rest model (OVR model) is a model architecture that splits multiclass classifier (three or more classes) into multiple binary classifiers. Each of the classes have their own binary classifier. Multiclass classifier is then formed from trained binary classifier. Requirement is that the output of binary classifier can be used with the other outputs to form a multiclass classifier. Often this means that the outputs are probabilities.
 
 With \textit{OVR model} I train a single binary classifier for each match's outcome. A binary classifier that predicts the probability for home team's win will label all true classes (the matches where the home team won) as 1 and rest of the matches as 0. The same operation is done to predict draw and away win with correct true classes. Probability of the true class $P(c_i = 1 | x)$ is taken from each binary classifier $i$. To form the probability distribution for the match's outcome these probabilities are normalized \cite{zadrozny2002transforming}. For example probability of the home team winning is calculated:
-\begin{align*}
+\begin{equation}
 \frac{P(c_{home\_win}| x)}{P(c_{home\_win}| x) + P(c_{draw}| x) + P(c_{away\_win}| x)}
-\end{align*}.
+\end{equation}.
 
 One advantage of a binary classifier is that the probability estimates from the model can be calibrated. This is particularly useful since some classifiers are biased with their estimates. For example, boosted trees rarely give probability estimates close to 0 or 1. This is not the case with random forest and with random forest benefiting from calibration is more problem specific. \cite{niculescu2005predicting} Two well-known calibration methods exists for binary classifiers. Platt scaling, named afterward by the inventor Platt himself \cite{platt1999probabilistic}, uses a sigmoid function to calibrate binary classifier probabilities. Probability estimates are passed through a sigmoid function:
-\begin{align*}
+\begin{equation}
 P ( c = 1 | f ) = \frac { 1 } { 1 + \exp ( A f + B ) }
-\end{align*}
+\end{equation}
 which is fitted for the problem. Here $f(x)$ is the output from the binary classifier and $A$ and $B$ are parameters that are fitted using the maximum likelihood estimation. With Platt scaling normally the assumption is that the non-calibrated probabilities tend to act like sigmoid function. Isotonic regression is more general calibration method. Basic assumption with isotonic regression is that function
-\begin{align*}
+\begin{equation}
 c _ { i } = m \left( f _ { i } \right) + \epsilon _ { i }
-\end{align*}
+\end{equation}
 where $m$ is an isotonic function, is used to calibrate the probabilities. Optimal function $m$ is problem specific and learned by minimizing
-\begin{align*}
+\begin{equation}
 \hat { m } = \arg \min _ { z } \sum \left( c _ { i } - z \left( f _ { i } \right) \right) ^ { 2 }
-\end{align*}
+\end{equation}
 . \cite{zadrozny2002transforming} During preface experiments using Platt scaling turned out to be the best way. It outperformed isotonic scaling and no-scaling alternatives.
 
 \subsection{Linear Model}
-With linear models idea is to approximate the problem using linear functions. To predict match outcome classes, model needs to be able to output probabilities for each class. Logistic regression is a model that uses linear functions to predict probabilities for classes $y$ using input vector $x$. In multiclass problem predicted posterior probability comes from a softmax function
-\begin{align*}
-P ( y = j | \mathbf { x } ) = \frac { e ^ { \mathbf { x } ^ { T } \mathbf { w } _ { j } } } { \sum _ { k = 1 } ^ { K } e ^ { \mathbf { T } } \mathbf { w } _ { k } }
-\end{align*}
-where $\mathbf{w}$ are the weights for optimal vector for each one-vs-rest linear regression. One-vs-rest means that each target class is labeled 1 and rest of the classes are labeled as 0. \cite{friedman2001elements} To fit the weights I use scikit learn's \textit{newton-cg} method \cite{scipy}. L2 regularization is used to keep the weights small. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
+With linear models idea is to approximate the problem using linear functions. To predict match outcome classes, model needs to be able to output probabilities for each class. Conditional probability for a class in logistic regression is denoted by $P ( Y = 1 | \mathbf { x } ) = \pi ( \mathbf { x } )$. The logit of the model is given by equation
+\begin{equation}
+    g ( \mathbf { x } ) = \beta _ { 0 } + \beta _ { 1 } x _ { 1 } + \beta _ { 2 } x _ { 2 } + \ldots + \beta _ { p } x _ { p }
+\end{equation}
+and the logistic regression model is
+\begin{equation}
+    \pi ( \mathbf { x } ) = \frac { e ^ { g ( \mathbf { x } ) } } { 1 + e ^ { g ( \mathbf { x } ) } }.
+\end{equation}
+To get the estimates for $\boldsymbol { \beta } = \left( \beta _ { 0 } , \beta _ { 1 } , \ldots , \beta _ { p } \right)$ I use maximum likelihood. Likelihood equations are
+\begin{equation}
+    \sum _ { i = 1 } ^ { n } \left[ y _ { i } - \pi \left( \mathbf { x } _ { i } \right) \right] = 0
+\end{equation}
+and
+\begin{equation}
+    \sum _ { i = 1 } ^ { n } x _ { i j } \left[ y _ { i } - \pi \left( \mathbf { x } _ { i } \right) \right] = 0
+\end{equation}
+for $j=1,2,..,p$. \cite{hosmer2013applied} With multiclass problem this can't be used directly. This linear model is a combination of three one-vs-rest logistic classifiers. Each of the classifiers gives a probability estimate for a single class and these classifiers are fitted independently from each other. Probability estimates of the multiclass model are normalized probability estimates from the underlying models. I use scikit learn's \textit{newton-cg} method \cite{scipy} to optimize the weights with L2 regularization to keep the weights small. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
 
-\section{Evaluating model using betting strategies}
+\section{Betting strategies}
 One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run. Betting market odds provide a good benchmark since bookmakers have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
 
 \subsection{Unit strategy}
@@ -138,10 +148,10 @@ First strategy \textit{unit strategy} is the simplest strategy. This strategy is
 
 \subsection{Kelly strategy}
 The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. Many times it's referred also as Kelly criterion. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler - "how much to bet" and "what are the favourable betting targets" -  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction to bet is calculated
-\begin{align*}
+\begin{equation}
 f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }
-\end{align*}
-, where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$ to get the size of the bet - if the fraction is positive. If the probabilities given by the model are close to true probabilities gambler should end up exponentially increasing her wealth in the long run. To utilize the whole potential of the model a more complex function is used to calculate the optimal fraction. To get the optimal fractions for bets 1, X and 2 (home win, draw and away in) the simple formula of Kelly criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{fig:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
+\end{equation}
+where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$ to get the size of the bet - if the fraction is positive. If the probabilities given by the model are close to true probabilities gambler should end up exponentially increasing her wealth in the long run. To utilize the whole potential of the model a more complex function is used to calculate the optimal fraction. To get the optimal fractions for bets 1, X and 2 (home win, draw and away in) the simple formula of Kelly criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{fig:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
 
 It's common to bet only a fraction of the optimal bet size since the short-term risk of losing a big proportion of the bankroll is high \cite{maclean2011medium}. For this reason, only 30\% of the suggested bet size is used.
 \begin{figure}
@@ -153,12 +163,18 @@ It's common to bet only a fraction of the optimal bet size since the short-term 
         \end{split}
      \end{equation}
 
-    \begin{align*}
+    \begin{equation*}
         \text { subject to: }  f_1 + f_2 + f_3 \leq 1 \\
          0 \geq f_1, f_2, f_3 \leq 1
-    \end{align*}
+    \end{equation*}
     \label{eq:kelly}
 \end{figure}
 
-\section{Simulation process}
-Before I can run any simulations I perform hyperparameter optimization for the model that I'm using with all the existing data that is available before the opening game of the tournament. During training all of my models can end up to different optimal solutions. This means that even with the same hyperparameters I need to run simulation multiple times to see how the model performs on average. In this study I run the simulation 10 times for each of the models.
+\section{Tournaments simulation process}
+Tournament simulation gives the results for the model: how accurate it is with outcome prediction (accuracy) and probability prediction (log loss), and how profitable Unit strategy and Kelly strategy are. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
+
+Simulation is done for World Cup 2018, 2014 and 2010. In every simulation model uses the optimal hyperparameters that have been search before the simulation using the whole dataset. Data used in training is between a start date 08/30/2006 and an end date, which is dependant of the tournament. In World Cup 2010 end date is 06/11/2010, in World Cup 2014 it's 06/12/2014 and in World Cup 2018 it's 06/04/2018, which is the last date for the international matches dataset.
+
+Each tournament is simulated according to the official tournament diagram. For each game current values for elo rating, player attributes and other metrics are fetched for each team and feature vector is calculated on those values. Estimates for outcome are predicted based on that. After the match elo rating is updated for both teams using the real outcome of the game, not the predicted one.
+
+This process, mentioned above, is run for every model and feature set combination.
