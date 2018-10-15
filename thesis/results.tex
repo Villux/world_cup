@@ -1,11 +1,13 @@
-In this part of my thesis, I report the results from my experiments. Since there are no direct benchmarks it's important to know how to view the results. In the simplest form, successful results can be stated when betting is profitable, which some of the models were able to achieve. Unfortunately, this is a very narrow perspective and for that reason, in this part of my thesis, I will dig deeper to see why some of the models were able to achieve profitable returns and what downsides these models and strategies might have even though they were profitable. Also, it's important to see how valuable the novel EA Sport's video game series FIFA's player attribute dataset is for the prediction.
+In this part of my thesis, I report the results from my experiments. Since there are no direct benchmarks it's important to know how to view the results. In the simplest form, successful results can be stated when betting is profitable, which some of the models were able to achieve. Unfortunately, this is a very narrow perspective and for that reason, in this part of my thesis, I will dig deeper to see why some of the models were able to achieve profitable returns and what downsides these models and strategies might have even though they were profitable.
 
-\section{Results from tournament simulations}
+\section{Tournament simulations}
 Tournament simulation results for each of the models are listed in the tables \ref{table:outcomemodel}, \ref{table:scoreresults}, \ref{table:onevsrestresults} and \ref{table:linearmodel}. Tables include metrics for accuracy, log loss, unit strategy's profit, and kelly strategy's profit. Listed values are averages from 10 individual simulations and include standard deviation. All metrics are listed for every feature set used in training. Description for each feature set is listed in the table \ref{table:featuresetlist}.
 
 First of all, it's important to see if any of the models were able to generate profit. Preferably, a model should be profitable in each of the tournaments, since investors prefer steady profits. Also, if a model is able to capture the logic from different data periods and estimate correctly based on that it's harder to say that the model was just lucky all the time.
 
-The unit strategy is the simples strategy and for that reason, it's a good starting point. Unit strategy's profits for \textit{Outcome mode}, \textit{Score model} and \textit{OVR model} are positive in every tournament, but not with all feature sets.  Good unit profits and high accuracy go hand in hand, which is no surprise, but high accuracy is not a clear indicator for good kelly profits, which is a slight of a surprise. With kelly strategy intuition can mislead you since the only thing that matters are the probability estimate and the given odd. Too high probabilities can lead to a situation where the model with high accuracy can have too risky bets when using kelly as a betting strategy.  In fact, only \textit{Outcome model}, trained with player features, is the only model that can be profitable using both of the strategies.
+The unit strategy is a simple strategy. Its results tell more about models accuracy than the actual opportunities to make profit. Most of the model's output information, the probability estimates for classes, are not utilized by unit strategy, since it only bets one unit for the predicted winner. Advantege of this simple strategy is its Interpretability. If model achieves positive returns with unit strategy it must be more accurate than the betting market on average is.
+
+Unit strategy's profits for \textit{Outcome mode}, \textit{Score model} and \textit{OVR model} are positive in every tournament, but not with all feature sets.  Good unit profits and high accuracy go hand in hand, which is no surprise, but high accuracy is not a clear indicator for good kelly profits, which is a slight of a surprise. With kelly strategy intuition can mislead you since things that matter are probability estimate for an outcome and given odd for that outcome; not the estimation of the outcome. When estimated probabilities are closer to the true ones than the market's probabilities Kelly criterion is a working strategy. Since Kelly criterion aims to maximize logarithm of expected wealth it utilizes current bankroll more efficient. Unit strategy is just a static one unit per game strategy and is not able to efficiently use good opportunities. From the tested models only \textit{Outcome model}, trained with player features, was able to be profitable using both of the strategies.
 
 Being profitable only in one out of 12 is not a great start. And since there are no direct benchmark it's even harder to say how good the performance is. Bookmaker's odds can be used to form a comparison model. ADD CALCULATIONS. Using bookmaker's average odds their accuracy on World cup 2018 and 2014 was 56.25\% (36 games correctly predicted) and 51.56  \% (33 games correctly predicted) on 2010. Most of the models that I used are able to outperform the comparison model in accuracy. Since bookmarker's use these probabilities to compute odds,  unit strategy and kelly strategy can't be compared.
 
@@ -235,28 +237,28 @@ My models predict higher probabilities for games that have a higher difference b
     \end{table}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_model_unit.png}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_model_unit.png}
     \caption{Unit strategy's cash balance progression on World Cup 2018.}
     \label{fig:unit_model_comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_model_kelly.png}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_model_kelly.png}
     \caption{Kelly strategy's cash balance progression on World Cup 2018.}
     \label{fig:kelly_model_comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_model_probability_draw_prob.png}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_model_probability_draw_prob.png}
     \caption{Predicted probability of draw in the World Cup 2018.}
     \label{fig:draw_probability}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/draw_true_probability_wc.eps}
+    \includegraphics[width=1\textwidth]{img/draw_true_probability_wc.eps}
     \caption{Predicted probabilities vs. sample probability distribution. Sample probability distribution of draw is calculated from all international football games between dates 11/30/1872 - 06/04/2018. Dots are single probability estimates from \textit{Score model} and \textit{Outcome model} for matches in World Cup 2014.}
     \label{fig:draw_prob_dist}
 \end{figure}
@@ -302,21 +304,21 @@ With \textit{player features} difference between features is not that big. Featu
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_outcome_feature_importance_af_feature_importance.eps}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_outcome_feature_importance_af_feature_importance.eps}
     \caption{Outcome model's feature importance with all features.}
     \label{fig:outcome_feature_importance_af}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_outcome_feature_importance_gf_feature_importance.eps}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_outcome_feature_importance_gf_feature_importance.eps}
     \caption{Outcome model's feature importance with generic features.}
     \label{fig:outcome_feature_importance_gf}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_outcome_feature_importance_pf_feature_importance.eps}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_outcome_feature_importance_pf_feature_importance.eps}
     \caption{Outcome model's feature importance with player features.}
     \label{fig:outcome_feature_importance_pf}
 \end{figure}
@@ -334,28 +336,28 @@ To test model's performance with limited feature set I ran the World cup simulat
 Based on the progression of the average accuracy and the average log loss models do not perform better when features are removed from the original feature set. Eventually performance decreases but never increases during feature elimination. Most of the time results just have natural variance, which causes small changes. It seems that using every available feature doesn't harm random forest's performance, even though there is no guarantee that all of the features are useful. Also, RFE's suitability for this setup can be questioned. Stroble et al. concluded: "In particular, the selection of the first splitting variable involves only the marginal, univariate association between that predictor variable and the response, regardless of all other predictor variables. However, this search strategy leads to a variable selection pattern where a predictor variable that is per se only weakly or not at all associated with the response, but is highly correlated with another influential predictor variable, may appear equally well suited for splitting as the truly influential predictor variable." This can be problematic since removing one of the correlated predictors decreases impurity significantly and this effect is not as visible when the rest of the correlated predictors are removed. This leads to a situation where importance of a feature is measured incorrectly.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/default_avg_accuracy.eps}
+    \includegraphics[width=1\textwidth]{img/default_avg_accuracy.eps}
     \caption{Mean accuracy for recursive feature elimination on outcome model with default parameters.}
     \label{fig:def_avg_accu}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/default_avg_lloss.eps}
+    \includegraphics[width=1\textwidth]{img/default_avg_lloss.eps}
     \caption{Mean log loss for recursive feature elimination on outcome model with default parameters. Only features from first round to the 30th round are list to ensure figure's readability.}
     \label{fig:def_avg_loss}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/optimal_avg_accuracy.eps}
+    \includegraphics[width=1\textwidth]{img/optimal_avg_accuracy.eps}
     \caption{Mean accuracy for recursive feature elimination on outcome model with optimal parameters for all features setup in the table \ref{table:outcomemodel}.}
     \label{fig:optimal_avg_accu}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/optimal_avg_lloss.eps}
+    \includegraphics[width=1\textwidth]{img/optimal_avg_lloss.eps}
     \caption{Mean log loss for recursive feature elimination on outcome model with optimal parameters for all features setup in the table \ref{table:outcomemodel}.}
     \label{fig:optimal_avg_loss}
 \end{figure}
@@ -388,21 +390,21 @@ Based on the progression of the average accuracy and the average log loss models
 \end{table}
 
 
-\subsection{Match-level betting activity - what drives the profits?}
+\section{Match-level betting activity - what drives the profits?}
 As it's mentioned many times unit strategy can be considered as a dummy strategy; one unit for the predicted winner. Kelly strategy instead is more sophisticated and deserves a deeper analysis. With the requirements 1) profitable in every tournament, and 2) best average profits has \textit{Score model} trained with all features performed the best with kelly strategy. For this reason \textit{Score model} is used to get the results for the following figures.
 
 The most successful tournament for \textit{Score model} was World Cup 2018. It achieved, on average, 35.59\% profit. In comparison profit from World Cup 2014 was only 12.37\%. By the numbers performance in World Cup 2018 was definitely better, but what happened with match-level betting? When we compare both of the tournaments side by side in the figures \ref{fig:net_win_cost_2018} and \ref{fig:net_win_cost_2014} it's clear that a single successful bet dominates the profit in World Cup 2018. Don't get confused by the difference in the scale of y-axis. Total bets per match are not that different between the tournaments. Only betting frequency differs - there are more games in World Cup 2014 without any bets. With World Cup 2018 winnings are more rare, but the size is bigger. These anomalies in odds are certainly important and this strategy is able to utilize them properly. Without three biggest winnings this strategy would achieve negative profits for sure. With World Cup 2014 strategy wins more often, but winning as not as big as they are in World Cup 2018. This would be ideal as well for the World Cup 2018, but it's harder to achieve. When winnings are more frequent predicted probabilities need to be closer to the true ones than the implied probabilities from the betting market are. Based on the limited amount of evidence, smaller but more frequent winnings and sparser betting activity, it seems that the probability estimates for World Cup 2014 were better than the implied ones based on the market. Where as in World Cup 2018 profitability was based on the strategy's ability to gain from few favourable odds. The latter might be extremely hard to keep profitable in the long run unless betting market's dynamics create opportunities often enough. Model's bias towards higher probability of a draw compared to market's when difference between teams' elo rating is relatively high stands out in both of the tournaments. This harms the strategy's performance.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2018_score_win_cost_.eps}
+    \includegraphics[width=1\textwidth]{img/match_level_2018_score_win_cost_.eps}
     \caption{Net winnings and betting costs per label for Score model in World Cup 2018.}
     \label{fig:net_win_cost_2018}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/match_level_2014_score_win_cost_.eps}
+    \includegraphics[width=1\textwidth]{img/match_level_2014_score_win_cost_.eps}
     \caption{Net winnings and betting costs per label for Score model trained with all features in World Cup 2014.}
     \label{fig:net_win_cost_2014}
 \end{figure}
