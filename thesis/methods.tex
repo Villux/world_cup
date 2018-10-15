@@ -179,6 +179,25 @@ It's common to bet only a fraction of the optimal bet size since the short-term 
     \label{eq:kelly}
 \end{figure}
 
+\section{Features used prediction}
+Features listed in Section 3 are calculated for each team, but are not used directly in training. For most of the features the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get Elo the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. Main advantage of this method is that it reduces the number of features and makes the link between home team's value and away team's value explicit for the model. One limitation of this process is that $40-20=20$ and $100-80=20$, which means that a game between very weak teams and game between strong teams can look the same if the feature vector is only inspected.
+
+It's interesting to know how much player attribute data can improve the predictions done using only the \textit{general features}. For this reason every model is trained using three feature sets \textit{all features}, \textit{general features}, and \textit{player features}. Table \ref{table:featuresetlist} has the description for each of the feature sets.
+
+\begin{table}
+    \caption{Feature set description}
+    \begin{tabular}{| c | c|}
+        \hline
+        Feature set's name & Description \\
+        \hline
+        Player features & FIFA player attributes only \\
+        All Features & General features and Player features \\
+        General Features & All excluding Player features \\
+        \hline
+    \end{tabular}
+    \label{table:featuresetlist}
+\end{table}
+
 \section{Tournaments simulation process}
 Tournament simulation gives the results for the model: how accurate it is with outcome prediction (accuracy) and probability prediction (log loss), and how profitable Unit strategy and Kelly strategy are. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
 
