@@ -3,32 +3,15 @@ In this part of my thesis, I report the results from my experiments. Since there
 \section{Tournament simulations}
 Tournament simulation results for each of the models are listed in the tables \ref{table:outcomemodel}, \ref{table:scoreresults}, \ref{table:onevsrestresults} and \ref{table:linearmodel}. Tables include metrics for accuracy, log loss, unit strategy's profit, and kelly strategy's profit. Listed values are averages from 10 individual simulations and include standard deviation. All metrics are listed for every feature set used in training. Description for each feature set is listed in the table \ref{table:featuresetlist}.
 
-First of all, it's important to see if any of the models were able to generate profit. Preferably, a model should be profitable in each of the tournaments, since investors prefer steady profits. Also, if a model is able to capture the logic from different data periods and estimate correctly based on that it's harder to say that the model was just lucky all the time.
+First of all, it's important to see if any of the models were able to generate profit. Preferably, a model should be profitable in each of the tournaments, since investors prefer steady profits. Also, if a model, trained with a different data periods, is able to continuously estimate correctly it's harder to say that the model was just lucky all the time.
 
-The unit strategy is a simple strategy. Its results tell more about models accuracy than the actual opportunities to make profit. Most of the model's output information, the probability estimates for classes, are not utilized by unit strategy, since it only bets one unit for the predicted winner. Advantege of this simple strategy is its Interpretability. If model achieves positive returns with unit strategy it must be more accurate than the betting market on average is.
-
-Unit strategy's profits for \textit{Outcome mode}, \textit{Score model} and \textit{OVR model} are positive in every tournament, but not with all feature sets.  Good unit profits and high accuracy go hand in hand, which is no surprise, but high accuracy is not a clear indicator for good kelly profits, which is a slight of a surprise. With kelly strategy intuition can mislead you since things that matter are probability estimate for an outcome and given odd for that outcome; not the estimation of the outcome. When estimated probabilities are closer to the true ones than the market's probabilities Kelly criterion is a working strategy. Since Kelly criterion aims to maximize logarithm of expected wealth it utilizes current bankroll more efficient. Unit strategy is just a static one unit per game strategy and is not able to efficiently use good opportunities. From the tested models only \textit{Outcome model}, trained with player features, was able to be profitable using both of the strategies.
-
-Being profitable only in one out of 12 is not a great start. And since there are no direct benchmark it's even harder to say how good the performance is. Bookmaker's odds can be used to form a comparison model. ADD CALCULATIONS. Using bookmaker's average odds their accuracy on World cup 2018 and 2014 was 56.25\% (36 games correctly predicted) and 51.56  \% (33 games correctly predicted) on 2010. Most of the models that I used are able to outperform the comparison model in accuracy. Since bookmarker's use these probabilities to compute odds,  unit strategy and kelly strategy can't be compared.
+Unit strategy's profits for \textit{Outcome mode}, \textit{Score model} and \textit{OVR model} are positive in every tournament, but not with all feature sets.  Good unit profits and high accuracy go hand in hand, which is no surprise, but high accuracy is not a indicator for good kelly profits, which is a slight of a surprise. When estimated probabilities are closer to the true ones than the market's probabilities Kelly criterion is a working strategy. Since Kelly criterion aims to maximize logarithm of expected wealth it utilizes current bankroll more efficient. Unit strategy is just a static one unit per game strategy and is not able to efficiently use good opportunities. From the tested models only \textit{Outcome model}, trained with player features, was able to be profitable using both of the strategies.
+Being profitable only in one out of 12 is not a great start. Using bookmaker's average odds their accuracy on World cup 2018 and 2014 was 56.25\% (36 games correctly predicted) and 51.56  \% (33 games correctly predicted) on 2010. Most of the models that I used were able to outperform the comparison model in accuracy. Since bookmarker's use these probabilities to compute odds, profits from unit strategy and Kelly strategy can't be compared.
 
 But which of the feature set and model combinations is the best? This question is tricky to answer. If being profitability in every tournament with high profit is preferred than \textit{Score model}, trained with all features, might be the right choice. Whereas highest unit profits are achieved with \textit{OVR model} trained with player features. Using only these metrics to validate if a model is good enough to be trusted in the next World cup 2022 is too risky. Being profitable in 192 games (64 per three tournaments) is a good start, but it's also important to understand how the models predict individual games to understand the total profits better.
 
 \begin{table}
-    \caption{Feature set description}
-    \begin{tabular}{| c | c|}
-        \hline
-        Feature set's name & Description \\
-        \hline
-        Player features & FIFA player attributes only \\
-        All Features & General features and Player features \\
-        General Features & All excluding Player features \\
-        \hline
-    \end{tabular}
-    \label{table:featuresetlist}
-\end{table}
-
-\begin{table}
-    \caption{Tournament characteristics. Underdog victory is a case where the winning team has higher odds for winning then the other team.}
+    \caption{Tournament characteristics. Underdog victory is a case where the winning team has higher odds for winning than the other team.}
     \begin{tabular}{| c | c|c | c|}
         \hline
         Characteristic & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}\\
@@ -44,7 +27,8 @@ But which of the feature set and model combinations is the best? This question i
 
 
 \begin{table}
-    \caption{Results for Outcome model}
+    \caption{Results for Outcome model.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c  c| c| c| c|c|}
         \hline
         Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
@@ -65,13 +49,14 @@ But which of the feature set and model combinations is the best? This question i
          & GF & -47.32\% $\pm$ 4.1 & 2.86\% $\pm$ 8.15 & 48.9\% $\pm$ 16.64& 1.48 \\
          & PF & 46.63\% $\pm$ 8.79 & 12.26\% $\pm$ 6.57 & 2.75\% $\pm$ 9.05& 20.55 \\
  \hline
-    \end{tabular}
+    \end{tabular}}
     \label{table:outcomemodel}
 \end{table}
 
 
 \begin{table}
-    \caption{Results for Score model}
+    \caption{Results for Score model.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c  c| c| c| c|c|}
         \hline
         Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
@@ -92,12 +77,13 @@ But which of the feature set and model combinations is the best? This question i
          & GF & -19.06\% $\pm$ 1.87 & 107.61\% $\pm$ 4.47 & 99.75\% $\pm$ 3.63& 62.77 \\
          & PF & 2.04\% $\pm$ 2.62 & 10.82\% $\pm$ 4.87 & 8.3\% $\pm$ 2.1& 7.05 \\
  \hline
-    \end{tabular}
+    \end{tabular}}
     \label{table:scoreresults}
 \end{table}
 
 \begin{table}
-    \caption{Results for OneVsRest model}
+    \caption{Results for OVR model.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c  c| c| c| c|c|}
         \hline
         Metric& & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
@@ -117,13 +103,14 @@ But which of the feature set and model combinations is the best? This question i
         Kelly profit & AF & -2.6\% $\pm$ 6.57 & 9.34\% $\pm$ 8.69 & 26.26\% $\pm$ 10.92& 11.0 \\
          & GF & -44.81\% $\pm$ 3.96 & 14.61\% $\pm$ 13.1 & 83.44\% $\pm$ 23.89& 17.75 \\
          & PF & 61.65\% $\pm$ 9.88 & -3.92\% $\pm$ 4.68 & 0.77\% $\pm$ 7.02& 19.5 \\
- \hline
-    \end{tabular}
+        \hline
+    \end{tabular}}
     \label{table:onevsrestresults}
 \end{table}
 
 \begin{table}
-    \caption{Results for Logistic Regression model}
+    \caption{Results for Linear model.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c  c| c| c| c|c|}
         \hline
         Metric & & \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010}& Mean\\
@@ -144,22 +131,21 @@ But which of the feature set and model combinations is the best? This question i
          & GF & -36.47\% $\pm$ 3.66 & 125.73\% $\pm$ 11.94 & 8.75\% $\pm$ 10.44& 32.67 \\
          & PF & 55.93\% $\pm$ 4.8 & 52.77\% $\pm$ 8.74 & -49.56\% $\pm$ 4.26& 19.71 \\
  \hline
-    \end{tabular}
+    \end{tabular}}
     \label{table:linearmodel}
 \end{table}
 
 \section{How models differ in game-level predictions?}
-To understand the tournament simulation results better it's important to understand what happens in the game-level predictions. Analyzing all of the tournaments at game-level is out of the reach of this thesis. A single tournament can be used to see how the models differ at game-level since all of the tournaments have similar characteristics. These characteristics are listed in the table \ref{table:tournamentcharacteristics}. The only noteworthy difference is the higher number of games ending a draw in World cup 2010.
+To understand the tournament simulation results better it's important to understand what happens in the game-level predictions. Analyzing all of the tournaments at game-level is out of the reach of this thesis. Luckily a single tournament can be used to see how the models differ at game-level prediction since all of the tournaments have more or less similar characteristics. These characteristics are listed in the table \ref{table:tournamentcharacteristics}. The only noteworthy difference is the higher number of games ending a draw in World cup 2010.
 
-The reason why tournament with few more games ending a draw matters so much is because the models are very inaccurate when it comes to predicting the outcome of a draw. For example, the average precision of a draw for \textit{Outcome model} with any of the feature sets is at maximum 0.1. The average recall is at best 0.00625. In most of the cases, precision and recall are almost always zero. Both of those values were for World Cup 2010, meaning that only one draw from the 10 draws that were predicted in total was correct. It's no wonder that predicting draws is hard since football games often have low scores. A goal for the underdog is very valuable but not that unlikely to happen. This makes winning the game for the favorite team harder. Draws are not preferred by the bookmakers either. Very seldom draw has the lowest odds (meaning the highest probability). For example, only one game in World Cup 2010 had the lowest odds for a draw and that game didn't end a draw.
-
-Since tournaments' characteristics are similar enough I can assume that I can use any of the tournaments to compare game-level characteristics of my models. I will use the World cup 2018 with all of the available features to compare models against each other.
+The reason why tournament with few more games ending a draw matters so much is because the models are very inaccurate when it comes to predicting the outcome of a draw. For example, the average precision of a draw for \textit{Outcome model} with any of the feature sets is at maximum 10\%. The average recall is at best 6.25\%. In most of the cases, precision and recall are almost always zero. Both of those values were for World Cup 2010, meaning that only one draw from the 10 draws that were predicted was correct. Draws are not preferred by the bookmakers either. Very seldom draw has the lowest odds (meaning the highest probability). For example, only one game in World Cup 2010 had the lowest odds for a draw and that game didn't end a draw.
 
 I compared simulation results from all of the models for World cup 2018. Models were trained using all of the available features.
 
-One interesting fact is that models predict outcomes are very similar - as figure \ref{fig:unit_model_comparison} shows. Outcome and score model are almost equal in their predictions. Based on the overall results models should differ more since profits are not equal or even similar. What might be the reason for this? To see more details it's wise to use the kelly strategy's cash balance progression from the figure \ref{fig:kelly_model_comparison} to compare the models. Cash balances clearly develop out of phase from the first game onward. The reason behind this is different probability distributions that the models output. By observing the tables \ref{table:home_win_metrics}, \ref{table:draw_metrics} and \ref{table:away_win_metrics} we can see that models' behaviour is fairly similar with probability prediction of a home win and an away win, but differs clearly with the prediction of a draw. Even when only random forest-based solutions are compared the difference between the models is most obvious when probability estimates for a draw are compared. The figure \ref{fig:draw_probability} shows how differently the models estimate the probability of game ending in a draw. This figure backed by the standard deviation values from the table \ref{table:draw_metrics} shows that \textit{Outcome model} and \textit{OVR model} predict probabilities of a draw more aggressively; both models sometimes predict a lot lower or higher probabilities than rest of the models. \textit{Score model} and \textit{Linear model} have significantly lower standard deviation than \textit{Outcome model} or \textit{OVR model}. Since averages from all of the models are quite close to each other this means that \textit{Score model} and \textit{Linear model} have more stable predictions. Low correlation with probability estimates with rest of the models makes \textit{linear model} the most independent. Since there are no true probabilities available for a game ending in a draw it's hard to say what is the better way to estimate the probability of a draw; is the true probability for every game closer to the average value or should the model be more flexible with the estimates. When current results are viewed less varying probability estimates for draw might be a better option since \textit{Score model} is able to make a profit with two different feature sets while \textit{Outcome model} and \textit{OVR model} are not. I compared \textit{Score model's} and \textit{Outcome model's} probability estimates to a sample probability distribution of a draw obtained from historical data. Results are in the figure \ref{fig:draw_prob_dist}.
+One interesting fact is that models predict outcomes are very similar - as figure \ref{fig:unit_model_comparison} shows. Outcome and score model are almost equal in their predictions. Based on the overall results models should differ more since profits are not equal or even similar. What might be the reason for this? To see more details it's wise to use the Kelly strategy's cash balance progression from the figure \ref{fig:kelly_model_comparison} to compare the models. Cash balances clearly develop out of phase from the first game onward. The reason behind this is different probability distributions that the models output. By observing the tables \ref{table:home_win_metrics}, \ref{table:draw_metrics} and \ref{table:away_win_metrics} we can see that models' behaviour is fairly similar with probability prediction of a home win and an away win, but differs clearly with the prediction of a draw. Even when only random forest-based solutions are compared the difference between the models is most obvious when the probability estimates for a draw are compared. The figure \ref{fig:draw_probability} shows how differently the models estimate the probability of game ending in a draw. This figure and the standard deviation values from the table \ref{table:draw_metrics} shows that \textit{Outcome model} and \textit{OVR model} predict probabilities of a draw more aggressively; both models predict often a lower or higher probabilities than rest of the models. \textit{Score model} and \textit{Linear model} have significantly lower standard deviation than \textit{Outcome model} or \textit{OVR model}. Since averages from all of the models are quite close to each other this means that \textit{Score model} and \textit{Linear model} have less varying predictions. \textit{Linear model} stands out from the tree-based models with low correlating probability estimates.
 
-My models predict higher probabilities for games that have a higher difference between teams' elo rating than the average is based on historical data. When sample probability distribution of a draw is taken for World Cup games only the probability line is not a as smooth, even when games are split to deciles each containing approximately 84 games. World Cup game is always important for the team, since in World Cup there are not that many opportunities to recover from bad performance. This high pressure situation can restrain even the top teams to play in a level they should be playing. These reason and a lower sample count are one of the reasons for more varying probability distribution. However eyeballing the figure \ref{fig:draw_prob_dist} indicate us that the probabilities are too high on average. This is the case even with the \textit{OVR model} as well, even though it has calibrated probability estimates.
+I compared \textit{Score model's} and \textit{Outcome model's} probability estimates to a sample probability distribution of a draw obtained from historical data. Results are visualized in the figure \ref{fig:draw_prob_dist}. My models predict higher probabilities for games that have a higher difference between teams' elo rating than the average is based on historical data. When sample probability distribution of a draw is taken for World Cup games only the probability line is not a as smooth, even when games are split to deciles each containing approximately 84 games. Based on the figure \ref{fig:draw_probability} and the metrics in the table \ref{table:draw_metrics} rest of the models have this same bias towards too high probability estimates when difference between Elo rating increases. Even the probability estimation calibration with \textit{OVR model} doesn't fix this problem.
+% World Cup game is always important for the team, since in World Cup there are not that many opportunities to recover from bad performance. This high pressure situation can restrain even the top teams to play in a level they should be playing. These reason and a lower sample count are one of the reasons for more varying probability distribution. However eyeballing the figure \ref{fig:draw_prob_dist} indicate us that the probabilities are too high on average. This is the case even with the \textit{OVR model} as well, even though it has calibrated probability estimates.
 
 \begin{table}[h]
     \caption{Means, standard deviations, and correlations of home win probability predictions for World cup 2018.}
@@ -266,16 +252,16 @@ My models predict higher probabilities for games that have a higher difference b
 \section{Feature set comparison}
 It's interesting that feature sets with fewer features can produce better predictions. How can less describe more? It's against common sense, right?
 
-These problems are visible if the models' accuracy is compared. Being one of the most important metrics, it's still not the most important for the sophisticated betting strategies like kelly, which utilizes model's probability estimates. Log loss is a metric that can be used to compare probability distributions' accuracy. A smaller value indicates a more accurate estimate. When log loss is compared per tournament model trained with limited feature set can have lower log loss value than the same model that is trained using all of the features. But when the average performance from every tournament is considered training model with all features seems to output the lowest log loss score with \textit{Outcome model} and \textit{OVR model} and second lowest (only 0.0009 difference at highest) with \textit{Score model} and \textit{Linear model}. This indicates that even-though increasing accuracy might not benefit from using all features probability distribution prediction clearly benefits. Since football games often have low scores can last-minute surprises change the outcome of the match. The underdog can beat the favorite or at least square the game. This means that achieving high accuracy is hard, but fixing probabilities to match the true ones has more room to improve.
+These problems are visible if the models' accuracy is compared. Being one of the most important metrics, it's still not the most important for the sophisticated betting strategies like Kelly strategy, which utilizes model's probability estimates. Log loss is a metric that can be used to compare probability distributions' accuracy. A smaller value indicates a more accurate estimate. When log loss is compared per tournament model trained with limited feature set can have a lower log loss value than the same model that is trained using all of the features. But when the average performance from every tournament is considered training a model with all features seems to output the lowest log loss score with \textit{Outcome model} and \textit{OVR model} and second lowest (only 0.0009 difference at highest) with \textit{Score model} and \textit{Linear model}. This indicates that even-though increasing accuracy might not benefit from using all features probability distribution prediction clearly benefits.
+% Since football games often have low scores can last-minute surprises change the outcome of the match. The underdog can beat the favorite or at least square the game. This means that achieving high accuracy is hard, but fixing probabilities to match the true ones has more room to improve.
 
-Feature importance can be calculated with Random Forest. These values can give insight on models reasoning. This data combined with optimal hyperparameters is one way to interpret the models since inspecting every single tree in the forest would be too cumbersome.
-
-Segal \cite{segal2004machine} showed that noisy variable can lead to higher optimal value for minimum samples at leaf hyperparameter. With generic features models seem to prefer higher value for the hyperparameter \textit{minimum samples at leaf} as we can see from the table \ref{table:hyperparam_results}.  Figure \ref{fig:outcome_feature_importance_gf} lists feature importance for Outcome model trained with generic features. Difference between elo rating dominates the others, but just by looking at the plot it's impossible to say if any of the features could be considered to be just noise. Lower importance features like \textit{home\_goal} and \textit{away\_goal} seem to be in the middle tier when model is trained with all features. This higher importance compared to other features could mean that these features have predicting power.
+Random forest's feature importance values give insight on models reasoning. This data combined with optimal hyperparameters is one way to interpret the models since inspecting every single tree in the forest would be too cumbersome. With random forest higher \textit{minimum samples at leaf} can mean that some of the features are very noisy. Tree-based models, trained with generic features, seem to have higher value for the hyperparameter \textit{minimum samples at leaf} as we can see from the table \ref{table:hyperparam_results}. The feature importance values for Outcome model trained with generic features are in the figure \ref{fig:outcome_feature_importance_gf}. Difference between Elo ratings is very valuable but the rest are harder to differentiate. Features like \textit{home\_goal} and \textit{away\_goal} are the least important ones. When the importance of these features is listed for a model trained with all features (figure \ref{fig:outcome_feature_importance_af}) \textit{home\_goal} and \textit{away\_goal} seem to rank in the middle tier.
 
 With \textit{player features} difference between features is not that big. Feature importance is gradually decreasing feature by feature as we can see from the figure \ref{fig:outcome_feature_importance_pf}. Same features seem to rank high with player features as they would with all features.
 
 \begin{table}
     \caption{Hyperparameter selection results for random forest models.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c  c| c| c| c|}
         \hline
         Model & Features & \# of predictors & Min samples at leaf & Max depth\\
@@ -298,7 +284,7 @@ With \textit{player features} difference between features is not that big. Featu
         OVR & PF draw & $\log_2{M}$ & 15 & 5 \\
         OVR & PF away win & $\log_2{M}$ & 5 & 8 \\
         \hline
-    \end{tabular}
+    \end{tabular}}
     \label{table:hyperparam_results}
 \end{table}
 
@@ -323,17 +309,15 @@ With \textit{player features} difference between features is not that big. Featu
     \label{fig:outcome_feature_importance_pf}
 \end{figure}
 
-If some of the features are just noise, those features can be removed without harming the model's probability estimates. One way to do this is recursive feature elimination where one by one features are eliminated and models performance is measured for every elimination round. This test is done 100 times for every elimination round to guarantee that variation in the results won't cause features to be eliminated too early. I did the recursive feature elimination process the \textit{Outcome model}.
-
-\section{Recursive feature elimination}
-If some of the features are just noise, those features can be removed without harming the model's probability estimates. One way to do this is recursive feature elimination (RFE) where one by one features are eliminated and models performance is measured for every elimination round. The least important feature is eliminated each round. Accuracy and log loss are measured 100 times for each round to account for natural variance in the results. Feature elimination process is started again until there are no features left. Stored average accuracy and average log loss can be used to see how the model's performance evolved during RFE. All of the test were done with \textit{Outcome model}.
+\section{Recursive feature elimination for Outcome model}
+RFE was performed for \textit{Outcome model} to see if using a subset of features could improve the results. Test was ran for two times: first with default hyperparameters and then with optimal hyperparameters for \textit{all features} setup.
 
 First test included default parameters for \textit{Outcome model}: 1000 for number of estimators, $\sqrt{M}$ for number of predictors, Na for maximum depth and one for minimum samples at leaf. From figure \ref{fig:def_avg_accu} we can see that after \textit{gk\_diving} accuracy starts to decrease slowly. If we compare this result to figure \ref{fig:def_avg_loss}
-it's evident that the performance decreases after \textit{gk\_diving}. For comparison I run the same test with \textit{Outcome model} using optimal parameters used in all feature setup in the table \ref{table:outcomemodel}. Results are visible in the figures \ref{fig:optimal_avg_accu} and \ref{fig:optimal_avg_loss}. With this setup model performs better through out the whole RFE process. Also, model peaks the highest accuracy with only just four features. Improvement with this same feature set is not visible in the average log loss. The average log loss has a clear performance drop only when there is a single feature left.
+it's evident that the performance decreases after \textit{gk\_diving}. The second test's results are in the table \ref{table:outcomemodel}. Results are visible in the figures \ref{fig:optimal_avg_accu} and \ref{fig:optimal_avg_loss}. With this setup model performs better through out the whole RFE process. Also, model peaks the highest accuracy with only just four features. Improvement with this same feature set is not visible in the average log loss. The average log loss has a clear performance drop only when there is a single feature left.
 
 To test model's performance with limited feature set I ran the World cup simulation for \textit{Outcome model} using features: \textit{away\_goals\_with\_home, finishing\_diff, height\_diff, crossing\_diff, potential\_diff, fk\_accuracy\_diff, home\_goal\_mean, away\_goal\_mean, ball\_control\_diff, long\_passing\_diff,  short\_passing\_diff, reactions\_diff, rating\_diff, elo\_diff}. I chose these features since they were the smallest feature set that was able to keep the performance with a model trained with default hyperparamaters. New optimal hyperparameters where grid searched for this feature set. These hyperparameters are listed in the table \ref{table:hyperparam_results_rfe} and World Cup simulation results are in the table \ref{table:outcomemodel_rfe}. Based on the results model's performance according to accuracy and log loss doesn't differ significantly from the model that was trained using all features.
 
-Based on the progression of the average accuracy and the average log loss models do not perform better when features are removed from the original feature set. Eventually performance decreases but never increases during feature elimination. Most of the time results just have natural variance, which causes small changes. It seems that using every available feature doesn't harm random forest's performance, even though there is no guarantee that all of the features are useful. Also, RFE's suitability for this setup can be questioned. Stroble et al. concluded: "In particular, the selection of the first splitting variable involves only the marginal, univariate association between that predictor variable and the response, regardless of all other predictor variables. However, this search strategy leads to a variable selection pattern where a predictor variable that is per se only weakly or not at all associated with the response, but is highly correlated with another influential predictor variable, may appear equally well suited for splitting as the truly influential predictor variable." This can be problematic since removing one of the correlated predictors decreases impurity significantly and this effect is not as visible when the rest of the correlated predictors are removed. This leads to a situation where importance of a feature is measured incorrectly.
+Based on the progression of the average accuracy and the average log loss models do not perform better when features are removed from the original feature set. Eventually performance decreases but never increases during feature elimination. Most of the time results just have natural variance, which causes small changes. It seems that using every available feature doesn't harm random forest's performance, even though there is no guarantee that all of the features are useful. Also, RFE's suitability for this setup can be questioned. Stroble et al. concluded: "In particular, the selection of the first splitting variable involves only the marginal, univariate association between that predictor variable and the response, regardless of all other predictor variables. However, this search strategy leads to a variable selection pattern where a predictor variable that is per se only weakly or not at all associated with the response, but is highly correlated with another influential predictor variable, may appear equally well suited for splitting as the truly influential predictor variable." It's possible that correlated features are ranked to be more important that the influential variable.
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{img/default_avg_accuracy.eps}
@@ -364,6 +348,7 @@ Based on the progression of the average accuracy and the average log loss models
 
 \begin{table}
     \caption{Results for Outcome model with limited features from RFE.}
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{| c | c| c| c|c|}
         \hline
         Metric& \textbf{WC 2018} & \textbf{WC 2014} & \textbf{WC 2010} & Mean\\
@@ -373,7 +358,7 @@ Based on the progression of the average accuracy and the average log loss models
         Unit profit  & -1.79\% $\pm$ 6.16 & 14.12\% $\pm$ 6.02 & 8.82\% $\pm$ 7.47& 7.05 \\
         Kelly profit  & -37.19\% $\pm$ 11.43 & 61.45\% $\pm$ 15.42 & 77.87\% $\pm$ 12.98& 34.04 \\
  \hline
-    \end{tabular}
+    \end{tabular}}
     \label{table:outcomemodel_rfe}
 \end{table}
 
@@ -393,7 +378,7 @@ Based on the progression of the average accuracy and the average log loss models
 \section{Match-level betting activity - what drives the profits?}
 As it's mentioned many times unit strategy can be considered as a dummy strategy; one unit for the predicted winner. Kelly strategy instead is more sophisticated and deserves a deeper analysis. With the requirements 1) profitable in every tournament, and 2) best average profits has \textit{Score model} trained with all features performed the best with kelly strategy. For this reason \textit{Score model} is used to get the results for the following figures.
 
-The most successful tournament for \textit{Score model} was World Cup 2018. It achieved, on average, 35.59\% profit. In comparison profit from World Cup 2014 was only 12.37\%. By the numbers performance in World Cup 2018 was definitely better, but what happened with match-level betting? When we compare both of the tournaments side by side in the figures \ref{fig:net_win_cost_2018} and \ref{fig:net_win_cost_2014} it's clear that a single successful bet dominates the profit in World Cup 2018. Don't get confused by the difference in the scale of y-axis. Total bets per match are not that different between the tournaments. Only betting frequency differs - there are more games in World Cup 2014 without any bets. With World Cup 2018 winnings are more rare, but the size is bigger. These anomalies in odds are certainly important and this strategy is able to utilize them properly. Without three biggest winnings this strategy would achieve negative profits for sure. With World Cup 2014 strategy wins more often, but winning as not as big as they are in World Cup 2018. This would be ideal as well for the World Cup 2018, but it's harder to achieve. When winnings are more frequent predicted probabilities need to be closer to the true ones than the implied probabilities from the betting market are. Based on the limited amount of evidence, smaller but more frequent winnings and sparser betting activity, it seems that the probability estimates for World Cup 2014 were better than the implied ones based on the market. Where as in World Cup 2018 profitability was based on the strategy's ability to gain from few favourable odds. The latter might be extremely hard to keep profitable in the long run unless betting market's dynamics create opportunities often enough. Model's bias towards higher probability of a draw compared to market's when difference between teams' elo rating is relatively high stands out in both of the tournaments. This harms the strategy's performance.
+The most successful tournament for \textit{Score model} was World Cup 2018. It achieved, on average, 35.59\% profit. In comparison profit from World Cup 2014 was only 12.37\%. By the numbers performance in World Cup 2018 was definitely better, but what happened with match-level betting? When we compare both of the tournaments side by side in the figures \ref{fig:net_win_cost_2018} and \ref{fig:net_win_cost_2014} it's clear that a single successful bet dominates the profit in World Cup 2018. Don't get confused by the difference in the scale of y-axis. Total bets per match are not that different between the tournaments. Only betting frequency differs - there are more games in World Cup 2014 without any bets. With World Cup 2018 winnings are more rare, but the size is bigger. These anomalies in odds are certainly important and this strategy is able to utilize them properly. Without three biggest winnings this strategy would achieve small or negative profits. In the World Cup 2014 this strategy wins more often, but winnings are not as big as they are in the World Cup 2018. This would be ideal as well for the World Cup 2018, but it's harder to achieve. When winnings are more frequent predicted probabilities need to be closer to the true ones than the implied probabilities from the betting market are. Based on the limited amount of evidence, smaller but more frequent winnings and sparser betting activity, it seems that the probability estimates for World Cup 2014 were better than the implied ones based on the market. Where as in World Cup 2018 profitability was based on the strategy's ability to gain from few favourable odds. The latter might be extremely hard to keep profitable in the long run unless betting market's provide opportunities like this often enough. Model's bias towards higher probability of a draw compared to market's when difference between teams' elo rating is relatively high stands out in both of the tournaments. This harms the strategy's performance.
 
 \begin{figure}[H]
     \centering

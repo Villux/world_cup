@@ -10,7 +10,7 @@ I don't use this dataset directly in prediction, but I use it to extract useful 
     \item[Elo rating:] describes the team's quality. This metric is calculated based on previous games with the following formula \begin{equation}
         \mathrm { R } _ { \mathrm { n } } = \mathrm { R } _ { \mathrm { O } } + \mathrm { K } \times \left( \mathrm { W } - \mathrm { W } _ { \mathrm { e } } \right)
     \end{equation}
-    where $\mathrm { R } _ { \mathrm { n } }$ is the new Elo rating and $\mathrm { R }  _ { \mathrm { O } }$ is the old (pre-match) rating. Paramater $\mathrm { K }$ is the weight constant for the tournament played. Values for $\mathrm { K }$ are listed in the table \ref{table:weight_constant}. These values are based on the values used in the website World Football Elo rating \footnote{\url{https://www.eloratings.net/about}}. Team qualities can vary a lot within a confederation and for that reasons FIFA \footnote{\url{https://fifa.com}} has a lowering coefficient of $0.85$ ($50 \times 0.85 = 42.5$) for AFC, CONCACAF, OFC and CAF. The selected $\mathrm { K }$ for the tournament type is multiplied based on the score. It is multiplied by $1.5$ if a game is won by two goals, by $1.75$ if a game is won by three goals, and by $1 + (3/4 + (N-3)/8)$ if the game is won by four or more goals, where N is the goal difference. Parameter \mathrm { W } is the outcome of the game: $1$ for a win, $0.5$ for a draw, and $0$ for a loss. The win expectancy $\mathrm { W } _ { \mathrm { e } }$ is calculated
+    where $\mathrm { R } _ { \mathrm { n } }$ is the new Elo rating and $\mathrm { R }  _ { \mathrm { O } }$ is the old (pre-match) rating. Paramater $\mathrm { K }$ is the weight constant for the tournament played. Values for $\mathrm { K }$ are listed in the table \ref{table:weight_constant}. These values are based on the values used in the website World Football Elo rating \footnote{\url{https://www.eloratings.net/about}}. Team qualities can vary a lot within a confederation and for that reasons FIFA \footnote{\url{https://fifa.com}} has a lowering coefficient of $0.85$ ($50 \times 0.85 = 42.5$) for AFC, CONCACAF, OFC and CAF. The selected $\mathrm { K }$ for the tournament type is multiplied based on the score. It is multiplied by $1.5$ if a game is won by two goals, by $1.75$ if a game is won by three goals, and by $1 + (3/4 + (N-3)/8)$ if the game is won by four or more goals, where N is the goal difference. Parameter $\mathrm { W }$ is the outcome of the game: $1$ for a win, $0.5$ for a draw, and $0$ for a loss. The win expectancy $\mathrm { W } _ { \mathrm { e } }$ is calculated
     \begin{equation}
         W _ { e } = 1 / \left( 10 ^ { ( - d r / 400 ) } + 1 \right)
     \end{equation}
@@ -108,3 +108,22 @@ If $N$ (the number of all available ratings for the attribute), is smaller than 
 
 \section{Historical odds}
 I have collected odds for the FIFA World Cup 2018, 2014 and 2010 from Odds Portal \cite{oddsportal}. Odds Portal has a collection of odds offered by multiple betting sites. For every match, I have used the average value from the available odds. Kuypers \cite{kuypers2008} mentions that football odds are mostly fixed. Based on values that Odds Portal offer, this is not the case anymore. Many odds have changed from the initial opening odd before the match start. I have used the latest value for every odd since the data is easier to collect that way.
+
+\section{Features used in prediction}
+Features listed above are calculated for each team, but all of them are not used directly in training. For most of the features the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get Elo the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. Main advantage of this method is that it reduces the number of features and makes the link between home team's value and away team's value explicit for the model. One limitation of this process is that $40-20=20$ and $100-80=20$, which means that a game between very weak teams and game between strong teams can look the same if the feature vector is only inspected.
+
+From the available features three feature sets are created: \textit{all features}, \textit{general features}, and \textit{player features}. Table \ref{table:featuresetlist} has the description for each of the feature sets.
+
+\begin{table}
+    \caption{Feature set description}
+    \begin{tabular}{| c | c|}
+        \hline
+        Feature set's name & Description \\
+        \hline
+        Player features & FIFA player attributes only \\
+        All Features & General features and Player features \\
+        General Features & All excluding Player features \\
+        \hline
+    \end{tabular}
+    \label{table:featuresetlist}
+\end{table}

@@ -83,8 +83,6 @@ where $N$ is the number of observations, $y$ is the correct class, and $\hat { y
 
 Grid search was use to test every parameter combination with a model. Cross validation of 5 folds was used. Best hyperparameter combination was chosen by looking first at the highest average accuracy and then by the lowest average cross entropy loss.
 
-
-\subsection{Variable importance in Random Forest}
 \section{Logistic Regression}
 Linear models like linear regression and logistic regression, which are the most well known methods, are widely use statistical modeling. Hosmer determinates the difference between these models well \cite{hosmer2013applied}: "What distinguishes a logistic regression model from  the linear regression model is that the outcome variable in logistic regression is \textit{binary} or \textit{dichotomous}. This difference between logistic and linear regression is reflected both in the choice of parametric model and in the assumptions. Once this difference is accounted for, the methods employed in an analysis using logistic regression follow the same general principles used in linear regression."
 
@@ -153,6 +151,18 @@ where $m$ is an isotonic function, is used to calibrate the probabilities. Optim
 \subsection{Linear Model}
 Linear model uses logistic regression to output the probabilities for the outcomes. Since the problem is a multiclass problem logistic regression can't be used directly. For this reason linear model is a combination of three one-vs-rest logistic regression classifiers. Each of these classifiers gives a probability estimate for a single class and these classifiers are fitted independently from each other. Probability estimates from the multiclass model are normalized probability estimates from the underlying models. Normalization is done the same way as it's done with the \textit{OVR model}. I use scikit learn's \textit{newton-cg} method \cite{scipy} to optimize the weights with L2 regularization. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
 
+\subsection{Bookmaker's model}
+Bookmaker's model is a benchmark model which predictions are implied probabilities calculated from the market odds. A single odd can't be used as a probability directly unless the commission taken by the bookmaker is zero. To count for the commission the sum of inverse odds is calculated
+\begin{equation}
+    k = \sum_{i=1}^{N}\frac{1}{\text{\textit{odd}}_i}
+\end{equation}
+where $N$ is the number of odds. In the case of football it is 3, since the possible outcomes are home win, draw or away win.
+When $k$ is known implied probability can be calculated
+\begin{equation}
+    \text{\textit{implied probability}} = \frac{1}{k *\text{\textit{odd}}_i}
+\end{equation}
+If there is no commission $k=1$ but normally $k>1$. If for example $k=1.04$ it means that the commission is 4\%.
+
 \section{Betting strategies}
 One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run. Betting market odds provide a good benchmark since bookmakers have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
 
@@ -183,29 +193,13 @@ It's common to bet only a fraction of the optimal bet size since the short-term 
     \label{eq:kelly}
 \end{figure}
 
-\section{Features used prediction}
-Features listed in Section 3 are calculated for each team, but are not used directly in training. For most of the features the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get Elo the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. Main advantage of this method is that it reduces the number of features and makes the link between home team's value and away team's value explicit for the model. One limitation of this process is that $40-20=20$ and $100-80=20$, which means that a game between very weak teams and game between strong teams can look the same if the feature vector is only inspected.
-
-It's interesting to know how much player attribute data can improve the predictions done using only the \textit{general features}. For this reason every model is trained using three feature sets \textit{all features}, \textit{general features}, and \textit{player features}. Table \ref{table:featuresetlist} has the description for each of the feature sets.
-
-\begin{table}
-    \caption{Feature set description}
-    \begin{tabular}{| c | c|}
-        \hline
-        Feature set's name & Description \\
-        \hline
-        Player features & FIFA player attributes only \\
-        All Features & General features and Player features \\
-        General Features & All excluding Player features \\
-        \hline
-    \end{tabular}
-    \label{table:featuresetlist}
-\end{table}
+\section{Recursive feature elimination}
+Recursive feature elimination (RFE) is an algorithm that can be used to see what features matter the most. In every iteration round RFE measures the models performance and uses feature importance values from the model to see what feature was the least important. This feature is removed from the feature set used in the next round. Algorithm stops when the feature set is empty. \cite{granitto2006recursive} Random forest model includes a feature importance values and can be used with RFE. To guarantee that the variance in a single fitting doesn't rule out an important feature a model is trained 100 times with different subset of the dataset in each elimination round. The feature that performs the worst on average will be removed from the feature set. The average accuracy and the average log loss values from each elimination rounds are stored.
 
 \section{Tournaments simulation process}
-To see how well models perform a world cup needs to be simulated using model's predictions. Tournament simulation outputs four metrics: accuracy, log loss, unit strategy's profit and Kelly strategy's profit. These metrics can be used to validate the model's performance. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
+Model's quality is measured using the results from the tournament predictions. Tournament is simulated and model's performance is measured for each game. Tournament simulation outputs four metrics: accuracy, log loss, unit strategy's profit and Kelly strategy's profit. These metrics can be used to validate the model's performance. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
 
-Simulation is done for World Cup 2018, 2014 and 2010. In every simulation model uses the optimal hyperparameters that have been search before the simulation using the whole dataset. Data used in training is between the start date August 30th, 2006 and an end date, which is dependant of the tournament. In World Cup 2010 end date is June 11th, 2010, in World Cup 2014 it's June 12th, 2014 and in World Cup 2018 it's June 4th, 2018, which is the last date for the international matches dataset.
+Simulation is done for World Cup 2018, 2014 and 2010. In every simulation model uses the optimal hyperparameters that have been search before the simulation using the whole dataset. Data used in training is between the start date August 30th, 2006 and an end date, which is dependant of the tournament. In World Cup 2010 end date is June 11th, 2010, in World Cup 2014 it's June 12th, 2014 and in World Cup 2018 it's June 4th, 2018, which is the last date for the international matches dataset. Model is retrained before every simulation.
 
 Each tournament is simulated according to the official tournament diagram. For each game the most resent values for features are used. This means that the feature values are not static throughout the tournament. Elo rating is updated after the match for both teams using the real outcome of the game, not the predicted one.
 
