@@ -65,7 +65,7 @@ Segal \cite{segal2004machine} showed that increasing the number of noise variabl
     \hline
     Hyperparameter & Values\\
     \hline
-    number of candidate predictors & $\sqrt(M)$, $\log_2(M)$\\
+    number of candidate predictors & $\sqrt{M}$, $\log_2(M)$\\
     minimum samples at leaf node & 1, 3, 5, 10, 15\\
     maximum depth of the tree & 3, 5, 8, 12, None\\
     \hline
@@ -75,7 +75,7 @@ Segal \cite{segal2004machine} showed that increasing the number of noise variabl
 
 I use two metrics to evaluate models performance. Accuracy
 \begin{equation}
-    \frac { 1 } { N} \sum _ { i = 1 } ^ {N} 1 \left( \hat { y } _ { i } = y _ { i } \right)
+    \frac { 1 } { N} \sum _ { i = 1 } ^ {N} 1 \left( \hat { y } _ { i } = y _ { i } \right)\text{,}
 \end{equation}
 where $N$ is the number of observations, $y$ is the correct class, and $\hat { y }$ the predicted class, is used to see how many observations are classified correctly. The second metric is cross entropy loss
 \begin{equation}
