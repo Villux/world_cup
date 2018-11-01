@@ -1,24 +1,25 @@
-\section{Random Forest}
-\label{ss:randomforest}
-In machine learning supervised learning is the task of learning the relationship between input features and and the target value. Structure that describes this relationship is called a model. In most cases these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
+In machine learning supervised learning is the task of learning the relationship between input features and the target value. The structure that describes this relationship is called a model. In most cases, these models are used to predict the target value based on new input features. There are two types of models: \textit{regression models} and \textit{classifier models}. If the target value is in a real-valued domain the model is called \textit{regression model}. \textit{Classifier models} are used to map the input features to predefined classes. \cite{rokach2005top}
 
-Decision tree is one of the most popular model type used in classification problems. Decision tree is a directed tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edge are called the \textit{leaf nodes}. Internal nodes in decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leaf nodes}. When a new input is given tree is navigated from the \textit{root node} to a \textit{leaf node} which determinates the predicted class label. In regression these target values can take continuous values. \cite{rokach2005top}
+\section{Decision trees}
+Decision tree is one of the most popular model type used in classification problems. Decision tree is a rooted tree, which means that all of the nodes, except the \textit{root node}, have exactly one incoming edge. Nodes that have outgoing edges are called \textit{internal nodes} and the nodes that have only incoming edges are called \textit{leaf nodes}. Internal nodes in a decision tree split the instance space into two or more subspaces according to a certain discrete function of the input's feature values. Usually a split is done based on a single feature from the whole feature vector. A single class value is assigned for the \textit{leaf nodes}. When a new input is given tree is navigated from the \textit{root node} to a \textit{leaf node} which determinates the predicted class label. In regression, these target values can take continuous values. \cite{rokach2005top}
 
 Decision trees have many benefits and are very useful "off-the-shelf" predictors. Outliers in the dataset or many irrelevant predictors are not problematic for the trees. Scaling or any other general transformation can be done to the input space since trees are invariant under transformation of the individual predictors. \cite{friedman2001elements} Decision trees have good interpretability if the trees are small.
 
-One main disadvantage of the decision trees is the bad prediction accuracy \cite{friedman2001elements}. Decision trees can express the training data well, but have high variance which means that prediction accuracy for unseen data is often weak.
+\section{Bootstrap aggregating}
+One main disadvantage of the decision trees is the bad prediction accuracy \cite{friedman2001elements}. Decision trees can express the training data well but have a high variance which means that the prediction accuracy for unseen data is often weak.
 
-Bootstrap aggregating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the average is taken over the output of a multiple estimators:
+Bootstrap aggregating, also called bagging, is a way to improve the prediction accuracy of decision trees by averaging. In bagging the average is taken over the output of multiple estimators:
 \begin{equation}
-    \hat {f}_{bag}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*}_{b}(x)
+    \hat {f}_{bag}(x) = \frac{1}{B}\sum_{b = 1}^{B} \hat {f}^{*}_{b}(x) \text{,}
 \end{equation}
 where B is the number of estimators and $\hat {f}^{*}_{b}(x)$ is a single estimator. This reduces the high variance of a single tree and makes predictions more accurate.
 
-Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution, meaning that the trees are identically distributed (i.d.). This combined with deep trees that have less bias ensures that the variance reduction achieved in bagging comes only with the expense of a small increase in bias and the loss of interpretability. The loss of interpretability can't be avoided since a single tree can't be used anymore for reasoning. Trees in bagging are only identically distributed. The missing independent property means that the trees in the forest can have pairwise correlation. This is common in cases where input data has one strong predictor which often leads to a situation where all of the tree are splitted similarily. \cite{friedman2001elements}
+Bootstrap in bagging means that in the training of a single tree a random sample with replacement is taken from the original sample. Samples used in training come from the same distribution, meaning that the trees are identically distributed (i.d.). This combined with deep trees that have less bias ensures that the variance reduction achieved in bagging comes only at the expense of a small increase in bias and loss of interpretability. The loss of interpretability can not be avoided since a single tree can not be used anymore for reasoning. Trees in bagging are only identically distributed. The missing independent property means that the trees in the forest can have a pairwise correlation. This is common in cases where input data has one strong predictor which often leads to a situation where all of the trees are split similarily. \cite{friedman2001elements}
 
-Amit and Geman's \cite{amit1997shape} idea of random feature selection inspired Breiman to use bagging in tandem with random feature selection. With this random feature selection correlation between the trees can be reduced since the generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them \cite{breiman2001random}. Breiman was first to use the name \textit{Random Forest} for algorithms that use bagging and random feature selection with tree predictors \cite{breiman2001random}. Step-by-step instruction from \cite{friedman2001elements} for Random Forest algorithm are listed in the Algorithm \ref{alg:random_forest}.
+\section{Random forest}
+Amit and Geman's \cite{amit1997shape} idea of random feature selection inspired Breiman to use bagging in tandem with random feature selection. With this random feature selection correlation between the trees can be reduced since the generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them \cite{breiman2001random}. Breiman was first to use the name \textit{Random Forest} for algorithms that use bagging and random feature selection with tree predictors \cite{breiman2001random}. Step-by-step instruction from \cite{friedman2001elements} for Random forest algorithm are listed in Algorithm \ref{alg:random_forest}.
 
-Main usecases for Random forest are \textit{classification} and \textit{regression}.
+The Main usecases for Random forest are \textit{classification} and \textit{regression}.
 
 \begin{algorithm}
     \footnotesize
@@ -48,15 +49,15 @@ Main usecases for Random forest are \textit{classification} and \textit{regressi
 \end{algorithm}
 
 \subsection{Random forest hyperparameter selection}
-Many machine learning algorithms have parameters that are not optimized within the algorithm itself. These parameters are called hyperparameters. Optimizing these hyperparameters is one way to improve the models performance, since optimal parameters are often problem specific. Random forest is no exception, even though in many cases its performance is relatively decent with default parameters \cite{probst2018hyperparameters}.
+Many machine learning algorithms have parameters that are not optimized within the algorithm itself. These parameters are called hyperparameters. Optimizing these hyperparameters is one way to improve the model's performance since optimal parameters are often problem specific. Random forest is no exception, even though in many cases its performance is relatively decent with the default parameters \cite{probst2018hyperparameters}.
 
 In this hyperparameter selection process three important hyperparameters are optimized: \textit{number of candidate predictors}, \textit{minimum samples at leaf node} and \textit{maximum depth of a tree}.
-% Idea behind this is keep the correlation between the trees low and improve the models ability to handle noise.
+% Idea behind this is to keep the correlation between the trees low and improve the model's ability to handle noise.
 
-\textit{Number of candidate predictors}, denoted as $K$, is one of the key hyperparameters to control the correlation between forest's trees \cite{probst2018hyperparameters}.
-In cases where there are many or only few relevant predictor variables, choosing the $K$ can have high influence on the results. For example in the case of minuscule $K$ with a dataset that has only small number of important predictors most of the trees are built without the important predictor and have low prediction accuracy. \cite{bernard2009influence} Often best values for $K$ are $\sqrt(M)$ and $\log_2(M)$, where $M$ is the number of predictor variables \cite{bernard2009influence}.
+The \textit{Number of candidate predictors}, denoted as $K$, is one of the key hyperparameters to control the correlation between forest's trees \cite{probst2018hyperparameters}.
+In cases where there are many or only a few relevant predictor variables, choosing the value of $K$ can have a high influence on the results. For example in the case of minuscule $K$ with a dataset that has only a small number of important predictors most of the trees are built without the important predictor and have low prediction accuracy. \cite{bernard2009influence} Often best values for $K$ are $\sqrt{M}$ and $\log_2(M)$, where $M$ is the number of predictor variables \cite{bernard2009influence}.
 
-Segal \cite{segal2004machine} showed that increasing the amount of noise variables lead to a higher optimal leaf node size. For this reason I chose to optimize the \textit{minimum samples at leaf node}. Good default values for this hyperparameter are 1 for classification and 5 for regression \cite{probst2018hyperparameters}. Last optimized hyperparamater - \textit{maximum depth of a tree} - is related to \textit{minimum samples at leaf node} since controlling the maximum depth of the tree the algorithm might be forced to have some leaf nodes to have more samples than the minimum value requires.
+Segal \cite{segal2004machine} showed that increasing the number of noise variables lead to a higher optimal leaf node size. For this reason, I chose to optimize the \textit{minimum samples at leaf node}. Good default values for this hyperparameter are 1 for classification and 5 for regression \cite{probst2018hyperparameters}. Last optimized hyperparameter - \textit{maximum depth of a tree} - is related to \textit{minimum samples at leaf node} since controlling the maximum depth of the tree the algorithm might be forced to have some leaf nodes to have more samples than the minimum value requires.
 
 \begin{table}
     \caption{Optimized hyperparameters and the tested values.}
@@ -78,23 +79,24 @@ I use two metrics to evaluate models performance. Accuracy
 \end{equation}
 where $N$ is the number of observations, $y$ is the correct class, and $\hat { y }$ the predicted class, is used to see how many observations are classified correctly. The second metric is cross entropy loss
 \begin{equation}
-    - \sum _ { i = 1 } ^ { N }\sum _ { j = 1 } ^ { M } y _ { i,j } \log \left( p _ { i,j } \right)
-\end{equation}, where $N$ is the number of observations, $M$ is the number of classes, $y$ is the binary indicator for correct class and $p$ is the probability for that class \cite{nasrabadi2007pattern}. Cross entropy loss is used to evaluate how good models probability estimates are.
+    - \sum _ { i = 1 } ^ { N }\sum _ { j = 1 } ^ { M } y _ { i,j } \log \left( p _ { i,j } \right) \text{,}
+\end{equation}
+where $N$ is the number of observations, $M$ is the number of classes, $y$ is the binary indicator for correct class and $p$ is the probability for that class \cite{nasrabadi2007pattern}. Cross entropy loss is used to evaluate how good models probability estimates are.
 
-Grid search was use to test every parameter combination with a model. Cross validation of 5 folds was used. Best hyperparameter combination was chosen by looking first at the highest average accuracy and then by the lowest average cross entropy loss.
+The grid search was used to test every parameter combination with a model. Cross-validation of 5 folds was used. Best hyperparameter combination was chosen by looking first at the highest average accuracy and then by the lowest average cross entropy loss.
 
 \section{Logistic Regression}
-Linear models like linear regression and logistic regression, which are the most well known methods, are widely use statistical modeling. Hosmer determinates the difference between these models well \cite{hosmer2013applied}: "What distinguishes a logistic regression model from  the linear regression model is that the outcome variable in logistic regression is \textit{binary} or \textit{dichotomous}. This difference between logistic and linear regression is reflected both in the choice of parametric model and in the assumptions. Once this difference is accounted for, the methods employed in an analysis using logistic regression follow the same general principles used in linear regression."
+Linear models like linear regression and logistic regression, which are the most well-known methods, are widely used in statistical modeling. Hosmer\cite{hosmer2013applied} determinates the difference between these models well: "What distinguishes a logistic regression model from  the linear regression model is that the outcome variable in logistic regression is \textit{binary} or \textit{dichotomous}. This difference between logistic and linear regression is reflected both in the choice of parametric model and in the assumptions. Once this difference is accounted for, the methods employed in an analysis using logistic regression follow the same general principles used in linear regression."
 
-Output of a logistic regression is a probability estimate for a class. This conditional probability for a class is denoted by $P ( Y = 1 | \mathbf { x } ) = \pi ( \mathbf { x } )$. Name for the model comes from the fact that the logistic function turns log-odds to this conditional probability. Sigmoid is the logistic function and the log-odds for the model are given by the equation
+The output of a logistic regression model is a probability estimate for a class. This conditional probability for a class is denoted by $P ( Y = 1 | \mathbf { x } ) = \pi ( \mathbf { x } )$. Name for the model comes from the fact that the logistic function turns log-odds to this conditional probability. Sigmoid is the logistic function and the log-odds for the model are given by the equation
 \begin{equation}
     g ( \mathbf { x } ) = \beta _ { 0 } + \beta _ { 1 } x _ { 1 } + \beta _ { 2 } x _ { 2 } + \ldots + \beta _ { p } x _ { p }.
 \end{equation}
-Thes combined the logistic regression model is
+This combined with the logistic function makes it a logistic regression model
 \begin{equation}
     \pi ( \mathbf { x } ) = \frac { e ^ { g ( \mathbf { x } ) } } { 1 + e ^ { g ( \mathbf { x } ) } }.
 \end{equation}
-To get the estimates for $\boldsymbol { \beta } = \left( \beta _ { 0 } , \beta _ { 1 } , \ldots , \beta _ { p } \right)$ maximum likelihood estimation is often used. Idea in maximum likelihood estimation is to maximize the likelihood function. Likelihood function equations are
+To get the estimates for $\boldsymbol { \beta } = \left( \beta _ { 0 } , \beta _ { 1 } , \ldots , \beta _ { p } \right)$ maximum likelihood estimation is often used. The idea in maximum likelihood estimation is to maximize the likelihood function. Likelihood function equations are
 \begin{equation}
     \sum _ { i = 1 } ^ { n } \left[ y _ { i } - \pi \left( \mathbf { x } _ { i } \right) \right] = 0
 \end{equation}
@@ -103,19 +105,21 @@ and
     \sum _ { i = 1 } ^ { n } x _ { i j } \left[ y _ { i } - \pi \left( \mathbf { x } _ { i } \right) \right] = 0
 \end{equation}
 for $j=1,2,..,p$. \cite{hosmer2013applied} No closed-form solution exists for logistic regression. Estimation is solved by iterative algorithms like Newton's method.
+
 \section{Poisson Distribution}
-Poisson distribution is on of the most important distributions in statistics. It's named after the french mathematician Simèon Denis Poisson (1781–1840) who was first to present this distribution. Poisson distribution is given by
+Poisson distribution is one of the most important distributions in statistics. It is named after the French mathematician Simèon Denis Poisson (1781–1840) who was the first to present this distribution. The poisson distribution is given by
 \begin{equation}
-    Po ( r ; \mu ) = \frac { \mu ^ { r } e ^ { - \mu } } { r ! }
+    Po ( r ; \mu ) = \frac { \mu ^ { r } e ^ { - \mu } } { r ! } \text{,}
 \end{equation}
-where r is the number of events and $\mu$ is the average number of events per interval. The Poisson distribution gives the probability for finding exactly $r$ events in a given length of time if the events occur independently at a constant rate $\mu$. \cite{walck1996hand} Poisson distribution has been discovered to give reasonably accurate description of football scores \cite{maher1982modelling}.
+where $r$ is the number of events and $\mu$ is the average number of events per interval. The Poisson distribution gives the probability for finding exactly $r$ events in a given length of time if the events occur independently at a constant rate of $\mu$. \cite{walck1996hand} The poisson distribution has been discovered to give a reasonably accurate description of football scores \cite{maher1982modelling}.
+
 \section{Prediction models}
 \subsection{Outcome Model}
-A football match can have three different outcomes: \textit{home win}, \textit{draw} or \textit{away win}. Using these three outcomes as classes random forest classifier can be used to predict the probabilities for each possible outcome. \textit{Outcome model} implements this idea and its output, the outcome probabilities, are used directly as the estimated probabilities for each outcome.
+A football match can have three different outcomes: \textit{home win}, \textit{draw} or \textit{away win}. Using these three outcomes as classes the random forest classifier can be used to predict the probabilities for each possible outcome. \textit{Outcome model} implements this idea and its output, the outcome probabilities, are used directly as the estimated probabilities for each outcome.
 \subsection{Score Model}
-\textit{Score model} is highly influenced by Groll et al.'s \cite{groll2018prediction} model that used random forest regression and a Poisson distribution to simulate each match in World Cup 2018. They used random forest regression to get the expected number of goals for both of the teams. To simulate the tournament correctly they needed to have probabilities for different end results for each match. To overcome this issue they used expected number of goals from the random forest regression as an intensity parameter $\mu$ in Poisson distribution $Po(\mu)$ to draw a random number of goals for both of the teams. Both teams had their own intensity value which meant that both of the Poisson distributions were independent but conditional on the features.
+The \textit{Score model} is highly influenced by Groll et al.'s \cite{groll2018prediction} model that used random forest regression and a Poisson distribution to simulate each match in the World Cup 2018. They used random forest regression to get the expected number of goals for both of the teams. To simulate the tournament correctly they needed to have probabilities for different end results for each match. To overcome this issue they used expected number of goals from the random forest regression as an intensity parameter $\mu$ in Poisson distribution $Po(\mu)$ to draw a random number of goals for both of the teams. Both teams had their own intensity value which meant that both of the Poisson distributions were independent but conditional on the features.
 
-Since I need the probabilities for each outcome, sampling just one possible end result for a match is not enough. For this reason, for each team, the probabilities of scoring number of goals between 0 to 10 is calculated from Poisson probability mass function. As an end result both teams have their own probabilities for scoring goals between 0 and 10 in the form of probability vector $score\_prob = \left( h _ { 1 } , h _ { 2 } , \dots , h _ { n - 1 } , h _ { n } \right)$, where N is 10. The outer product of these two score probability vectors, called the \textit{goal matrix}, has the probability estimates for each unique end result as illustrated in the figure \ref{fig:goal_matrix}. Instead of probabilities, this figure has the end result to clarify the matrix's structure. Probabilities for match outcome are simple sums from this goal matrix, since $\sum_{i=1}\sum_{j=1}p_{ij} = 1$. Lower triangular is the probability of the home team winning, sum of diagonal is the probability of a draw and sum of upper triangular is the probability of the away team winning.
+Since I need the probabilities for each outcome, sampling just one possible end result for a match is not enough. For this reason, for each team, the probabilities of scoring a number of goals between 0 to 10 is calculated from the Poisson probability mass function. As an end result both teams have their own probabilities for scoring goals between 0 and 10 in the form of probability vector $score\_prob = \left( h _ { 1 } , h _ { 2 } , \dots , h _ { n - 1 } , h _ { n } \right)$, where N is 10. The outer product of these two score probability vectors, called the \textit{goal matrix}, has the probability estimates for each unique end result as illustrated in the figure \ref{fig:goal_matrix}. Instead of probabilities, this figure has the end result to clarify the matrix's structure. Probabilities for match outcome are simple sums from this goal matrix, since $\sum_{i=1}\sum_{j=1}p_{ij} = 1$. The sum of the lower triangular entries is the probability of the home team winning, the sum of the diagonal entries is the probability of a draw, and the sum of the upper triangular entries is the probability of the away team winning.
 \begin{figure}
     $\begin{bmatrix}
     0-0 & 0-1 & \cdots & 0-N \\
@@ -127,54 +131,53 @@ Since I need the probabilities for each outcome, sampling just one possible end 
 \end{figure}
 
 \subsection{One-vs-rest model}
-One-vs-rest model (OVR model) is a model architecture that splits multiclass classifier (three or more classes) into multiple binary classifiers. Each of the classes have their own binary classifier. Multiclass classifier is then formed from trained binary classifiers. Requirement is that the output of binary classifier can be used with the other outputs to form a multiclass classifier. Often this means that the outputs are probabilities.
+The One-vs-rest model (OVR model) is a model architecture that splits multiclass classifier (three or more classes) into multiple binary classifiers. Each of the classes has its own binary classifier. A multiclass classifier is then formed from trained binary classifiers. The requirement is that the output of binary classifier can be used with the other outputs to form the multiclass classifier. Often this means that the outputs are probabilities.
 
-With \textit{OVR model} I train a single binary classifier for each match's outcome. A binary classifier that predicts the probability for home team's win will label all true classes (the matches where the home team won) as 1 and rest of the matches as 0. The same operation is done to predict draw and away win with correct true classes. Probability of the true class $P(c_i = 1 | x)$ is taken from each binary classifier $i$. To form the probability distribution for the match's outcome these probabilities are normalized \cite{zadrozny2002transforming}. For example probability of the home team winning is calculated:
+With the \textit{OVR model} I train a single binary classifier for each match's outcome. A binary classifier that predicts the probability for home team's win will label all true classes (the matches where the home team won) as 1 and rest of the matches as 0. The same operation is done to predict draw and away win with correct true classes. The probability of the true class $P(c_i = 1 | x)$ is taken from each binary classifier $i$. To form the probability distribution for the match's outcome these probabilities are normalized \cite{zadrozny2002transforming}. For example the probability of the home team winning is calculated by
 \begin{equation}
-\frac{P(c_{home\_win}| x)}{P(c_{home\_win}| x) + P(c_{draw}| x) + P(c_{away\_win}| x)}
-\end{equation}.
+\frac{P(c_{home\_win}| x)}{P(c_{home\_win}| x) + P(c_{draw}| x) + P(c_{away\_win}| x)} \text{.}
+\end{equation}
 
-One advantage of a binary classifier is that the probability estimates from the model can be calibrated. This is particularly useful since some classifiers are biased with their estimates. For example, boosted trees rarely give probability estimates close to 0 or 1. This is not the case with random forest and with random forest benefiting from calibration is more problem specific. \cite{niculescu2005predicting} Two well-known calibration methods exists for binary classifiers. Platt scaling, named by the inventor Platt himself \cite{platt1999probabilistic}, uses a sigmoid function to calibrate binary classifier probabilities. Probability estimates from the vanilla model are passed through a fitted sigmoid function
+One advantage of a binary classifier is that the probability estimates from the model can be calibrated. This means that model's probability estimates can be adjusted after the prediction to remove the possible bias. For example, boosted trees rarely give probability estimates close to 0 or 1. This is not the case with random forest and with random forest benefiting from calibration is more problem specific. \cite{niculescu2005predicting} Two well-known calibration methods exists for binary classifiers. Platt scaling uses a sigmoid function to calibrate binary classifier probabilities \cite{platt1999probabilistic}. Probability estimates from the vanilla model are passed through a fitted sigmoid function
 \begin{equation}
 P ( c = 1 | x ) = \frac { 1 } { 1 + \exp ( A f(x) + B ) }
 \end{equation}
-to get the calibrated estimates. Here $f(x)$ is the output from the binary classifier and $A$ and $B$ are parameters that are fitted using the maximum likelihood estimation. With Platt scaling normally the assumption is that the non-calibrated probabilities tend to act like sigmoid function. If this is not the case often the other calibration method, isotonic regression, is used. Basic assumption with isotonic regression is that function
+to get the calibrated estimates. Here $f(x)$ is the output from the binary classifier and $A$ and $B$ are parameters that are fitted using the maximum likelihood estimation. With Platt scaling normally the assumption is that the non-calibrated probabilities tend to act like a sigmoid function. If this is not the case often the other calibration method, isotonic regression, is used. The basic assumption with isotonic regression is that function
 \begin{equation}
-c _ { i } = m \left( f _ { i } \right) + \epsilon _ { i }
+c _ { i } = m \left( f _ { i } \right) + \epsilon _ { i } \text{,}
 \end{equation}
 where $m$ is an isotonic function, is used to calibrate the probabilities. Optimal function $m$ is problem specific and learned by minimizing
 \begin{equation}
-\hat { m } = \arg \min _ { z } \sum \left( c _ { i } - z \left( f _ { i } \right) \right) ^ { 2 }
+\hat { m } = \arg \min _ { z } \sum \left( c _ { i } - z \left( f _ { i } \right) \right) ^ { 2 } \text{. \cite{zadrozny2002transforming}}
 \end{equation}
-. \cite{zadrozny2002transforming} During preface experiments Platt scaling outperformed isotonic scaling and no-scaling option. For this reason Platt scaling is used with the binary classifiers in this model.
 
 \subsection{Linear Model}
-Linear model uses logistic regression to output the probabilities for the outcomes. Since the problem is a multiclass problem logistic regression can't be used directly. For this reason linear model is a combination of three one-vs-rest logistic regression classifiers. Each of these classifiers gives a probability estimate for a single class and these classifiers are fitted independently from each other. Probability estimates from the multiclass model are normalized probability estimates from the underlying models. Normalization is done the same way as it's done with the \textit{OVR model}. I use scikit learn's \textit{newton-cg} method \cite{scipy} to optimize the weights with L2 regularization. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results.
+The linear model uses logistic regression to output the probabilities for the outcomes. Since the problem is a multiclass problem logistic regression can not be used directly. For this reason, the \textit{Linear model} is a combination of three one-vs-rest logistic regression classifiers. Each of these classifiers gives a probability estimate for a single class and these classifiers are fitted independently from each other. Probability estimates from the multiclass model are normalized probability estimates from the underlying models. Normalization is done the same way as it is done with the \textit{OVR model}.
 
 \subsection{Bookmaker's model}
-Bookmaker's model is a benchmark model which predictions are implied probabilities calculated from the market odds. A single odd can't be used as a probability directly unless the commission taken by the bookmaker is zero. To count for the commission the sum of inverse odds is calculated
+The bookmaker's model is a benchmark model which predictions are implied probabilities calculated from the market odds. A single odd can't be used as a probability directly unless the commission taken by the bookmaker is zero. To count for the commission the sum of inverse odds is calculated
 \begin{equation}
     k = \sum_{i=1}^{N}\frac{1}{\text{\textit{odd}}_i}
 \end{equation}
 where $N$ is the number of odds. In the case of football it is 3, since the possible outcomes are home win, draw or away win.
-When $k$ is known implied probability can be calculated
+When $k$ is known the implied probability can be calculated as
 \begin{equation}
-    \text{\textit{implied probability}} = \frac{1}{k *\text{\textit{odd}}_i}
+    \text{\textit{implied probability}} = \frac{1}{k \cdot \text{\textit{odd}}_i}\text{.}
 \end{equation}
-If there is no commission $k=1$ but normally $k>1$. If for example $k=1.04$ it means that the commission is 4\%.
+If there is no commission $k=1$, but normally $k>1$. If for example $k=1.04$ it means that the commission is 4\%.
 
 \section{Betting strategies}
 One way to validate a model that predicts the outcome of a football match is to see if betting according to the model's predictions is profitable in the long run. Betting market odds provide a good benchmark since bookmakers have a financial interest to provide as accurate models as possible. I have used two betting strategies to validate my models' performance in FIFA World Cups.
 
 \subsection{Unit strategy}
-The first strategy, \textit{unit strategy}, is the simplest strategy. This strategy is named as \textit{unit strategy} since for all of the games one unit is placed for the predicted winner. In most of the cases positive returns from this strategy requires the model to be more accurate than the bookmaker's model. If a model and bookmaker's model predict the outcomes equally the expected return is negative since bookmaker's include their commission into the odds. If bookmaker's model predicts that the probability of a home win is 25\% and bookmaker's commission is 3\% the final value for the odd is calculated as $1/(0.25+0.03) = 3.57$. Being less accurate but profitable requires a model to predict many outcomes with low probability correctly. Unit strategy's main weakness is that it doesn't use all of the data available in betting. It doesn't use the probabilities to change the bet size or targets. For this reason I have a another betting strategy.
+The first strategy, \textit{unit strategy}, is the simplest strategy. This strategy is named \textit{unit strategy} since for all of the games one unit is placed for the predicted winner. In most of the cases, positive returns from this strategy require the model to be more accurate than the bookmaker's model. If a model and bookmaker's model predict the outcomes equally the expected return is negative since bookmakers include their commission into the odds. If bookmaker's model predicts that the probability of a home win is 25\% and bookmaker's commission is 3\% the final value for the odd is calculated as $1/(0.25+0.03) = 3.57$. Being less accurate but profitable requires a model to predict many outcomes with low probability correctly. Unit strategy's main weakness is that it doesn't use all of the data available in betting. It doesn't use the probabilities to change the bet size or targets. For this reason, I experiment with another betting strategy.
 
 \subsection{Kelly strategy}
-The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. Many times it's referred also as Kelly's criterion. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler - "how much to bet" and "what are the favourable betting targets" -  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction to bet is calculated
+The Second betting strategy is named as \textit{Kelly strategy} by the inventor Kelly \cite{kelly2011new}. Many times it's referred also as Kelly's criterion. In his famous paper \cite{kelly2011new} Kelly consider how to choose the optimal bet size according to the available odds to maximize the logarithm of wealth. This way the typical questions of a gambler --- "how much to bet" and "what are the favorable betting targets" ---  can be answered. In the simplest form, when calculating optimal fraction only for a single outcome, the optimal fraction of the bet is calculated as
 \begin{equation}
-f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }
+f ^ { * } =  \frac { p ( b + 1 ) - 1 } { b }\text{,}
 \end{equation}
-where $b$ is the net odd and $p$ is the probability given by the model. Gamblers bankroll is multiplied with the optimal fraction $f^{*}$ to get the size of the bet - if the fraction is positive. If the probabilities given by the model are close to true probabilities gambler should end up exponentially increasing her wealth in the long run. To utilize the whole potential of the model a more complex function is used to calculate the optimal fraction. To get the optimal fractions for bets 1, X and 2 (home win, draw and away win) the simple formula of Kelly's criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{eq:kelly}. Since there is no closed form solution to this equation it's maximized numerically using Scipy's implementation of Sequential Least Squares Programming \cite{scipy}.
+where $b$ is the net odd and $p$ is the probability given by the model. The gambler's bankroll is multiplied with the optimal fraction $f^{*}$ to get the size of the bet --- if the fraction is positive. If the probabilities given by the model are close to the true probabilities the gambler should end up with exponentially increasing her wealth in the long run. To utilize the whole potential of the model a more complex function is used to calculate the optimal fraction. To get the optimal fractions for bets 1, X and 2 (home win, draw and away win) the simple formula of Kelly's criterion needs to be extended to include all the odds, probabilities and fractions as in the equation \ref{eq:kelly}.
 
 It's common to bet only a fraction of the optimal bet size since the short-term risk of losing a big proportion of the bankroll is high \cite{maclean2011medium}. For this reason, only 30\% of the suggested bet size is used.
 \begin{figure}
@@ -187,20 +190,25 @@ It's common to bet only a fraction of the optimal bet size since the short-term 
      \end{equation}
 
     \begin{equation*}
-        \text { subject to: }  f_1 + f_2 + f_3 \leq 1 \\
-         0 \geq f_1, f_2, f_3 \leq 1
+        \begin{split}
+            \text { subject to: }  f_1 + f_2 + f_3 \leq 1 \\
+             0 \geq f_1, f_2, f_3 \leq 1
+         \end{split}
     \end{equation*}
     \label{eq:kelly}
 \end{figure}
 
 \section{Recursive feature elimination}
-Recursive feature elimination (RFE) is an algorithm that can be used to see what features matter the most. In every iteration round RFE measures the models performance and uses feature importance values from the model to see what feature was the least important. This feature is removed from the feature set used in the next round. Algorithm stops when the feature set is empty. \cite{granitto2006recursive} Random forest model includes a feature importance values and can be used with RFE. To guarantee that the variance in a single fitting doesn't rule out an important feature a model is trained 100 times with different subset of the dataset in each elimination round. The feature that performs the worst on average will be removed from the feature set. The average accuracy and the average log loss values from each elimination rounds are stored.
+Recursive feature elimination (RFE) is an algorithm that can be used to see what features matter the most. In every iteration round, RFE measures the model's performance and uses feature importance values from the model to see what feature was the least important. This feature is removed from the feature set used in the next round. The algorithm stops when the feature set is empty. \cite{granitto2006recursive} Random forest model includes a feature importance values and can be used with RFE. To guarantee that the variance in a single fitting doesn't rule out an important feature a model is trained 100 times with a different subset of the dataset in each elimination round. The feature that performs the worst on average will be removed from the feature set. The average accuracy and the average log loss values from each elimination rounds are stored.
 
 \section{Tournaments simulation process}
-Model's quality is measured using the results from the tournament predictions. Tournament is simulated and model's performance is measured for each game. Tournament simulation outputs four metrics: accuracy, log loss, unit strategy's profit and Kelly strategy's profit. These metrics can be used to validate the model's performance. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
+The quality of the model is measured using the results from the tournament predictions. The tournament is simulated and the model's performance is measured for each game. The tournament simulation outputs four metrics: accuracy, log loss, unit strategy's profit, and Kelly strategy's profit. These metrics can be used to validate the model's performance. Since the same model can end up into a different local optimum between sequential training sessions simulation is run for 10 times per tournament to get the average performance and standard deviation.
 
-Simulation is done for World Cup 2018, 2014 and 2010. In every simulation model uses the optimal hyperparameters that have been search before the simulation using the whole dataset. Data used in training is between the start date August 30th, 2006 and an end date, which is dependant of the tournament. In World Cup 2010 end date is June 11th, 2010, in World Cup 2014 it's June 12th, 2014 and in World Cup 2018 it's June 4th, 2018, which is the last date for the international matches dataset. Model is retrained before every simulation.
+Simulation is done for World Cup 2018, 2014 and 2010. In every simulation the model uses the optimal hyperparameters that have been searched before the simulation using the whole dataset. The data used in the training span a period from the start date August 30th, 2006 to an end date, which depends on the tournament. In the World Cup 2010 the end date is June 11th, 2010, in the World Cup 2014 it is June 12th, 2014 and in the World Cup 2018 it is June 4th, 2018, which is the last date for the international matches dataset. The model is retrained before every simulation.
 
-Each tournament is simulated according to the official tournament diagram. For each game the most resent values for features are used. This means that the feature values are not static throughout the tournament. Elo rating is updated after the match for both teams using the real outcome of the game, not the predicted one.
+Each tournament is simulated according to the official tournament diagram. For each game, the most recent values for features are used. This means that the feature values are not static throughout the tournament. Elo rating is updated after the match for both teams using the real outcome of the game, not the predicted one.
 
 This process, mentioned above, is run for every model and feature set combination.
+
+\section{Implementation details}
+In my experiments I use scikit learn's algorithm library \cite{scipy} for the random forest models and for the \textit{Linear model}. \textit{Linear model} uses scikit learn's \textit{newton-cg} method to optimize the weights with L2 regularization. Scikit learn's inverse of regularization strength $C$ is set to 0.001 based on grid search results. All of the parameters that do not use the scikit learn's default values are mentioned in this thesis. Scipy's implementation of Sequential Least Squares Programming is used to calculate the optimal fractions for Kelly strategy.
