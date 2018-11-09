@@ -5,472 +5,352 @@
 %%  hannu@tiitu.fi
 %%
 \begin{filecontents*}{\jobname.xmpdata}
-    \Title{Towards proper errors! The errors and their interpretation in automatically assessed exercises in mathematics}
-    \Author{Hannu Tiitu}
-    \Keywords{learning environment\sep pedagogical usability\sep error classification\sep automated assessment\sep teaching mathematics\sep STACK}
-    \Publisher{Aalto University}
-  \end{filecontents*}
-  \documentclass[oneside,pdfa]{aaltoseries}
-  \makeatletter
-  \@ifpackageloaded{inputenc}{%
-    \inputencoding{utf8}}{%
-    \usepackage[utf8]{inputenc}}
-  \hypersetup{hidelinks}                % Linkkien korostus pois
-  \makeatother
-  \usepackage[finnish,english]{babel}   % Kieli on englanti, tiivistelmässä suomi
-  \usepackage{setspace}                 % Rivivälin säätämiseksi
-  \usepackage{afterpage}                % Sivun taustaväri
-  \microtypesetup{letterspace=25}       % Kannen harvaan välistykseen
-  \usepackage{amsmath}
-  \usepackage{float}
-  \usepackage[ruled,vlined]{algorithm2e}
-  \usepackage{bm}
-  \usepackage{rotating}
+  \Title{Feasibility of profitable betting on FIFA World Cup tournaments}
+  \Author{Ville Toiviainen}
+  \Keywords{football prediction\sep random forest\sep Kelly's criterion \sep classification\sep recursive feature elimination\sep betting}
+  \Publisher{Aalto University}
+\end{filecontents*}
+\documentclass[oneside,pdfa]{aaltoseries}
+\makeatletter
+\@ifpackageloaded{inputenc}{%
+  \inputencoding{utf8}}{%
+  \usepackage[utf8]{inputenc}}
+\hypersetup{hidelinks}                % Linkkien korostus pois
+\makeatother
+\usepackage[finnish,english]{babel}   % Kieli on englanti, tiivistelmässä suomi
+\usepackage{setspace}                 % Rivivälin säätämiseksi
+\usepackage{afterpage}                % Sivun taustaväri
+\microtypesetup{letterspace=25}       % Kannen harvaan välistykseen
+\usepackage{dcolumn}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{bm}
+\usepackage{rotating}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}{>{\arraybackslash}m{10cm}}
 
 
-  \author{Hannu Tiitu}
-  \title{Towards proper errors! The errors and their interpretation in automatically assessed exercises in mathematics}
 
-  \begin{document}
+\author{Ville Toiviainen}
+\title{Feasibility of profitable betting on FIFA World Cup tournaments}
 
+\begin{document}
 
 
-  %%  KANSI  ---------------------------------------------
 
-  \thispagestyle{empty}
-  \setcounter{page}{0}  % Kansisivulle sivunumero 0
+%%  KANSI  ---------------------------------------------
 
-  % Kansisivun marginaalit
-  \newgeometry{left=23.2mm,right=23.2mm,top=13.5mm,bottom=18mm}
+\thispagestyle{empty}
+\setcounter{page}{0}  % Kansisivulle sivunumero 0
 
-  % Musta kansisivu
-  \pagecolor{aaltoBlack}\afterpage{\nopagecolor}
-  {\color{white}  % Valkoinen teksti alkaa
+% Kansisivun marginaalit
+\newgeometry{left=23.2mm,right=23.2mm,top=13.5mm,bottom=18mm}
 
-  {\parindent0pt % Kappaleiden sisennys pois päältä
-  {\fontsize{11.9pt}{11.9pt}\bfseries\sffamily\lsstyle Master's Programme in Mathematics and Operations Research}
+% Musta kansisivu
+\pagecolor{aaltoBlack}\afterpage{\nopagecolor}
+{\color{white}  % Valkoinen teksti alkaa
 
-  \vspace{13.1mm}
+{\parindent0pt % Kappaleiden sisennys pois päältä
+{\fontsize{11.9pt}{11.9pt}\bfseries\sffamily\lsstyle Master’s Programme in Computer, Communication and Information Sciences}
 
-  \begin{spacing}{3.1}
-  {\fontsize{35}{35}\selectfont Towards proper errors!}
-  \end{spacing}
+\vspace{13.1mm}
 
-  \vspace{2.2mm}
+\begin{spacing}{3.1}
+{\fontsize{35}{35}\selectfont Feasibility of profitable betting on FIFA World Cup tournaments}
+\end{spacing}
 
-  \begin{spacing}{1.24}
-  {\fontsize{14pt}{14pt}\bfseries\sffamily\lsstyle The errors and their interpretation in automatically\\assessed exercises in mathematics}
-  \end{spacing}
+\vspace{7.2mm}
 
-  \vspace{7.2mm}
+\rule{\textwidth}{1.25pt}
 
-  \rule{\textwidth}{1.25pt}
+\vspace{8.5mm}
 
-  \vspace{8.5mm}
+{\fontsize{13.9pt}{13.9pt}\bfseries\sffamily\lsstyle Ville Toiviainen}
 
-  {\fontsize{13.9pt}{13.9pt}\bfseries\sffamily\lsstyle Hannu Tiitu}
+\vfill
 
-  \vfill
+\begin{picture}(0,0)
+\put(356,-7.8){\bfseries\sffamily\footnotesize\lsstyle MASTER'S}
+\put(356,-17.4){\bfseries\sffamily\footnotesize\lsstyle THESIS}
+\put(346,-26.5){\rule{.75pt}{25pt}}
+\end{picture}
 
-  \begin{picture}(0,0)
-  \put(356,-7.8){\bfseries\sffamily\footnotesize\lsstyle MASTER'S}
-  \put(356,-17.4){\bfseries\sffamily\footnotesize\lsstyle THESIS}
-  \put(346,-26.5){\rule{.75pt}{25pt}}
-  \end{picture}
+\AaltoLogoSmall{.66}{?}{white}
 
-  \AaltoLogoSmall{.66}{?}{white}
+} % Kappaleiden sisennys takaisin käyttöön
+} % Valkoisen tekstin pääätös
 
-  } % Kappaleiden sisennys takaisin käyttöön
-  } % Valkoisen tekstin pääätös
 
 
+%%  NIMIÖSIVU  -----------------------------------------
 
-  %%  NIMIÖSIVU  -----------------------------------------
+\newpage
 
-  \newpage
+\pagenumbering{roman}
 
-  \pagenumbering{roman}
+% Nimiösivun marginaalit
+\newgeometry{left=80.7mm,right=25mm,top=12.9mm,bottom=21mm}
 
-  % Nimiösivun marginaalit
-  \newgeometry{left=80.7mm,right=25mm,top=12.9mm,bottom=21mm}
+\thispagestyle{empty}
 
-  \thispagestyle{empty}
+{\parindent0pt % Kappaleiden sisennys pois päältä
+\begin{spacing}{1.1}
+\hspace{-39.1mm}{\fontsize{10.5pt}{10.5pt}\sffamily\lsstyle Aalto University}
 
-  {\parindent0pt % Kappaleiden sisennys pois päältä
-  \begin{spacing}{1.1}
-  \hspace{-39.1mm}{\fontsize{10.5pt}{10.5pt}\sffamily\lsstyle Aalto University}
+\hspace{-39.1mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle MASTER'S THESIS} {\sffamily\lsstyle 2017}
+\end{spacing}
 
-  \hspace{-39.1mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle MASTER'S THESIS} {\sffamily\lsstyle 2017}
-  \end{spacing}
+\vspace{12.7mm}
 
-  \vspace{12.7mm}
+\begin{spacing}{1.63}
+{\fontsize{17.8pt}{17.8pt}\selectfont Feasibility of profitable betting on FIFA World Cup tournaments}
+\end{spacing}
 
-  \begin{spacing}{1.63}
-  {\fontsize{17.8pt}{17.8pt}\selectfont Towards proper errors!}
-  \end{spacing}
+\vspace{10.6mm}
 
-  \vspace{10.5mm}
+{\fontsize{13.9pt}{13.9pt}\bfseries\sffamily\lsstyle Ville Toiviainen}
 
-  \begin{spacing}{1.2}
-  {\fontsize{13pt}{13pt}\selectfont The errors and their interpretation\\in automatically assessed exercises\\in mathematics}
-  \end{spacing}
+\vfill
 
-  \vspace{10.6mm}
+{\fontsize{10.3pt}{10.3pt}\sffamily\lsstyle\raggedright
+\begin{spacing}{1.06}
 
-  {\fontsize{13.9pt}{13.9pt}\bfseries\sffamily\lsstyle Hannu Tiitu}
+Thesis submitted in partial fulfillment of the requirements for the
+degree of Master of Science in Technology.
 
-  \vfill
+Otaniemi, 19 Nov 2018
 
-  {\fontsize{10.3pt}{10.3pt}\sffamily\lsstyle\raggedright
-  \begin{spacing}{1.06}
+\begin{tabbing}
+Supervisor:\hspace{6mm} \= professor Aristides Gionis \\
+\end{tabbing}
+\vspace{-4mm}
+\end{spacing}
+} % fontsize
 
-  Thesis submitted in partial fulfillment of the requirements for the
-  degree of Master of Science in Technology.
+\vspace{11.5mm}
 
-  Otaniemi, 27 Nov 2017
+\begin{spacing}{.9}
+{\bfseries\sffamily\lsstyle Aalto University \\
+School of Science \\
+Master’s Programme in Computer, Communication and \\Information Sciences}
+\end{spacing}
+} % Kappaleiden sisennys takaisin käyttöön
 
-  \begin{tabbing}
-  Supervisor:\hspace{6mm} \= professor Lauri Malmi \\
-  Advisor: \> docent Jarmo Malinen
-  \end{tabbing}
-  \vspace{-4mm}
-  \end{spacing}
-  } % fontsize
 
-  \vspace{11.5mm}
 
-  \begin{spacing}{.9}
-  {\bfseries\sffamily\lsstyle Aalto University \\
-  School of Science \\
-  Master's Programme in Mathematics and\\Operations Research}
-  \end{spacing}
-  } % Kappaleiden sisennys takaisin käyttöön
+%%  ABSTRACT  ------------------------------------------
 
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Abstract}
 
+% Tiivistelmien marginaalit
+\newgeometry{left=41.8mm,right=25mm,top=14.33mm,bottom=27mm}
+% Alkuperäisessä Aalto-sarjassa marginaalit ovat suunnilleen näin:
+%\newgeometry{left=41.8mm,right=17.6mm,top=14.33mm,bottom=20.4mm}
 
-  %%  ABSTRACT  ------------------------------------------
+\begin{spacing}{.88}
 
-  \newpage
-  \phantomsection
-  \addcontentsline{toc}{chapter}{Abstract}
+{\parindent0pt % Kappaleiden sisennys pois päältä
+\AaltoLogoSmall{.625}{''}{aaltoBlack}
 
-  % Tiivistelmien marginaalit
-  \newgeometry{left=41.8mm,right=25mm,top=14.33mm,bottom=27mm}
-  % Alkuperäisessä Aalto-sarjassa marginaalit ovat suunnilleen näin:
-  %\newgeometry{left=41.8mm,right=17.6mm,top=14.33mm,bottom=20.4mm}
+{\fontsize{13.9pt}{13.9pt}\selectfont
+\vspace{-8.9mm}\hfill{\bfseries\sffamily\lsstyle Abstract}}
 
-  \begin{spacing}{.88}
+{\fontsize{9.48pt}{9.48pt}\selectfont
+\vspace{.9mm}\hfill{\bfseries\sffamily\lsstyle Aalto University, P.O. Box 11000, FI-00076 Aalto~~\textcolor{aaltoGray}{www.aalto.fi}}}
 
-  {\parindent0pt % Kappaleiden sisennys pois päältä
-  \AaltoLogoSmall{.625}{''}{aaltoBlack}
+\vspace{7.8mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Author}\\
+{\small Ville Toiviainen}
 
-  {\fontsize{13.9pt}{13.9pt}\selectfont
-  \vspace{-8.9mm}\hfill{\bfseries\sffamily\lsstyle Abstract}}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{9.48pt}{9.48pt}\selectfont
-  \vspace{.9mm}\hfill{\bfseries\sffamily\lsstyle Aalto University, P.O. Box 11000, FI-00076 Aalto~~\textcolor{aaltoGray}{www.aalto.fi}}}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Title}\\
+\parbox[t]{\textwidth}{\raggedright\small Feasibility of profitable betting on FIFA World Cup tournaments}
 
-  \vspace{7.8mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Author}\\
-  {\small Hannu Tiitu}
+\vspace{.5mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle School}~~{\small School of Science}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Title}\\
-  \parbox[t]{\textwidth}{\raggedright\small Towards proper errors! The errors and their interpretation in automatically assessed exercises in mathematics}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{.5mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Master's programme}~~{\small Computer, Communication and Information Sciences}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle School}~~{\small School of Science}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Major}~~{\small  Machine Learning and Data Mining}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Code}~~{\small SCI3044}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Master's programme}~~{\small Mathematics and Operations Research}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Supervisor}~~{\small professor Aristides Gionis}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Major}~~{\small Mathematics}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Code}~~{\small SCI3054}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Level}~~{\small Master's thesis}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Date}~~{\small 19 Nov 2018}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Pages}~~{\small 46}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Language}~~{\small English}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Supervisor}~~{\small professor Lauri Malmi}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\vspace{6mm}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Advisor}~~{\small docent Jarmo Malinen}
+} % Kappaleiden sisennys takaisin käyttöön
+\end{spacing}
+\begin{spacing}{1.05}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\noindent{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Abstract}
+\vspace{.8mm}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Level}~~{\small Master's thesis}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Date}~~{\small 27 Nov 2017}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Pages}~~{\small 70}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Language}~~{\small English}
+{\small
+  This thesis examines the feasibility of building a profitable betting system that bets on FIFA World Cups. Existing literature has researched the opportunity to bet on football games, but not in the context of FIFA World Cups. Most of the existing literature related to FIFA World Cups has examined how to predict the most probable winner or what the most probable course of the tournament might be.
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+  In this thesis, tournaments are predicted using tree-based models and a linear model. All of the models are trained using a dataset on historical matches and a player attribute dataset obtained from the EA Sport's video game series FIFA. A more in-depth analysis of the engineered features is performed using different combinations of the features and with recursive feature elimination process. Models' output is used with a betting strategy based on Kelly's criterion and with a betting strategy that places one unit for the most probable winner.
 
-  \vspace{6mm}
+  Two of the models are profitable in all of the tested tournaments, and most of the models can be profitable at least in two out of the three tested tournaments. However, guaranteed profits cannot be stated with full confidence since the number of games in total is relatively small. Data limitations limit the possibility to test the model with more tournaments. Using video game data with historical matches increased the accuracy in probability predictions. Models predict the probability of a home win and an away win very similarly, but predict the probability of a draw differently. Models do not prefer a draw as the most probable outcome in almost all of the matches.
+}
 
-  } % Kappaleiden sisennys takaisin käyttöön
-  \end{spacing}
-  \begin{spacing}{1.05}
+\vfill
 
-  \noindent{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Abstract}
-  \vspace{.8mm}
+\end{spacing}
+\begin{spacing}{.88}
+{\parindent0pt % Kappaleiden sisennys pois päältä
 
-  {\small
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus
-    elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur
-    dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer
-    id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque
-    habitant morbi tristique senectus et netus et malesuada fames ac
-    turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla
-    et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus
-    sit amet tortor gravida placerat. Integer sapien est, iaculis in,
-    pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices
-    bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar
-    at, mollis ac, nulla. Curabitur auctor semper nulla.  Donec varius
-    orci eget risus. Duis nibh mi, congue eu, accumsan eleifend,
-    sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum.
+\makebox[19mm][l]{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Keywords}\parbox[t]{123.6mm}{\raggedright\small football prediction, random forest, Kelly's criterion  classification, recursive feature elimination, betting}
 
-    Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel,
-    wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at,
-    lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed
-    accumsan bibendum, erat ligula aliquet magna, vitae ornare odio
-    metus a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut
-    massa. Cras nec ante. Pellentesque a nulla.  Cum sociis natoque
-    penatibus et magnis dis parturient montes, nascetur ridiculus
-    mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum
-    turpis. Pellentesque cursus luctus mauris.
+\vspace{.5mm}\rule{\textwidth}{.75pt}
 
-    Nulla malesuada porttitor diam. Donec felis erat, congue non,
-    volutpat at, tincidunt tristique, libero. Vivamus viverra fermentum
-    felis. Donec nonummy pellentesque ante. Phasellus adipiscing semper
-    elit. Proin fermentum massa ac quam. Sed diam turpis, molestie
-    vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum
-    ligula, eleifend at, accumsan nec, suscipit a, ipsum. Morbi blandit
-    ligula feugiat magna. Nunc eleifend consequat lorem. Sed lacinia
-    nulla vitae enim. Pellentesque tincidunt purus vel magna. Integer
-    non enim. Praesent euismod nunc eu purus.  Donec bibendum quam in
-    tellus. Nullam cursus pulvinar lectus. Donec et mi. Nam vulputate
-    metus eu enim. Vestibulum pellentesque felis eu massa.
-  }
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle urn}~~{\small http://urn.fi/URN:NBN:fi:aalto-201712188201}
 
-  \vfill
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \end{spacing}
-  \begin{spacing}{.88}
-  {\parindent0pt % Kappaleiden sisennys pois päältä
+} % Kappaleiden sisennys takaisin käyttöön
+\end{spacing}
 
-  \makebox[19mm][l]{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Keywords}\parbox[t]{123.6mm}{\raggedright\small learning environment, pedagogical usability, error classification, automated assessment, teaching mathematics, STACK}
 
-  \vspace{.5mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle urn}~~{\small http://urn.fi/URN:NBN:fi:aalto-201712188201}
+%%  TIIVISTELMÄ  ---------------------------------------
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Tiivistelmä}
 
-  } % Kappaleiden sisennys takaisin käyttöön
-  \end{spacing}
+% Tiivistelmäsivu suomeksi
+\selectlanguage{finnish}
 
+\begin{spacing}{.88}
 
+{\parindent0pt % Kappaleiden sisennys pois päältä
+\AaltoLogoSmall{.625}{!}{aaltoBlack}
 
-  %%  TIIVISTELMÄ  ---------------------------------------
+{\fontsize{13.9pt}{13.9pt}\selectfont
+\vspace{-8.9mm}\hfill{\bfseries\sffamily\lsstyle Tiivistelmä}}
 
-  \newpage
-  \phantomsection
-  \addcontentsline{toc}{chapter}{Tiivistelmä}
+{\fontsize{9.48pt}{9.48pt}\selectfont
+\vspace{.9mm}\hfill{\bfseries\sffamily\lsstyle Aalto-yliopisto, PL 11000, 00076 Aalto~~\textcolor{aaltoGray}{www.aalto.fi}}}
 
-  % Tiivistelmäsivu suomeksi
-  \selectlanguage{finnish}
+\vspace{7.8mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Tekijä}\\
+{\small Ville Toiviainen}
 
-  \begin{spacing}{.88}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  {\parindent0pt % Kappaleiden sisennys pois päältä
-  \AaltoLogoSmall{.625}{!}{aaltoBlack}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Työn nimi}\\
+\parbox[t]{\textwidth}{\raggedright\small Feasibility of profitable betting on FIFA World Cup tournaments}
 
-  {\fontsize{13.9pt}{13.9pt}\selectfont
-  \vspace{-8.9mm}\hfill{\bfseries\sffamily\lsstyle Tiivistelmä}}
+\vspace{.5mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{9.48pt}{9.48pt}\selectfont
-  \vspace{.9mm}\hfill{\bfseries\sffamily\lsstyle Aalto-yliopisto, PL 11000, 00076 Aalto~~\textcolor{aaltoGray}{www.aalto.fi}}}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Korkeakoulu}~~{\small Perustieteiden korkeakoulu}
 
-  \vspace{7.8mm}{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Tekijä}\\
-  {\small Hannu Tiitu}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Maisteriohjelma}~~{\small Computer, Communication and Information Sciences}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Työn nimi}\\
-  \parbox[t]{\textwidth}{\raggedright\small Oikeisiin virheisiin! Virheelliset vastaukset ja niiden tulkinta automaattisesti tarkastetuissa matematiikan harjoitustehtävissä}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{.5mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Pääaine}~~{\small  Machine Learning and Data Mining}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Koodi}~~{\small SCI3044}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Korkeakoulu}~~{\small Perustieteiden korkeakoulu}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Valvoja}~~{\small professori Aristides Gionis}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Maisteriohjelma}~~{\small Matematiikka ja operaatiotutkimus}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Pääaine}~~{\small Matematiikka}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Koodi}~~{\small SCI3054}
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Työn laji}~~{\small Diplomityö}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Päiväys}~~{\small 19.11.2018}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Sivuja}~~{\small 46}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Kieli}~~{\small englanti}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Valvoja}~~{\small professori Lauri Malmi}
+\vspace{6mm}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+} % Kappaleiden sisennys takaisin käyttöön
+\end{spacing}
+\begin{spacing}{1.05}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Ohjaaja}~~{\small dosentti Jarmo Malinen}
+\noindent{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Tiivistelmä}
+\vspace{.8mm}
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+{\small
+  Tämä diplomityö tutkii, onko mahdollista toteuttaa voittoatekevä vedonlyöntijärjestelmä jalkapallon maailmanmestaruuskilpailuja varten. Mahdollisuutta tienata vedonlyönnillä jalkapallossa on aiemmin tutkittu. Tämä tutkimus ei ole kuitenkaan ulottunut koskemaan vedonlyöntiä jalkapallon maailmanmestaruuskisoissa. Jalkapallon maailmanmestaruuskisoja koskeva aikaisempi tutkimus on keskittynyt ennustamaan potentiaalista voittajaa tai simuloimaan kuinka kisoissa todennäköisesti käy.
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Työn laji}~~{\small Diplomityö}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Päiväys}~~{\small 27.11.2017}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Sivuja}~~{\small 70}\hfill{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Kieli}~~{\small englanti}
+  Tässä diplomityössä jalkapallon maailmanmestaruuskisoja ennustetaan puupohjaisilla malleilla ja lineaarisella mallilla. Kaikki käytetyt mallit koulutetaan syötteellä, joka on generoitu kahdesta eri datalähteestä: historiallisista otteludatasta sekä videopelin “EA Sport’s video game series FIFA” pelaaja-attribuuttidatasta. Syötteen merkittävyyttä tutkitaan tarkemmin hyödyntäen erilaisia syötekombinaatioita sekä toteuttamalla rekursiivinen syötteen eliminointiprosessi. Mallien tulostetta käytetään kahdessa vedonlyöntistrategiassa. Ensimmäinen strategia lyö vetoa voittajan puolesta ja toinen strategia hyödyntää Kellyn kriteeriä vedonlyöntikohteiden valinnassa.
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+  Kaksi mallia on voitollisia kaikissa kokeiluissa turnauksissa ja suurin osa malleista on voitollisia ainakin kahdessa kokeiluista turnauksista. Tuloksien luotettavuutta heikentää rajattu turnauksien määrä mitä testauksessa voidaan käyttää. Videopeleissä käytetyn datan hyödyntäminen ennustamisessa osoittautui hyödylliseksi. Kaikki mallit ennustavat koti- ja vierasjoukkueen voiton hyvin samankaltaisesti. Eniten eroavaisuuksia mallien välillä on tasapelin ennustamisessa. Mallit eivät pidä kovinkaan usein tasapelia kaikista todennäköisempänä lopputuloksena.
+}
 
-  \vspace{6mm}
+\vfill
 
-  } % Kappaleiden sisennys takaisin käyttöön
-  \end{spacing}
-  \begin{spacing}{1.05}
+\end{spacing}
+\begin{spacing}{.88}
+{\parindent0pt % Kappaleiden sisennys pois päältä
 
-  \noindent{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Tiivistelmä}
-  \vspace{.8mm}
+\makebox[21mm][l]{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Avainsanat}\parbox[t]{121.6mm}{\raggedright\small football prediction, random forest, Kelly's criterion  classification, recursive feature elimination, betting}
 
-  {\small
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus
-    elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur
-    dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer
-    id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque
-    habitant morbi tristique senectus et netus et malesuada fames ac
-    turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla
-    et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus
-    sit amet tortor gravida placerat. Integer sapien est, iaculis in,
-    pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices
-    bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar
-    at, mollis ac, nulla. Curabitur auctor semper nulla.  Donec varius
-    orci eget risus. Duis nibh mi, congue eu, accumsan eleifend,
-    sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum.
+\vspace{.5mm}\rule{\textwidth}{.75pt}
 
-    Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel,
-    wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at,
-    lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed
-    accumsan bibendum, erat ligula aliquet magna, vitae ornare odio
-    metus a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut
-    massa. Cras nec ante. Pellentesque a nulla.  Cum sociis natoque
-    penatibus et magnis dis parturient montes, nascetur ridiculus
-    mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum
-    turpis. Pellentesque cursus luctus mauris.
+{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle urn}~~{\small http://urn.fi/URN:NBN:fi:aalto-201712188201}
 
-    Nulla malesuada porttitor diam. Donec felis erat, congue non,
-    volutpat at, tincidunt tristique, libero. Vivamus viverra fermentum
-    felis. Donec nonummy pellentesque ante. Phasellus adipiscing semper
-    elit. Proin fermentum massa ac quam. Sed diam turpis, molestie
-    vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum
-    ligula, eleifend at, accumsan nec, suscipit a, ipsum. Morbi blandit
-    ligula feugiat magna. Nunc eleifend consequat lorem. Sed lacinia
-    nulla vitae enim. Pellentesque tincidunt purus vel magna. Integer
-    non enim. Praesent euismod nunc eu purus.  Donec bibendum quam in
-    tellus. Nullam cursus pulvinar lectus. Donec et mi. Nam vulputate
-    metus eu enim. Vestibulum pellentesque felis eu massa.
-  }
+\vspace{-2.4mm}\rule{\textwidth}{.75pt}
 
-  \vfill
+} % Kappaleiden sisennys takaisin käyttöön
+\end{spacing}
 
-  \end{spacing}
-  \begin{spacing}{.88}
-  {\parindent0pt % Kappaleiden sisennys pois päältä
+\selectlanguage{english}  % Palataan englantiin
+\restoregeometry  % Palataan normaaleihin sivumarginaaleihin
 
-  \makebox[21mm][l]{\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle Avainsanat}\parbox[t]{121.6mm}{\raggedright\small oppimisympäristö, pedagoginen käytettävyys, virheluokittelu, automaattinen tarkastaminen, matematiikan opetus, Stack}
 
-  \vspace{.5mm}\rule{\textwidth}{.75pt}
 
-  {\fontsize{10.5pt}{10.5pt}\bfseries\sffamily\lsstyle urn}~~{\small http://urn.fi/URN:NBN:fi:aalto-201712188201}
+%%  SISÄLTÖ  -------------------------------------------
 
-  \vspace{-2.4mm}\rule{\textwidth}{.75pt}
+\newpage
 
-  } % Kappaleiden sisennys takaisin käyttöön
-  \end{spacing}
+\tableofcontents
 
-  \selectlanguage{english}  % Palataan englantiin
-  \restoregeometry  % Palataan normaaleihin sivumarginaaleihin
+%%  TYÖ ALKAA TÄSTÄ  -----------------------------------
 
+\newpage
 
+\pagenumbering{arabic}
 
-  %%  SISÄLTÖ  -------------------------------------------
+\chapter{Introduction}
+\input{introduction.tex}
 
-  \newpage
+\chapter{Literature Review}
+\input{literature_review.tex}
 
-  \tableofcontents
+\chapter{Data}
+\input{data.tex}
 
-  %%  TYÖ ALKAA TÄSTÄ  -----------------------------------
+\chapter{Methodology}
+\input{methods.tex}
 
-  \newpage
+\chapter{Results}
+\input{results.tex}
 
-  \pagenumbering{arabic}
+\chapter{Conclusion}
+\input{conclusion.tex}
 
-  \chapter{Introduction}
-  \input{introduction.tex}
 
-  \chapter{Literature Review}
-  \input{literature_review.tex}
+\bibliography{references.bib}
+\bibliographystyle{IEEEtran}
 
-  \chapter{Data}
-  \input{data.tex}
-
-  \chapter{Methods}
-  \input{methods.tex}
-
-  \chapter{Results}
-  \input{results.tex}
-
-  \chapter{Conclusion}
-  \input{conclusion.tex}
-
-
-  \bibliography{references.bib}
-  \bibliographystyle{IEEEtran}
-
-
-
-  %%  LIITTEET  ------------------------------------------
-
-  \appendix
-
-  \chapter{Ut purus elit}
-
-  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus
-  elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur
-  dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id,
-  vulputate a, magna. Donec vehicula augue eu neque. Pellentesque
-  habitant morbi tristique senectus et netus et malesuada fames ac
-  turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla
-  et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus sit
-  amet tortor gravida placerat. Integer sapien est, iaculis in, pretium
-  quis, viverra ac, nunc. Praesent eget sem vel leo ultrices
-  bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar
-  at, mollis ac, nulla. Curabitur auctor semper nulla.  Donec varius
-  orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis
-  quis, diam. Duis eget orci sit amet orci dignissim rutrum.
-
-  Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel,
-  wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at,
-  lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed
-  accumsan bibendum, erat ligula aliquet magna, vitae ornare odio metus
-  a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut
-  massa. Cras nec ante. Pellentesque a nulla.  Cum sociis natoque
-  penatibus et magnis dis parturient montes, nascetur ridiculus
-  mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum
-  turpis. Pellentesque cursus luctus mauris.
-
-  \section{Fusce mauris}
-
-  Fusce mauris. Vestibulum luctus nibh at lectus. Sed bibendum, nulla a
-  faucibus semper, leo velit ultricies tellus, ac venenatis arcu wisi
-  vel nisl.  Vestibulum diam. Aliquam pellentesque, augue quis sagittis
-  posuere, turpis lacus congue quam, in hendrerit risus eros eget
-  felis. Maecenas eget erat in sapien mattis porttitor. Vestibulum
-  porttitor. Nulla facilisi.  Sed a turpis eu lacus commodo
-  facilisis. Morbi fringilla, wisi in dignissim interdum, justo lectus
-  sagittis dui, et vehicula libero dui cursus dui. Mauris tempor ligula
-  sed lacus. Duis cursus enim ut augue. Cras ac magna.  Cras
-  nulla. Nulla egestas. Curabitur a leo. Quisque egestas wisi eget
-  nunc. Nam feugiat lacus vel est. Curabitur consectetuer.
-
-  \end{document}
+\end{document}

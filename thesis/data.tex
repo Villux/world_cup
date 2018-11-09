@@ -1,9 +1,9 @@
-In this section, I briefly describe the main datasets: the dataset of international football matches and the dataset of player attributes from the EA Sport's video game series FIFA. I have used both of the datasets to generate new data points. This process will be discussed in this chapter.
+In this section, we briefly describe the main datasets: the dataset of international football matches and the dataset of player attributes from the EA Sport's video game series FIFA. We have used both of the datasets to generate new data points. This process will be discussed in this chapter.
 
 \section{International football match dataset}
-As the primary source of data I have used results from all international football matches from November 11th, 1872 to June 6th, 2018. This dataset is provided by Kaggle \cite{matchdb} and contains match scores, tournament types, dates and more attributes that are not used in this thesis.
+As the primary source of data we have used results from all international football matches from November 11th, 1872 to June 6th, 2018. This dataset is provided by Kaggle \cite{matchdb} and contains match scores, tournament types, dates and more attributes that are not used in this thesis.
 
-I don't use this dataset directly in prediction, but I use it to extract useful features. Generated features from this dataset are named as \textit{general features}.
+We don't use this dataset directly in prediction. Instead, we extract useful features from this data. Generated features from this dataset are named as \textit{general features}.
 \renewcommand{\labelitemi}{}
 \begin{description}
     \itemsep0em
@@ -40,8 +40,8 @@ I don't use this dataset directly in prediction, but I use it to extract useful 
 \section{EA Sport’s video game series FIFA's player attributes}
 EA Sport's video game series FIFA describes every player in the game with several different attributes. These attributes are first collected by EA's data reviewers who are a group of coaches, professional scouts, and season ticket holders. EA editors give the final value based on the reviewers' answers \cite{playerattr}. From here onwards EA Sport's video game series FIFA's player attributes are called just player attributes.
 
-Player attributes are available from August 30th, 2006 onwards \cite{sofifa}. I collected this data myself since it was not available as a single dataset.
-All of the player attributes have a value in the range of 0-99. When two players are compared, a lower value means that the player's capability regarding that attribute is not as good as the other players. From all possible attributes, I have used 24 player attributes that were available from the beginning. These attributes are listed here with a short description that is taken from Fifplay \cite{playerattr}.
+Player attributes are available from August 30th, 2006 onwards \cite{sofifa}. We collected this data ourselves since it was not available as a single dataset.
+All of the player attributes have a value in the range of 0-99. When two players are compared, a lower value means that the player's capability regarding that attribute is not as good as the other players. From all possible attributes, we have used 24 player attributes that were available from the beginning. These attributes are listed here with a short description that is taken from Fifplay \cite{playerattr}.
 
 \renewcommand{\labelitemi}{}
 \begin{description}
@@ -96,22 +96,22 @@ All of the player attributes have a value in the range of 0-99. When two players
 \end{description}
 
 \section{Aggregating team-level attributes}
-In this section, I explain how player attributes are combined to team-level attributes to describe a football team based on its players' capabilities.
+In this section, we explain how player attributes are combined to team-level attributes to describe a football team based on its players' capabilities.
 
-To describe the team in general level, I have used the average value from the team's 23 best players. These attributes are: \textit{overall rating, potential, age, height, weight, international reputation} and \textit{weak foot}. As an extra attribute, I calculated the average age from the top 11 players. The idea behind this attribute is to get the average age of the presumed starting lineup.
+To describe the team in general level, we have used the average value from the team's 23 best players. These attributes are: \textit{overall rating, potential, age, height, weight, international reputation} and \textit{weak foot}. As an extra attribute, we calculated the average age from the top 11 players. The idea behind this attribute is to get the average age of the presumed starting lineup.
 
-The other attributes are described by a subsection of the team's 23 best players. I have used my knowledge and intuition on football to select the sizes of the subsections. The goalkeeper attributes are calculated based on the team's two best values for that attributes. The average for a skill required in set piece situation, like the attributes \textit{free kick accuracy} and \textit{penalties} for example, is calculated based on the top three ratings, since in most cases a small subset of players handle these situations. Also, \textit{sprint speed} and \textit{marking} are only calculated based on the top three values. \textit{Strength} and \textit{stamina} are calculated using the 10 best ratings. Other values are calculated using the five best ratings for each attribute.
+The other attributes are described by a subsection of the team's 23 best players. We have used our knowledge and intuition on football to select the sizes of the subsections. The goalkeeper attributes are calculated based on the team's two best values for that attributes. The average for a skill required in set piece situation, like the attributes \textit{free kick accuracy} and \textit{penalties} for example, is calculated based on the top three ratings, since in most cases a small subset of players handles these situations. Also, \textit{sprint speed} and \textit{marking} are only calculated based on the top three values. \textit{Strength} and \textit{stamina} are calculated using the 10 best ratings. Other values are calculated using the five best ratings for each attribute.
 
-In cases where the team does not have enough players to calculate the attribute's value as mentioned in the previous part I have used this formula
+In cases where the team does not have enough players to calculate the attribute's value as mentioned in the previous part we have used this formula
 \begin{equation}
 \frac{1}{N}\sum_{i=1}^{N}x_i \cdot \max{\{N/K, C\}}.
 \end{equation}
-If $N$ (the number of all available ratings for the attribute) is smaller than $K$ (the required number of ratings), the average is multiplied with a coefficient that has an integer value in the inclusive range from $C$ and 1. I have set the value of $C$ to 0.9.
+If $N$ (the number of all available ratings for the attribute) is smaller than $K$ (the required number of ratings), the average is multiplied with a coefficient that has an integer value in the inclusive range from $C$ and 1. We have set the value of $C$ to 0.9.
 
 Feature set containing the aggregated player attributes is named as \textit{player features}.
 
 \section{Historical odds}
-I have collected odds for the FIFA World Cup 2018, 2014 and 2010 from Odds Portal \cite{oddsportal}. Odds Portal has a collection of odds offered by multiple betting sites. For every match, I have used the average value from the available odds. Kuypers \cite{kuypers2008} mentions that football odds are mostly fixed. Based on values that Odds Portal offer, this is not the case anymore. Many odds have changed from the initial opening odd before the match start. I have used the latest value for every odd since the data is easier to collect that way.
+We have collected odds for the FIFA World Cup 2018, 2014 and 2010 from Odds Portal \cite{oddsportal}. Odds Portal has a collection of odds offered by multiple betting sites. For every match, we have used the average value from the available odds. Kuypers \cite{kuypers2008} mentions that football odds are mostly fixed. Based on values that Odds Portal offer, this is not the case anymore. Many odds have changed from the initial opening odd before the match start. We have used the latest value for every odd since the data is easier to collect that way.
 
 \section{Features used in prediction}
 Features listed above are calculated for each team, but all of them are not used directly in training. For most of the features, the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get Elo the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. The main advantage of this method is that it reduces the number of features and makes the link between the home team's value and the away team's value explicit for the model. One limitation of this process is that a game between weak teams and a game between strong teams can look the same if the feature vector is only inspected.
