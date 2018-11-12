@@ -1,16 +1,16 @@
-In this section, we briefly describe the main datasets: the dataset of international football matches and the dataset of player attributes from the EA Sport's video game series FIFA. We have used both of the datasets to generate new data points. This process will be discussed in this chapter.
+In this section, we briefly describe the main datasets: the dataset of international football matches and the dataset of player attributes from the EA Sport's video game series FIFA. We use both of the datasets to generate new data points. This process will be discussed in this chapter.
 
 \section{International football match dataset}
-As the primary source of data we have used results from all international football matches from November 11th, 1872 to June 6th, 2018. This dataset is provided by Kaggle \cite{matchdb} and contains match scores, tournament types, dates and more attributes that are not used in this thesis.
+We use results from all international football matches from November 11th, 1872 to June 6th, 2018 as the primary source of data. This dataset is provided by Kaggle \cite{matchdb} and contains match scores, tournament types, dates and more attributes that are not used in this thesis.
 
-We don't use this dataset directly in prediction. Instead, we extract useful features from this data. Generated features from this dataset are named as \textit{general features}.
+We don not use this dataset directly in prediction. Instead, we extract useful features from this data. Generated features from this dataset are named as \textit{general features}.
 \renewcommand{\labelitemi}{}
 \begin{description}
     \itemsep0em
     \item[Elo rating] describes the team's quality. This metric is calculated based on previous games with the following formula \begin{equation}
         \mathrm { R } _ { \mathrm { n } } = \mathrm { R } _ { \mathrm { O } } + \mathrm { K } \times \left( \mathrm { W } - \mathrm { W } _ { \mathrm { e } } \right)
     \end{equation}
-    where $\mathrm { R } _ { \mathrm { n } }$ is the new Elo rating and $\mathrm { R }  _ { \mathrm { O } }$ is the old (pre-match) rating. Paramater $\mathrm { K }$ is the weight constant for the tournament played. Values for $\mathrm { K }$ are listed in the table \ref{table:weight_constant}. These values are based on the values used in the website World Football Elo rating \footnote{\url{https://www.eloratings.net/about}}. Team qualities can vary a lot within a confederation and for that reasons a lowering coefficient of $0.85$ ($50 \times 0.85 = 42.5$) is used for AFC, CONCACAF, OFC and CAF. The selected $\mathrm { K }$ for the tournament type is multiplied based on the score. It is multiplied by $1.5$ if a game is won by two goals, by $1.75$ if a game is won by three goals, and by $1 + (3/4 + (N-3)/8)$ if the game is won by four or more goals, where N is the goal difference. Parameter $\mathrm { W }$ is the outcome of the game: $1$ for a win, $0.5$ for a draw, and $0$ for a loss. The win expectancy $\mathrm { W } _ { \mathrm { e } }$ is calculated as
+    where $\mathrm { R } _ { \mathrm { n } }$ is the new Elo rating and $\mathrm { R }  _ { \mathrm { O } }$ is the old (pre-match) rating. Paramater $\mathrm { K }$ is the weight constant for the tournament played. Values for $\mathrm { K }$ are listed in Table \ref{table:weight_constant}. These values are based on the values used in the website World Football Elo rating \footnote{\url{https://www.eloratings.net/about}}. Team qualities can vary a lot within a confederation and for that reasons a lowering coefficient of $0.85$ ($50 \times 0.85 = 42.5$) is used for AFC, CONCACAF, OFC and CAF. The selected $\mathrm { K }$ for the tournament type is multiplied based on the score. It is multiplied by $1.5$ if the game is won by two goals, by $1.75$ if the game is won by three goals, and by $1 + (3/4 + (N-3)/8)$ if the game is won by four or more goals, where N is the goal difference. Parameter $\mathrm { W }$ is the outcome of the game: $1$ for a win, $0.5$ for a draw, and $0$ for a loss. The win expectancy $\mathrm { W } _ { \mathrm { e } }$ is calculated as
     \begin{equation}
         W _ { e } = 1 / \left( 10 ^ { ( - d r / 400 ) } + 1 \right)\text{,}
     \end{equation}
@@ -18,7 +18,7 @@ We don't use this dataset directly in prediction. Instead, we extract useful fea
 
     \item[Goal average] describes how many goals a team has scored on average in the previous games within the timespan of four years. This metric is calculated for the home team and the away team. Features' names are \textit{home\_goal\_mean} and \textit{away\_goal\_mean}.
     \item[Goal average difference] is the difference between the home team's \textit{goal average} and the away team's \textit{goal average}. Feature's name is \textit{goal\_diff\_with\_away}.
-    \item[Goal average with the opponent] describes how many goals a team has scored on average against the opponent. The time lag is four years, and the metric is calculated for both teams. The features' names are \textit{home\_goals\_with\_away} and \textit{away\_goals\_with\_home}.
+    \item[Goal average with the opponent] describes how many goals the team has scored on average against the opponent. The time lag is four years, and the metric is calculated for both teams. The features' names are \textit{home\_goals\_with\_away} and \textit{away\_goals\_with\_home}.
 \end{description}
 
 \begin{table}
@@ -41,7 +41,7 @@ We don't use this dataset directly in prediction. Instead, we extract useful fea
 EA Sport's video game series FIFA describes every player in the game with several different attributes. These attributes are first collected by EA's data reviewers who are a group of coaches, professional scouts, and season ticket holders. EA editors give the final value based on the reviewers' answers \cite{playerattr}. From here onwards EA Sport's video game series FIFA's player attributes are called just player attributes.
 
 Player attributes are available from August 30th, 2006 onwards \cite{sofifa}. We collected this data ourselves since it was not available as a single dataset.
-All of the player attributes have a value in the range of 0-99. When two players are compared, a lower value means that the player's capability regarding that attribute is not as good as the other players. From all possible attributes, we have used 24 player attributes that were available from the beginning. These attributes are listed here with a short description that is taken from Fifplay \cite{playerattr}.
+All of the player attributes have a value in the range of 0-99. When two players are compared, a lower value means that the player's capability regarding that attribute is not as good as the other player's. From all possible attributes, we have used 24 player attributes that were available from the beginning. These attributes are listed here with a short description that is taken from Fifplay \cite{playerattr}.
 
 \renewcommand{\labelitemi}{}
 \begin{description}
@@ -98,15 +98,15 @@ All of the player attributes have a value in the range of 0-99. When two players
 \section{Aggregating team-level attributes}
 In this section, we explain how player attributes are combined to team-level attributes to describe a football team based on its players' capabilities.
 
-To describe the team in general level, we have used the average value from the team's 23 best players. These attributes are: \textit{overall rating, potential, age, height, weight, international reputation} and \textit{weak foot}. As an extra attribute, we calculated the average age from the top 11 players. The idea behind this attribute is to get the average age of the presumed starting lineup.
+To describe the team in a general level, we have used the average value from the team's 23 best players. These attributes are: \textit{overall rating, potential, age, height, weight, international reputation} and \textit{weak foot}. As an extra attribute, we calculated the average age from the top 11 players. The idea behind this attribute is to get the average age of the presumed starting lineup.
 
-The other attributes are described by a subsection of the team's 23 best players. We have used our knowledge and intuition on football to select the sizes of the subsections. The goalkeeper attributes are calculated based on the team's two best values for that attributes. The average for a skill required in set piece situation, like the attributes \textit{free kick accuracy} and \textit{penalties} for example, is calculated based on the top three ratings, since in most cases a small subset of players handles these situations. Also, \textit{sprint speed} and \textit{marking} are only calculated based on the top three values. \textit{Strength} and \textit{stamina} are calculated using the 10 best ratings. Other values are calculated using the five best ratings for each attribute.
+The other attributes are described by a subsection of the team's 23 best players. We have used our knowledge and intuition on football to select the sizes of the subsections. The goalkeeper attributes are calculated based on the team's two best values for that attributes. The average value for a skill required in a set piece situation, like the attributes \textit{free kick accuracy} and \textit{penalties} for example, is calculated based on the top three ratings, since in most cases a small subset of players handles these situations. Also, \textit{sprint speed} and \textit{marking} are only calculated based on the top three values. \textit{Strength} and \textit{stamina} are calculated using the 10 best ratings. Other values are calculated using the five best ratings for each attribute.
 
 In cases where the team does not have enough players to calculate the attribute's value as mentioned in the previous part we have used this formula
 \begin{equation}
 \frac{1}{N}\sum_{i=1}^{N}x_i \cdot \max{\{N/K, C\}}.
 \end{equation}
-If $N$ (the number of all available ratings for the attribute) is smaller than $K$ (the required number of ratings), the average is multiplied with a coefficient that has an integer value in the inclusive range from $C$ and 1. We have set the value of $C$ to 0.9.
+If $N$ (the number of all available ratings for the attribute) is smaller than $K$ (the required number of ratings), the average is multiplied with a coefficient that has an integer value in the inclusive range from $C$ to 1. We have set the value of $C$ to 0.9.
 
 Feature set containing the aggregated player attributes is named as \textit{player features}.
 
@@ -114,9 +114,9 @@ Feature set containing the aggregated player attributes is named as \textit{play
 We have collected odds for the FIFA World Cup 2018, 2014 and 2010 from Odds Portal \cite{oddsportal}. Odds Portal has a collection of odds offered by multiple betting sites. For every match, we have used the average value from the available odds. Kuypers \cite{kuypers2008} mentions that football odds are mostly fixed. Based on values that Odds Portal offer, this is not the case anymore. Many odds have changed from the initial opening odd before the match start. We have used the latest value for every odd since the data is easier to collect that way.
 
 \section{Features used in prediction}
-Features listed above are calculated for each team, but all of them are not used directly in training. For most of the features, the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get Elo the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. The main advantage of this method is that it reduces the number of features and makes the link between the home team's value and the away team's value explicit for the model. One limitation of this process is that a game between weak teams and a game between strong teams can look the same if the feature vector is only inspected.
+Features listed above are calculated for each team, but all of them are not used directly in training. For most of the features, the difference between the home team's value and the away team's value is used as the final value for that feature. For example to get the Elo difference the away team's Elo is subtracted from the home team's Elo. This process is done for all of the player attributes. From \textit{general features} difference is only used for Elo. The main advantage of this method is that it reduces the number of features and makes the link between the home team's value and the away team's value explicit for the model. One limitation of this process is that a game between weak teams and a game between strong teams can look the same if the feature vector is only inspected.
 
-From the available features, three feature sets are created: \textit{all features}, \textit{general features}, and \textit{player features}. Table \ref{table:featuresetlist} show the description for each of the feature sets.
+From the available features, three feature sets are created: \textit{all features}, \textit{general features}, and \textit{player features}. Table \ref{table:featuresetlist} shows the description for each of the feature sets.
 
 \begin{table}
     \caption{Feature set descriptions}
